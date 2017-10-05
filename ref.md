@@ -2901,6 +2901,10 @@ install from local file system
   move windows
     bind c-o  rotate window up
     bind m-o  rotate windo down
+  resize
+    resize-pane -R 20
+      resize current pane right by 20 cells
+      -D -U -L -R
 
 # Unix
 

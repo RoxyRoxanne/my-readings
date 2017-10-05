@@ -658,10 +658,6 @@
         Fourier transformu çok sezgisel bir şekilde anlatan bir yazı. 
         Kitabı:Math Better Explained
           tartışma ve başka kaynaklar: http://www.reddit.com/r/math/comments/17v8cv/visualized_fourier/c89c3pa
-    comedy
-      http://spikedmath.com/
-      http://www.capslik.com/
-      https://www.59saniye.com/artema-standartlari-zorlamayi-senden-ogrendik/
     education
       kitaplar
         Big.Ideas.Simply.Explained.The.Psychology.Book.0756689708.pdf
@@ -709,34 +705,6 @@
         children apps
       Domain knowledge
         Requirements
-    sinema
-      Captain Fantastic
-        http://m.imdb.com/title/tt3553976/
-      Daddy's Home 2
-      Daddy's Home +
-      Yok Artık +
-      Secret in their Eyes +
-      Live By Night +
-      Bana Masal Anlatma
-      Bir Baba Hindu
-      Kara Bela
-      Niyazi Gül Dörtnala
-      Olanlar Oldu
-      Düğün Dernek
-      http://letterboxd.com/2016/
-      http://unutulmazfilmler.com/as-far-as-my-feet-will-carry-me-so-weit-die-fue-tragen-k2.html#izle
-        Sibiryadan kaçan bir Alman esir
-      http://unutulmazfilmler.com/etiket/the-man-from-earth-hd-altyazili-izle.html
-      catch me if you can
-      fight club
-      taxi driver
-      naked gun 
-      charlie chaplin
-      https://www.youtube.com/watch?v=0z5SsDEWWIU
-      Midnight in Paris +
-      To Rome with Love
-      Iron Giant
-      Marley & Me
     psychology
       http://further.net/worst-case-scenario/
         Embracing worst case improves performance
@@ -758,9 +726,6 @@
       HOW I READ TWO TO THREE BOOKS EVERY WEEK 
 
   form
-    insanlar
-      Zorluhan Zorlu
-        milliyet, big data, reklam pazarlama
     youtube channels
       mathematics
         3Blue1Brown
@@ -780,7 +745,6 @@
           fear of trying
         hygiene for personal psychology
         what would happen if everybody was happy?
-          
       Dave Isay: Everyone around you has a story the world needs to hear 
         https://www.youtube.com/watch?v=QKHk_UiQboA
       Julian Treasure: How to speak so that people want to listen 
@@ -863,11 +827,6 @@
             if you don't have advertisers, give it for free
             check which ones are more clicked
             then sell it
-    ebook sites
-      bookzz.org
-      pdfdrive.net
-      https://www.reddit.com/r/trackers/comments/hrgmv/tracker_with_pdfsebooks_of_college_textbooks/c1xrq44/
-      https://cse.google.com/cse/home?cx=000661023013169144559:a1-kkiboeco
 
   purpose
     memorizing - spaced repetition tools
@@ -875,7 +834,7 @@
       http://opencards.info/
       https://github.com/marcusbuffett/Clanki
         cli for anki
-    english resources for özgür emin id=g_10094
+    english resources for children özgür emin id=g_10094
       english resources for özgür emin <url:file:///~/Dropbox/mynotes/content/code/cstuff.md#r=g_10094>
       epic - subscription
       alphabet - free
@@ -1021,13 +980,7 @@
       people don't always buy into new ideas
 
   unclassified
-    Kütüphane library books
-      http://menadoc.bibliothek.uni-halle.de/landau/nav/index/all
     google.com/fonts
-    teknoloji inceleme sitesi
-      webtekno youtube
-    drone/kamera vs satış sitesi
-      technostore
     android uygulama inceleme sitesi
       http://tr.fobito.com/android
     eğitim uygulamaları
@@ -1051,10 +1004,6 @@
       reddit startups
     https://orbitalinsight.com/platform/
       satellite photos and their business uses
-    ev fiyatları - kira - hane geliri ilişkisi - ekşi
-      https://eksisozluk.com/entry/64710775
-    etkinlik organizasyon şirketi
-      http://www.bizzconsulting.com.tr/haberler
     How to Make a Raspberry Pi Smart Mirror
       video. 
       tahta çerçevelerin arkasına bir ekran ve önüne bir ayna yapıştırıyorlar.
@@ -1068,40 +1017,8 @@
     Silent Letters | English Pronunciation & Vocabulary | PART 1
       https://www.youtube.com/watch?v=nUccn2K0fjw
       okunmayan harfleri çok iyi anlatıyor
-    İngilizce kanalları  
-      Çocuklar için İngilizce Kanalları
-        Learn English Through Stories
-      mmmmEnglish
-      English with Lucy
-      77PhrasalVerbs
-      English Lessons with Adam - Learn English with Adam [engVid]
-      Go Natural English
-      TOEIC CHANNELS
-      Boston English Centre
-    teknolojik icatlar
-      desktop water cutter
-        https://www.kickstarter.com/projects/1294137530/the-first-desktop-waterjet-cutter
-        4000 $
-      bixpy jet: su motoru
-      lucy sun shine mirror
-      Beelinguapp
-        tüm metinleri iki dilde yanyana gösteren bir ekitap app 
-        @me: buna benzer bir şey bizim sahada nasıl olurdu?
-          aynı problemin farklı çözüm şekilleri
-          çözümü ver, problemi sor
-      Hy - hidden wireless earbuds you never have to take off
-      Dobot M1: Pro Robotic Arm for Makers and Businesses
-        1000 $ civarına çok yetenekli bir robot
-      A/Stand: laptop için taşınabilir sehpa
-        https://www.kickstarter.com/projects/737096508/a-stand-the-ultimate-lap-desk-case-tray-stand?ref=category_popular
-      JeVois: Open-Source Quad-Core Smart Machine Vision Camera
-        50 $
-        açık kaynak, raspberry pi için akıllı kamera
     Mechanisms: makine mekanizmalarının 3d videoları
       https://www.youtube.com/playlist?list=PLhoXNQqrCmEfAaTf0AfQ1Ztxmz2DoZiCk
-    girişimler
-      stajim.net
-        stajyerlere özel sosyal ağ
     borderlinx: abd'den ürün getirme
     Acting and Speaking Power - Stanford Business School
       how to act with power
@@ -1200,10 +1117,6 @@
         interest 
           high -> less borrowing
     Başarısız olan girişimlerin başarısızlık hikayeleri : https://collapsed.co 
-    restoranlar
-      yakamoz kuleli
-        http://www.yakamozbalik.com/fix-menu.php
-        piliç menü: 65 TL
     innovations
       UpKeep gives companies an app to speed up the maintenance work order process
         https://techcrunch.com/2017/01/23/upkeep-gives-companies-an-app-to-speed-up-the-maintenance-work-order-process/
@@ -1230,44 +1143,6 @@
         https://cloud.sagemath.com/settings
         For professors teaching courses using open source software
         SMC is the easiest way to get your class up and running. We eliminate installation problems, and the limitations of the Mathematica and ShareLaTeX cloud offerings. Our collaborative environment includes LaTeX, R, Jupyter, Python, SageMath, Octave, Julia, and much more.
-      
-    yemek tipleri
-      https://www.youtube.com/watch?v=fOoDEZd4a4A
-        bayat ekmeği tazeleştirmek
-          su dök üzerinden
-          3 dk fırınla
-          tersine çevir tekrar 3 dk fırınla
-        yumurta soymak
-          yumurtayı ez ve yuvarla
-          kabuğunu çıkart
-        limon sıkma
-          limonun tabanından bir delik aç çiviyle
-        soğan doğrama
-          rendeyi kullan
-      How To Cook A Cheap Steak Vs. An Expensive Steak
-        https://www.youtube.com/watch?v=ir5U88d_3iI
-        marineleme
-          buzdolabı poşeti içine eti koy
-          soya sosu, elle ezilmiş sarımsak, karabiber koy
-          30dk-8 saat
-          sonra üzerindeki sosu kağıt havluyla kurula
-      https://www.youtube.com/watch?v=af3dEbAd4Os
-        sarmısakları cam kavanoza koy ve salla. kabukları soyularak çıkar
-        kiviyi ikiye kes. cam bardağın kenarını kullanarak kabuğunu çıkart
-        patatesin kabuğunu çevreleyerek kes. kaynat. çekerek kabuğunu çıkart.
-      https://www.youtube.com/watch?v=23qMd90xcaY
-        bayat yumurtaları tespit etmek: su kovasına koy. yüzeyde kalanlar bayattır.
-        mayonez yapma: sıvı yağ, yumurta, limon. el blenderı.
-      WHAT CAN YOU CUT WITH PAPER?
-        kağıt kullanarak elektrikli testere yapımı
-    hikaye: "müslüm diye bir hıyar varmış"
-      petroclub'da beni dövdüler
-      4 araba gittiler
-      gider gitmez ilk duyduğum "siper alın"
-      meğer bunlar muhammed tokcan
-      orada saklanıyorlarmış
-      avrasya feribotunu basan çeçen mafya
-      sonra swiss otel baskını yapıyorlar
     A kinder, gentler philosophy of success _ Alain de Botton-MtSE4rglxbY.mp4
       why are we suffering?
         we are surrounded by snobs
@@ -1371,26 +1246,6 @@
       https://github.com/Thibaut/devdocs/
     rxvis: visualization for rxjs
       https://rxviz.com
-    mali müşavir: mehmet atay
-      teknoparklar konusunda uzman muhasebeci
-      533 366 55 06
-    satılık ev 
-      maltepe kiptaş seyrantepe
-        http://www.kiptas.istanbul/tr/projelerimiz/satisi-tamamlanan-projeler-/maltepe-konutlari-2-etap
-        ev büyüklüğü
-          ANTRE  7.06  m²
-          KORİDOR  5.33  m²
-          MUTFAK  11.28  m²
-          SALON  29.33  m²
-          YATAK  ODASI  12.10  m²
-          YATAK  ODASI  12.02  m²
-          E.  YATAK  ODASI  18.50  m²
-          BANYO  5.50  m²
-          BANYO  3.82  m²
-          WC  3.08  m²
-          BALKON  5.04  m²
-          113 net
-          150 brüt
     PlantUml: text to uml tool
       http://plantuml.com
     PleasingFungus game: design a CPU
@@ -1442,14 +1297,4 @@
       simetri kavramlarıyla matematiğin grup teorisini anlatıyor.
     İngilizce Sohbet Uygulaması
       https://www.cambly.com/english?lang=en
-    espri
-      saç
-        [20:29, 4.10.2017] Ismail Ertunc Ayik: Abicim zaten nazar değicek diye ödüm patlıyo. Geçen kel bi vale beni görünce ilk dediği şey abi ne güzel saçın var oldu
-        Hayır dedim güzel değil, bakma
-        [20:30, 4.10.2017] Ismail Ertunc Ayik: Aslında seyrek saçlarım, ama gür sanılıyo
-        [20:38, 4.10.2017] Erdem Yoruk: lan azcık uzatsan içinde ben bile yaşarım
-        [20:40, 4.10.2017] Ismail Ertunc Ayik: Sen gel sana yer buluruz
-    bilgi
-      ab vizesi
-        aslı çiçek: Macaristan Miştok mevkiinde (şehir denmez köy diyelim ama 3.şehirmiş) 20-25 K'ya dayre aliniyo oturma izni çat tşk (deniz yok spa var göl var-mış. Peder aldı gölde yüzüyo.)
 
