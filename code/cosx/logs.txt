@@ -1,0 +1,54 @@
+➜  ~ sudo cat /private/var/db/com.apple.xpc.launchd/disabled.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>com.apple.hdiejectd</key>
+        <false/>
+        <key>com.apple.screensharing</key>
+        <true/>
+        <key>com.apple.ManagedClientAgent.enrollagent</key>
+        <true/>
+        <key>com.apple.mtmd</key>
+        <false/>
+        <key>com.apple.ftpd</key>
+        <false/>
+        <key>com.openssh.sshd</key>
+        <false/>
+        <key>com.apple.usbmuxd</key>
+        <false/>
+        <key>com.apple.rpmuxd</key>
+        <false/>
+        <key>com.apple.mdmclient.daemon.runatboot</key>
+        <true/>
+        <key>com.apple.smbd</key>
+        <true/>
+        <key>com.delantis.TCPBlock</key>
+        <false/>
+        <key>com.microsoft.office.licensing.helper</key>
+        <false/>
+        <key>com.apple.mrt</key>
+        <false/>
+        <key>com.apple.ManagedClient.enrollagent</key>
+        <true/>
+        <key>org.apache.httpd</key>
+        <true/>
+        <key>com.apple.mtmfs</key>
+        <false/>
+        <key>com.apple.locate</key>
+        <false/>
+        <key>com.apple.metadata.mds</key>
+        <false/>
+        <key>org.net-snmp.snmpd</key>
+        <true/>
+        <key>org.ntp.ntpd</key>
+        <false/>
+        <key>com.apple.pacemaker</key>
+        <true/>
+        <key>org.macosforge.xquartz.privileged_startx</key>
+        <false/>
+</dict>
+</plist>
+➜  ~ sudo launchctl remove com.apple.mDNSResponder.reloaded
+➜  ~ sudo launchctl load /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+/System/Library/LaunchDaemons/com.apple.mDNSResponder.plist: Service is disabled
