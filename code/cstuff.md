@@ -1297,4 +1297,6 @@
       simetri kavramlarıyla matematiğin grup teorisini anlatıyor.
     İngilizce Sohbet Uygulaması
       https://www.cambly.com/english?lang=en
+    From design patterns to category theory
+      http://blog.ploeh.dk/2017/10/04/from-design-patterns-to-category-theory/
 
