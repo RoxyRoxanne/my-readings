@@ -1292,11 +1292,31 @@
         requests per second
     Debugging Javascript
       https://dzone.com/refcardz/debugging-javascript
-    Illustrating Group Theory A Coloring Book
-      http://www.coloring-book.co
-      simetri kavramlarıyla matematiğin grup teorisini anlatıyor.
     İngilizce Sohbet Uygulaması
       https://www.cambly.com/english?lang=en
     From design patterns to category theory
       http://blog.ploeh.dk/2017/10/04/from-design-patterns-to-category-theory/
+    Learn X in Y minutes
+      https://learnxinyminutes.com/
+    Cheatsheets for several programming languages: devhints.io
+      https://devhints.io/vimscript
+    fzf: fuzzy file finder
+      fzf examples
+        https://github.com/junegunn/fzf/wiki/examples
+        searching file contents
+          ag --nobreak --nonumbers --noheading . | fzf
+        fasd replacement
+        chrome history
+    VimAwesome: vim plugins
+      https://vimawesome.com/
+    math video channels
+      WelchLabs
+      3blue1brown
+      Numberphile
+      Siraj Rival
+      Veritasium
+      Vsauce
+      Minute Physics
+      2 Minute Papers 
+
 

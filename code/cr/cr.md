@@ -134,4 +134,6 @@
 			RStudio addins to make copy-pasting vectors and tables into source painless.
 	Shiny developer conference
 		https://www.rstudio.com/resources/webinars/shiny-developer-conference/
+  Renjin: R on JVM
+    http://www.renjin.org/
 

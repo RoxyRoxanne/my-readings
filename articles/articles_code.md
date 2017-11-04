@@ -1,4 +1,6 @@
 
+_ id=r_lastid acd_0003
+
 # IntelliJ
 
   42 IntelliJ IDEA Tips and Tricks-eq3KiAH4IBI.mp4
@@ -1885,6 +1887,1172 @@ _refcard _me
       yield event
     end
   end # def decode
+
+# lua id=g_10160
+
+    lua <url:file:///~/Dropbox/mynotes/content/articles/articles_code.md#r=g_10160>
+    LuaJIT
+      a compiler for lua
+      overview
+        http://luajit.org/luajit.html
+        scripting middleware
+        from embedded devices to servers
+        low memory
+        very high performance
+      Lua - wikipedia
+        https://en.wikipedia.org/wiki/Lua_(programming_language)
+      Why Lua id=acd_0002
+        Why Lua <url:#r=acd_0002>
+        http://www.eluaproject.net/overview/why-lua
+          minimal yet fully functional language
+          not only scripting, also web services
+          limited resource use
+            runs on microcontrollers fully
+          highly portable: ANSI C
+          infinite recursion (tail calls)
+          lambda functions
+        http://notebook.kulchenko.com/programming/lua-good-different-bad-and-ugly-parts
+          integrated interpreter
+          garbage collector
+          functions 
+            return multiple values
+            variadic arguments
+          differences
+            indexes start at 1
+            number: int + real
+            no classes
+            nil, false: only false values
+            not equal ~=
+            not, or, and
+            assignments are statements
+        http://blog.datamules.com/blog/2012/01/30/why-lua/
+          integration with c
+            much better than others
+            clean
+          computer science education
+            ex: how vm works
+            accessible source code
+          functional
+          everything is a table
+            arrays, hashes, modules, global environment etc.
+            ex: module[var]
+              access variables in module
+          consistent
+    Learn Lua in 15 Minutes id=acd_0003
+      Learn Lua in 15 Minutes <url:#r=acd_0003>
+      http://tylerneylon.com/a/learn-lua/
+      comment
+        -- comment
+        -- [[ 
+          multiline comment
+        -- ]]
+      Variables
+        num = 42 -- all numbers are doubles
+        s = 'walter'
+        t = "walter"
+        u = [[ multiline
+          string ]]
+        t = nil -- undefines t for gc
+        foo = newVar -- foo = nil
+        aBool = false -- only nil and false are falsy
+      Blocks
+        while num < 50 do
+          num = num + 1
+        end
+        sum = 0
+        for i = 1, 100 do
+          sum = sum + i
+        end
+      If
+        if num > 40 then
+          print("over 40")
+        elseif s ~= "walternate" then -- not equal !=
+          io.write("not over 40") -- stdout
+        else
+          thisIsGlobal = 5 -- vars are global by default
+          local line = io.read() -- stdin line
+          print("coming, " .. line)
+        end
+      Functions
+        function fib(n)
+          if n < 2 then return 1 end
+          return fib(n-2) + fib(n-1)
+        end
+        -- closures
+        function adder(x)
+          return function (y) return x + y end
+        end
+        x,y = 1,2
+        function bar(a,b)
+          return 4, 8
+        end
+        f = function (x) return x * x end
+        local g = function (x) ..
+        -- one string param calls no parens
+        print 'hello'
+      Tables
+        -- associative arrays
+        t = {key1 = 'value1', key2 = false}
+        print(t.key1)
+        k.key2 = nil
+        -- literal notation
+        u = {[{}] = 13, [6.28] = 'tau'}
+        print(u[6.28])
+        -- key matching by value for primitives
+        -- by identity for tables
+        b = u[{}] -- b = nil because lookup fails
+        -- one-table-param function call needs no parens:
+        function h(x) print(x.key1) end
+        h{key1 = 'sonmi'}
+        -- table iteration
+        for key, val in pairs(u) do
+          print(key, val)
+        end
+        -- _G table of all globals
+        -- using tables as lists
+        for i = 1, #u do
+          print(u[i])
+        end
+
+# nginx
+
+## OpenResty id=g_10161
+
+    OpenResty <url:file:///~/Dropbox/mynotes/content/articles/articles_code.md#r=g_10161>
+    Definitely an openresty guide
+      http://www.staticshin.com/programming/definitely-an-open-resty-guide/
+      1. Why openresty
+        what is openresty
+          packaging of nginx + libraries to write app servers
+          not just configuring server but you can porgram it
+        openresty removes barries to developing apps with nginx
+        what are barriers?
+          configuration files
+          ex: validate input data
+            content_by_lua
+              ngx.req.read_body()
+              local post_args = ngx.req.get_post_args()
+              local clean_body_data = require("lib/validate").validate_body(post_args)
+          delegate these functions to proxy (nginx)
+        learning lua
+          ref
+            Learn Lua in 15 Minutes <url:#r=acd_0003>
+      Hello world
+        file structure
+          root
+          - logs
+          - conf
+        ex:
+          mkdir lua
+          hello_world.lua:
+            ngx.say("<p>Hello world from a lua file</p>");
+          -->
+          location /by_file {
+            default_type text/html;
+            content_by_lua_file ./lua/hello_world.lua;
+          }
+          $ curl http://localhost:8080/by_file 
+          <p>hello world from lua</p>
+      Directives
+        2 types
+          simple
+          block level
+      run nginx
+        nginx -p `pwd` -c conf/nginx.conf
+      Openresty Directives
+        lua_code_cache
+          on by default
+          during dev: make it off
+          equivalent to:
+            nginx -s reload
+          only for *by_lua_file
+            not *by_lua
+        init_by_lua
+          runs lua code as nginx is initializing
+            to register global variables
+            to start lua modules
+          ex
+            init_by_lua 'cjson = require("cjson")'
+            location /one {
+              content_by_lua '
+                local validate = require("lua/validate")
+                decoded_one = cjson.decode({hello="world"})
+                '
+            }
+        set_by_lua
+          equivalent to nginx set
+            can be used interchangeably
+          ex:
+          location /set_by_lua {
+            set $nvar 20;
+            set_by_lua $lvar 'return ngx.var.nvar + 1';
+            echo "$nvar,$lvar";
+          }
+        content_by_lua
+          location /json{
+            content_by_lua '
+              ngx.say(cjson.encode({message="hello world",another_message="goodbye world"}));
+              ';
+          }
+        rewrite_by_lua
+          you can issue dynamic rewrites from database
+        access_by_lua
+      The ngx api
+        ngx is already imported globally
+        ngx.location.capture
+          to make subrequest to a uri (location)
+          location: defines endpoints for clients to make requests to
+          subrequest: internal sync request
+          ex:
+            location /go-go-go{
+              ###does something in a hurry
+            }
+            # call it:
+            local res = ngx.location.capture("/go-go-go")
+          note: uri must be internal
+            # won't work:
+            local res = ngx.location.capture("http://www.google.com/")
+          res returned:
+            res.status
+            res.header
+              # as lua table
+              res.header["Vary"]
+            res.body
+            res.truncated
+          arguments can be passed as args:
+            local res= ngx.location.capture("/hello?a=1&b=2")
+            ===
+            local res = ngx.location.caputre("/hello",{args={a=1,b=2}})
+          ex: other data
+            local account_page = ngx.location.capture("/get_account",
+              {method=ngx.HTTP_POST,body=
+              json_body,args={user_name=name}
+            })
+        ngx.location.capture.multi
+          local home,about,contact = ngx.location.capture.multi{{"/home"},{"/about"},{"/contact"}}
+            makes multiple subrequests
+            run in parallel
+            results returned when all complete
+        The req
+          add/remove http headers, body
+          headers of the request
+            ngx.req.get_headers()
+              local headers = ngx.req.get_headers()
+              local cookie = headers["Cookie"]
+              local etag = headers["Etag"]
+              local host = headers["Host"]
+            ngx.req.set_header("Content-type","application/json")
+          body of the request
+            ngx.req.read_body()
+            local args = ngx.req.get_post_args()
+            -- just like the headers, args is a lua table.
+          method of the request
+            local method = ngx.req.get_method
+            ngx.req.set_method(ngx.HTTP_POST)
+          uri of the request
+            you can change uri of req
+              ngx.req.set_uri("/foo")
+            only in rewrite phase
+          url arguments
+            ngx.req.set_uri_args("a=3&b=hello%20world")
+            ngx.req.set_uri_args({ a = 3, b = {5, 6} })
+            -- this will be translated as "a=3&b=5&b=6"
+            local is_test = ngx.req.get_uri_args()["test"]
+        The res
+          headers of the response
+            local content_type = ngx.header.content_type -- reads "Content-Type header"
+            local content_type_orig = ngx.header["Content-type"]
+            ngx.header.content_type = "application/json" -- sets the content type header
+            ngx.header["My-Multi-Value-Header"] = {"1","2"}
+          body of the response
+            ngx.print("Hello world") --sends  Hello world
+            ngx.say("Hello world") -- sends Hello world/n that is the body appended with a newline
+            ngx.say(cjson.encode({a=1,b=2})) -- you can also send json in the response body
+      Debugging openresty scripts
+        error logs
+          error_log logs/error.log;
+          tail -f ./logs/error.log
+          # output to terminal
+          error_log /dev/stderr;
+        check values of variables
+          ex: write to error log
+            local body = res.body
+            ngx.log(ngx.ERR,body)
+        zerobrane studio ide
+          debug scripts
+      Global variables in openresty
+        modules
+          local module = require("/dir/packer")
+          # loads packer into "module" variable
+          it is cached inside: package.loaded table
+          global variables loaded into "_ENV" table
+      working with JSON
+        cjson preinstalled
+        cjson.encode() # data -> json
+        cjson.decode() # json -> data
+        json has two data structures:
+          dictionary -> table in lua
+          array -> table in lua
+        ex:
+          local simple_table = { des = "hi" }
+          simple_table.des # access
+          simple_table.["des"] # access
+          local simple_arr = {"one", "two"}
+          simple_arr[1] # one
+        ex: json to lua
+          local members = json_decoded.members
+          local user1 = members.names[1]
+      Organizing openresty code
+        nginx configuration files
+        server {
+          include ./routes.conf;
+        }
+        # routes.conf
+          location ...
+      The lua code
+      Concurrency
+        implemented with coroutines
+          coroutine: lightweight (green) thread
+            that is spawned from lua's execution environment
+            not an os level thread
+          what problems coroutines solve
+            The problem coroutines resolve is 'I want to have a function I can execute for a while, then go back to do other thing, and then come back and have the same state I had when I left it'.
+            Notice that I didn't say 'I want it to keep running while I do other things"; the flow of code "stops" on the coroutine, and only continues on it when you go back to it.
+        most directives are run as coroutines
+      The luaJIT VM
+      resty cli
+        resty cli runs lua scripts
+        $ which resty
+        $ resty -e "ngx.say('hello world')"
+        $ resty hello_world.lua
+        resty is a perl program
+    upstream server
+      a server that provides service to another server
+      ex
+        http {
+          upstream myproject {
+            server 127.0.0.1:8000 weight=3;
+            server 127.0.0.1:8001;
+            server 127.0.0.1:8002;    
+            server 127.0.0.1:8003;
+          }
+          server {
+            listen 80;
+            server_name www.domain.com;
+            location / {
+              proxy_pass http://myproject;
+            }
+          }
+        }
+      used for proxying requests to other servers
+    nginx: ngx_http_upstream_module
+      http://nginx.org/en/docs/http/ngx_http_upstream_module.html
+      directives:
+        upstream server
+      used to define servers that can be referenced by:
+        proxy_pass, fastcgi_pass ...
+    Top ten things about openresty
+      http://www.staticshin.com/top-tens/things-about-openresty.html
+      1. program nginx
+      2. fast
+      3. low memory
+      4. lua
+      5. *by_lua_directives
+        access_by_lua
+          lua processing during access phase of request
+        rewrite_by_lua
+          lua processing in rewrite phase
+        content_by_lua
+          lua processing in content phase
+        you can put lua code in files
+          use: *by_lua_file directives
+            access_by_lua_file
+            content_by_lua_file
+            ...
+      6. ngx.location.capture.multi
+        api mashup tool
+        allows to make sync yet non blocking subrequests
+        its benefit:
+          proxy_pass: to pass requests to different servers
+          with location capture api, get a response from proxied server
+          so, you can have multiple services in different locations
+            and make requests to them from lua
+        think microservices:
+          authentication, billing, notification ...
+      7. simplified application architecture
+      location.capture syncronous?
+        yes, synchronous but nonblocking
+        provides a lua interface over subrequests
+          subrequests: look like http request
+            implementation has nothing to do
+            it is abstract invocation for decomposing task into smaller internal requests
+              that can be served independently by multiple different location blocks
+            calls a few c functions no socket communication
+        ex: single location capture
+          local res = ngx.location.capture("/url")
+          ngx.say(res.body)
+        equivalent to:
+          location /main {
+            echo_location /url;
+          }
+          location /url {
+            echo hello_url;
+          }
+          $ curl http://localhost:8080/main
+          hello_url
+        ex: location.capture_multi
+          local res = ngx.location.capture_multi({/url1}, {"url2"})
+          ngx.say(res1.body..res2.body)
+        initiates multiple rubrequests to url1 and url2
+        equivalent to:
+          location /main {
+            echo_location_async /url1;
+            echo_location_async /url2;
+          }
+          location /url1 {
+            echo hello_url1;
+          }
+          location /url2 {
+            echo hello_url2;
+          }
+        location.capture does not return until all subrequests have been completed
+      can i make external http requests with location.capture?
+        yes. subrequests are internal
+        inside subrequests you can do anything
+    HTTP request processing phases in Nginx
+      http://www.nginxguts.com/2011/01/phases/
+      processing http request in phases
+        may be 0+ handlers called
+      phases:
+        URI transformation on virtual server level
+        configuration location lookup
+        URI transformation on location level
+        URI transformation post-processing
+        access restrictions preprocessing
+        access restrictions check
+        access restrictions postprocessing
+        try_files
+        content generation
+        logging
+      you can register handlers on phases
+      handlers can return values:
+        NGX_OK
+        NGX_DECLINED
+        NGX_AGAIN
+        NGX_ERROR
+      critics
+        legacy from apache
+    Hackernews: OpenResty
+      https://news.ycombinator.com/item?id=9865835
+        underlying HttpLuaModule is very useful on its own
+          to build logic around requests
+          this the really important bit
+    Lua Nginx Module
+      https://github.com/openresty/lua-nginx-module#readme
+      synopsis
+        # search path for lua libs
+        lua_package_path '/foo/bar';
+        location /lua_content {
+          default_type 'text/plain';
+          content_by_lua_block {
+            ngx.say('hello')
+          }
+        }
+        location /nginx_var {
+          # access /nginx_var?a=hello
+          content_by_lua_block {
+            ngx.say(ngx.var.arg_a)
+          }
+        }
+        location = /request_body {
+          content_by_lua_block {
+            ngx.req.read_body()
+            local data = ngx.req.get_body_data()
+            if data then
+              ngx.say("body:")
+              ngx.print(data)
+              return
+            end
+            local file = ngx.req.get_body_file()
+            if file then
+              ngx.say("body is in file ", file)
+            else
+              ngx.say("no body")
+            end
+          }
+        }
+        # subrequests
+        ...
+          local res = ngx.location.capture("/other")
+          if res then
+            ngx.print(res.body)
+          end
+        # rewrite
+        location = /mixed {
+          rewrite_by_lua_file /path/to/rewrite.lua;
+    Packt.Nginx.HTTP.Server.3rd.Edition.1785280333.pdf
+      chapter01
+      chapter02. Basic Nginx Configuration
+        Configuration directives
+          directive = statements
+            ex: 
+              <directive>;
+          worker_processes 1;
+        Organization and inclusions
+          include mime.types;
+        Directive blocks
+          modules bring directives
+          modules may enable directive blocks
+          ex:
+            events {
+              worker_connections 1024;
+            }
+          Events module brings events block
+            directives of this module can be used within that block
+          ex:
+            http {
+              server {
+                listen 80;
+                server_name example.com;
+                access_log ...;
+                location ^~ /admin/ {
+                  index index.php;
+                }
+              }
+            }
+          server block: a virtual host
+            matches http requests with Host header: example.com
+            location blocks: when requested URI matches specified path
+        Advanced language rules
+          Directives accept specific syntaxes
+            ex:
+              rewrite ^/...$ /image.php?file=$1&... last;
+            location, rewrite: support complex expressions
+            listen: accepts 17 parameters
+            Rewrite module: advanced logical structure through if, set, break, return
+          Diminutives in  directive values
+            to specifiy file size:
+              k K: kilobytes
+              m M
+              g G
+            ex:
+              client_max_body_size 2G;
+              client_max_body_size 2048M;
+            same directive multiple times allowed
+            time value:
+              ms s m h d w M y
+            ex:
+              client_body_timeout 3m;
+          Variables
+            always start with $
+            ex:
+              location .. {
+                log_formad main '$pid - $remote_addr';
+            not all directives allow variables
+          String values
+            without quotes strings:
+              root /home/example.com/www;
+        Base module directives
+          What are
+            Core module: process management, security
+            Events module: networking
+            Configuration module: inclusion
+          Nginx process architecture
+            Master Process:
+              starts with nginx
+              doesn't process client requests
+              it spawns processes that do
+                they are: Worker Processes
+              nginx.conf: define number of worker processes
+                max. connections per worker
+          Core module directives
+            daemon
+              daemon on;
+            debug_points
+              debug_points stop;
+            env
+              env MY_VARIABLE=my_value;
+            error_log
+              error_log /file/path level;
+            lock_file 
+              lock_file
+                logs/nginx.lock;
+            log_not_found
+              log_not_found on;
+            master_process
+              master_process on;
+          Events module
+            worker_connections
+          Configuration module
+            include sites/*.conf
+          Core directives
+            user www-data www-data;
+              <user> <group>
+        Performance tests
+          httperf
+            httperf --server 192.168.1.10 --uri /index.html --rate 300 ...
+          autobench
+            increases request rates until server gets saturated
+          OpenWebLoad
+            transactions per second
+            avg response time
+      Chapter03. Http Configuration
+        HTTP Core module
+          Structure blocks
+            http
+            server
+              to declare a website
+            location
+              particular location in a website
+          Socket and host
+            listen inside server
+              listen [address][:port] [options];
+                options:
+                  ssl
+                  proxy_protocol
+                  default_server
+              ex:
+                listen 192.168.1.1:80;
+                listen 80 default;
+                listen [:::a8c9:1234]:80; #ipv6 address
+                listen 443 ssl;
+                listen unix:/tmp/nginx.sock; # unix socket
+            server_name inside server
+              assigns 1+ hostnames to server block
+              ex
+                server_name www.website.com;
+                server_name www.website.com  website.com;
+                server_name *.website.com;
+                server_name ~^(www)\.website\.com;
+                  regex
+              regex: ~...
+            server_name_in_redirect
+              context: http, server, location
+          Paths and documents
+            root
+              context: http, server, location, if.
+              variables ok
+              document root
+              ex:
+                root /home/website.com/public_html;
+            alias
+              context: location
+              variables ok
+              defferent path for a specific request
+              ex:
+                server {
+                  root /../;
+                  location /admin/ {
+                    alias /var/www/locked/;
+            error_page
+              context: http, server, location, if.
+              variables ok
+              ex:
+                error_page 404 /not_found.html;
+                error_page 500 501 ...;
+            if_modified_since
+              for google
+            index
+              default page if filename not found
+          MIME types
+            types
+              ex:
+                http {
+                  include mime.types;
+              ex:
+                types {
+                  text/html html;
+                  image/gif gif;
+          Limits and restrictions
+            limit_except
+              context: location
+              prevent HTTP methods excepts the ones you allow
+              ex:
+                location /admin/ {
+                  limit_except GET {
+                    allow 192.168.1.0/24;
+                    deny all;
+            limit_rate
+              limit transfer rate per secnod
+              ex:
+                limit_rate 500k;
+                    ...
+          File processing and caching
+            disable_symlinks
+              how to handle symbolic links
+          Other
+            log_not_found
+              disables logging of 404 not found
+            log_subrequest
+        Location modifier
+          location /admin/
+          complex patterns allowed:
+            location [=|~|~*|^~|@] pattern {..}
+          first optional argument: location modifier
+          The = modifier
+            match pattern exactly
+            no regex
+            location = /abcd {..}
+              website.com/abcd +
+              website.com/abcd/ - no match slash
+          No modifier
+            no regex
+            location /abcd {..}
+              website.com/abcd +
+              website.com/abcd/ +
+              website.com/abcde +
+          The ~ modifier
+            case sensitive regex
+            location ~ /abcd$ {..}
+              website.com/abcd +
+              website.com/ABCD -
+              website.com/abcd/ -
+              website.com/abcde -
+          The ~* modifier
+            case insensitive regex
+            location ~ /abcd$ {..}
+              website.com/abcd +
+              website.com/ABCD +
+              website.com/abcd/ -
+              website.com/abcde -
+          The ^~ modifier
+            like no-symbol
+          The @ modifier
+            for internal requests
+        Search Order and Priority
+          server {
+            location /files/ {
+              # matches /files/doc.txt
+            }
+            location = /files/ {
+              # matches /files/
+            }
+          exact match has priority
+          order: = no ^~ ~ 
+      Chapter04. Module Configuration
+        The Rewrite module
+          goal: clean ugly URLs with multiple params
+          ex:
+            article.php?id=1234
+            -->
+            article-1234-us-economy
+          key for SEO
+        Reminder on regular expressions
+          PCRE syntax
+            perl compatible re
+          captures
+            $1 $2
+          ex:
+            location ~* ^/(downloads|files)/(.*)$ {
+              add_header Capture1 $1;
+              add_header Capture2 $2;
+            }
+        Internal requests
+          internal requests: triggered by nginx via directives
+          directives that produce internal requests:
+            error_page index rewrite try_files add_before_body include ...
+          2 types:
+            internal redirects
+              nginx redirects client requests internally
+              uri is changed
+              request may match another location block
+              most common: rewrite directive
+            subrequests
+              to generate content that complements main request
+              ex: Addition module
+                add_after_body: content appended to body of original request
+          error_page
+            error_page 404 /errors/404.html;
+            location /errors/ {
+              alias /var/www/common/errors/;
+              internal;
+            }
+            note: check logs to understand how redirects and rewrites work
+          Rewrite
+            ex:
+              location /storage/ {
+                internal;
+                alias /var/www/storage/;
+              }
+              location /documents/ {
+                rewrite ^/documents/(.*)$ /storage/$1;
+              }
+          Infinite loops
+            allowed 10 internal redirects
+          Server Side Includes (SSI)
+        Conditional structure
+          server {
+            if ($request_method = POST) {
+            ...
+            }
+            ~ regex
+            -f existence of file
+              -d -e -x
+        Directives
+          rewrite
+            rewrite regexp replacement
+            ex
+              rewrite ^/search/(.*)$ /search.php?q=$1;
+          break
+            prevent further rewrite
+            ex:
+              if (-f $uri) {
+                break;
+              }
+          return
+            returns http status code
+          set
+            defines a variable
+              set $variable value
+          rewrite_log
+            rewrite_log on;
+        Common rewrite rules
+          performing a search
+            input: http://website.com/search/some-search
+            rewritten: http://website.com/search.php?q=some-search
+            rule: rewrite ^/search/(.*)$ /search.php?q=$1?;
+          user profile page
+            input: http://website.com/user/32/james
+            rewritten: http://website.com/user.php?id=32&name=james
+            rule: rewrite ^/user/([0-9]+)/(.+)$ /user.php?id=$1&name=&2?;
+          multiple parameters
+            input: http://website.com/index.php/param1/param2
+            rewritten: http://website.com/index.php?p1=param1&p2=param2
+            rule: rewrite ^/index.php/(.*)/(.+)$ /index.php?p1=$1&p2=&2?;
+        SSI module
+          server side programming language
+          include command
+          ex:
+            <h1>Quote: <!--# include file="quote.txt" -->
+          Module directives and variables
+            ssi
+              ssi on;
+              enable parsing for SSI commands
+            ssi_types
+              mime file types eligible
+              ssi_types text/html;
+            parsing decreases performance
+              enable under specific pages:
+              location ~* \.shtml$ {
+                ssi on;
+              }
+        SSI commands
+          <!--# command param1="value1" ... -->
+          File includes
+            <!--# include file="header.html" -->
+              generates a subrequest
+            <!--# include virtual="/source/header.php?id=123" -->
+              generates a subrequest
+        Additional modules
+          Website access and logging
+            Index
+              index index.php index.html;
+            Autoindex
+              automatic listing of the files in directory
+              autoindex on;
+            Random index
+              random_index
+            Log
+              access logs
+              access_log
+                access_log path [format] | off;
+                log_format template_name format_string;
+                  log_format combined '$remote_addr - $remote_user'
+              log variables:
+                $time_local
+                $request_time
+                ..
+          Limits and restrictions
+            Auth_basic module
+              basic authentication
+              auth_basic "Admin control panel";
+              auth_basic_user_file access/password_file;
+                password file:
+                  username:password
+            Access
+              allow IP | CIDR | unix: | all
+                CIDR: ip address range
+                unix: all unix domain sockets
+              deny
+              ex:
+                location {
+                  allow 127.0.0.1;
+                  allow unix:;
+                  deny all; # deny all other ip
+            Limit connections
+              limit by ip address zone
+            Limit request
+              limit number of requests for a defined zone
+            auth_request
+              allow access based on subrequest
+                if subrequest returns 2XX access is allowed
+              ex:
+                location /downloads/ {
+                  auth_request /authorization.php;
+                  # if returns 200 then authorized
+            auth_request_set
+              set a variable after subrequest's server response
+              ex:
+                auth_request /authorization.php;
+                auth_request_set $filename "${upstream_http_x_filename}.zip";
+                rewrite ^ /documents/$filename;
+          Content and encoding
+            Empty GIF
+              location = /empty.gif {
+                empty_gif;
+              }
+            FLV and mp4
+            HTTP headers
+              add_header name value [always]
+              expires epoc|off|max|time_value;
+            Addition
+              to add content before/after body of http response
+              add_before_body file_uri;
+              add_after_body file_uri;
+            Gzip filter
+              to compress response body
+              gizp on;
+            Charset filter
+              to specify value of charset argument of Content-Type HTTP header
+            Memcached
+              key/value caching system
+            Image filter
+              image processing
+              image_filter
+                resize width height
+                crop width height
+                rotate ...
+                size ...
+          About visitors
+            Browser
+              parses User-Agent HTTP header of request
+              variables:
+                $moder_browser
+                $ancient_browser
+                $msie
+            Map
+              to create maps of values
+                map $ uri $variable {
+                  /page.html 0;
+                  /contact.html 1;
+                }
+                rewrite ^ /index.php?page=$variable;
+            Geo
+              specify ip address ranges 
+              to create maps of values:
+                geo $variable {
+                  default unknown;
+                  123.12.3.0/24 uk;
+                }
+            GeoIP
+            UserID
+              assigns an identifier to clients by issuing cookies 
+            Referrer
+              valid_referers none blocked *.website.com;
+              if ($invalid_referer) {
+                return 403;
+              }
+            Real IP
+          Split Clients
+            to split visitors into subgroups
+            split_clients "$remote_addr" $variable {
+              50% "group1";
+              30% "group2";
+            location .. {
+              set $args "${query_string}&group=${variable}";
+          SSL and security
+            SSL
+              ssl on;
+              ssl_certificate <pem_file>;
+              ssl_certificate_key <pem_secret_key>;
+              ssl_client_certificate <client_pem_cert>;
+        Other modules
+          Stub
+          Degradation
+      Chapter05. PHP and Python with Nginx 
+        Introduction to FastCGI
+    An Introduction To OpenResty (nginx + lua) 
+      http://openmymind.net/An-Introduction-To-OpenResty-Nginx-Lua/
+      ex: lua block
+        location / {
+          content_by_lua_block {
+            require("handler")()
+          }
+        }
+        # lua code inside
+      ex: search path for lua files
+        lua_package_path '${prefix}../../src/?.lua;;';
+      looks inside nginx's prefix path: /opt/resty
+        configured with -p
+          /opt/resty/nginx/sbin/nginx -c ~/code/proj1/develop.conf -p ~/code/proj1/test/nginx/
+      disable cache during development
+        lua_code_cache off;
+    Programming OpenResty
+      https://openresty.gitbooks.io/programming-openresty/content/
+    official doc
+      intro
+        http://openresty.org/en/
+          integrates: nginx core, luajit, lua libs, 3rd party nginx modules, external deps of nginx
+            Why Lua <url:#r=acd_0002>
+          turns nginx to app server using lua
+          non-blocking IO with HTTP clients and backends like postgresql (pgs)
+      Getting Started
+        http://openresty.org/en/getting-started.html
+        resty -e 'print("hello, world!")'
+        conf/nginx.conf
+          ...
+        nginx -p `pwd`/ -c conf/nginx.conf
+      Ningnx Tutorials - agentzh
+        https://openresty.org/download/agentzh-nginx-tutorials-en.html
+        Nginx Variables 01
+          Variables as Value Containers   
+            configuration files: small programs
+          Variable Syntax and Interpolation
+            set $a "hello";
+              --> $a = "hello"
+            set $b "$a, world";
+              --> $b = $a + ", world"
+              variable interpolation
+            ex
+              server {
+                listen 88080;
+                location /test {
+                  set $foo hello;
+                  echo "foo: $foo";
+              }}
+              curl http://localhost:8080/test
+                foo: hello
+          Escape $
+            not $$
+            no way to escape
+            ex
+              geo $dollar {
+                default "$";
+              }
+              ...
+                echo "this is $dollar";
+              # this is $
+            geo directive does not support variable interpolation
+          Disambiguating Variable Names
+            echo "${first}world";
+          Variable Declaration and Creation
+            error: unknown foo variable
+            first declare then use
+          Variable Scope
+            variable names: scope global 
+            variable values: scope only inside the block
+            ex:
+              location /foo {
+                  echo "foo = [$foo]";
+              }
+              location /bar {
+                  set $foo 32;
+                  echo "foo = [$foo]";
+              }
+            test:
+              $ curl 'http://localhost:8080/bar'
+              foo = [32]
+              $ curl 'http://localhost:8080/foo'
+              foo = []
+        Nginx Variables 02
+          Variable Lifetime & Internal Redirection
+          Nginx Builtin Variables
+            user variables: defined with "set"
+            predefined variables: builtin variables
+            $uri & $request_uri
+              ex:
+                location /test {
+                    echo "uri = $uri";
+                    echo "request_uri = $request_uri";
+                }
+              test:
+                $ curl 'http://localhost:8080/test/hello%20world?a=3&b=4'
+                uri = /test/hello world
+                request_uri = /test/hello%20world?a=3&b=4
+            Variables with Infinite Names
+              $arg_xxx
+              ex
+                location /test {
+                    echo "name: $arg_name";
+                    echo "class: $arg_class";
+                }
+              test:
+                $ curl 'http://localhost:8080/test?name=hello%20world&class=9'
+                name: hello%20world
+                class: 9
+              use set_unescape_uri to decode %20
+                ex:
+                  location /test {
+                      set_unescape_uri $name $arg_name;
+                      set_unescape_uri $class $arg_class;
+                      echo "name: $name";
+                      echo "class: $class";
+                  }
+                test:
+                  $ curl 'http://localhost:8080/test?name=hello%20world&class=9'
+                  name: hello world
+                  class: 9
+              set_unescape_uri implicitly defines variables
+              other builtins: $cookie_xxx 
+                $http_xxx
+                  to fetch request headers
+                $sent_http_xxx
+                  to get response headers
+            Read only builtin variables
+        Nginx Variables 03
+          Writable Builtin Variable $args
+            by writing it, it modifies the query string
+            ex:
+              location /test {
+                  set $orig_args $args;
+                  set $args "a=3&b=4";
+                  echo "original args: $orig_args";
+                  echo "args: $args";
+              }
+            test:
+              $ curl 'http://localhost:8080/test?a=0&b=1&c=2'
+              original args: a=0&b=1&c=2
+              args: a=3&b=4
+            ex:
+              location /test {
+                  set $orig_a $arg_a;
+                  set $args "a=5";
+                  echo "original a: $orig_a";
+                  echo "a: $arg_a";
+              }
+              $ curl 'http://localhost:8080/test?a=3'
+              original a: 3
+              a: 5
+        Nginx Variables 05
+          Variables in Subrequests
+            A Detour to Subrequests
+              request definition:
+                1. main requests
+                  initiated by http clients
+                  including internal redirections via: echo_exec, rewrite
+                2. subrequests
+                  initiated from within nginx
+                  but not created by ngx_proxy
+                  decomposes main request into smaller internal requests
+                  can be recursive
+              ex:
+                location /main {
+                    echo_location /foo;
+                    echo_location /bar;
+                }
+                location /foo {
+                    echo foo;
+                }
+                location /bar {
+                    echo bar;
+                }
+                $ curl 'http://localhost:8080/main'
+                foo
+                bar
+              echo_location: initiates GET subrequests
+              subrequests don't run network, sockets
+                so they are very fast
+            Independent Variable Containers in Subrequests
 
 # ruby
 

@@ -17,35 +17,22 @@
 
 # aws
 
-    access key
-      aws cosnole > mert nuhoglu (top right) > my security credentials > access keys
-    cli
-      s3
-        aws s3 ls s3://mert01
-          lists all files in bucket mert01
-        aws s3 ls s3://mert01/2017
-          lists all files that start with 2017 in bucket mert01
-        aws s3 rm s3://mert01 --include="2017-*"
-          remove files 
-        aws s3 sync . s3://mert01/test/
-          uploads all files in . to mert01/test
-          creates test/ directory
+		access key
+			aws cosnole > mert nuhoglu (top right) > my security credentials > access keys
+		cli
+			s3
+				aws s3 ls s3://mert01
+					lists all files in bucket mert01
+				aws s3 ls s3://mert01/2017
+					lists all files that start with 2017 in bucket mert01
+				aws s3 rm s3://mert01 --include="2017-*"
+					remove files 
+				aws s3 sync . s3://mert01/test/
+					uploads all files in . to mert01/test
+					creates test/ directory
 
 # bash
 
-  getent
-    getent <database> <key>
-    ex
-      getent hosts <host>
-        Perform a reverse DNS lookup
-      getent passwd `whoami` 
-        print users info
-      getent group <group>
-        get members of a group
-      getent services <port_number>
-        get which service is used by port
-      getent hosts google.com | awk '{print $1}'
-        get ip of a host
   cd to script directory
     https://stackoverflow.com/questions/3349105/how-to-set-current-working-directory-to-the-directory-of-the-script
     cd "$(dirname "$0")"
@@ -370,24 +357,6 @@
 
 # DigitalOcean
 
-  add new user
-    https://www.digitalocean.com/community/tutorials/how-to-add-and-delete-users-on-an-ubuntu-14-04-vps
-    https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04#step-four-
-    adduser mertnuhoglu
-    usermod -aG sudo mertnuhoglu
-    su - mertnuhoglu
-    mkdir ~/.ssh
-    chmod 700 ~/.ssh
-    # localhost
-    cat ~/.ssh/id_rsa.pub | ssh root@[your.ip.address.here] "cat >> ~/.ssh/authorized_keys"
-      opt
-        vim ~/.ssh/authorized_keys
-          # localhost
-          cat ~/.ssh/id_rsa.pub | pbcopy
-          # paste here
-    disallow password access
-      sudo vim /etc/ssh/sshd_config
-        PermitRootLogin without-password
   ubuntu-01
     static html files
       /srv/www/veribilimi.mertnuhoglu.com/html
@@ -436,30 +405,30 @@
 
   ref
     docker <url:file:///~/Dropbox/mynotes/content/code/ccode.md#r=g_10120>
-  run docker command inside container
-    -v /var/run/docker.sock:/var/run/docker.sock 
-    -v $(which docker):/usr/bin/docker 
-      in general
-    - "/usr/bin/docker:/usr/bin/docker"
-      osx
-  run
-    docker run -it node:6.6.0 bash
-    docker run --name container_name -d -p -t .. image_name [bash]
-    docker run -d --name db training/postgres
-    docker run --rm --name web2 --link db:db training/webapp env
-    docker run -it --rm cplex01:current bash
-    docker run -it <container_name> bash
-    docker run -d --name="myApp-1" -v="myAwesomeApp:/data/app" myApp
-  exec
-    docker exec -it vrp_java_1 bash
-  print names only - docker ps
-    docker ps -a --format '{{.Names}}'
-    docker ps -a | tail -n +2 | awk '{print $NF}'
-  config: show config file
-    docker-compose config
-      this puts env variables into placeholders 
-  turn interactive mode off - exit
-    ^p^q
+	run docker command inside container
+		-v /var/run/docker.sock:/var/run/docker.sock 
+		-v $(which docker):/usr/bin/docker 
+			in general
+		- "/usr/bin/docker:/usr/bin/docker"
+			osx
+	run
+		docker run -it node:6.6.0 bash
+		docker run --name container_name -d -p -t .. image_name [bash]
+		docker run -d --name db training/postgres
+		docker run --rm --name web2 --link db:db training/webapp env
+		docker run -it --rm cplex01:current bash
+		docker run -it <container_name> bash
+		docker run -d --name="myApp-1" -v="myAwesomeApp:/data/app" myApp
+	exec
+		docker exec -it vrp_java_1 bash
+	print names only - docker ps
+		docker ps -a --format '{{.Names}}'
+		docker ps -a | tail -n +2 | awk '{print $NF}'
+	config: show config file
+		docker-compose config
+			this puts env variables into placeholders 
+	turn interactive mode off - exit
+		^p^q
   tasks
     inspect / check volumes 
       docker inspect -f '{{ .Mounts }}' <containerid>
@@ -615,36 +584,26 @@
 
 # Git
 
-  remove file from git repo without deleting it from filesystem
-    git rm --cached mylogfile.log
-    git rm --cached -r mydirectory
-  change remote origin
-    git remote set-url origin https://...
-  add remote origin
-    git remote add origin https://...
-  get url of repo from local
-    git remote show origin
-    git remote -v
-  commit uncommitted changes to existing branch
-    https://stackoverflow.com/questions/2944469/how-to-commit-my-current-changes-to-a-different-branch-in-git
-    git stash
-    git checkout other-branch
-    git stash pop
-  branch merging
-    # co = checkout
-    # dev is a branch
-    git co dev
-    git merge master
-    # resolve conflicts
-    git co master
-    git merge --no-ff dev
+	commit uncommitted changes to existing branch
+		https://stackoverflow.com/questions/2944469/how-to-commit-my-current-changes-to-a-different-branch-in-git
+		git stash
+		git checkout other-branch
+		git stash pop
+	branch merging
+		# co = checkout
+		# dev is a branch
+		git co dev
+		git merge master
+		# resolve conflicts
+		git co master
+		git merge --no-ff dev
   stash
-    stash apply vs stash pop
-      stash pop
-        stash'i geri yükledikten sonra otomatik olarak drop ediyor
-      git stash pop =
-        git stash apply
-        git stash drop
+		stash apply vs stash pop
+			stash pop
+				stash'i geri yükledikten sonra otomatik olarak drop ediyor
+			git stash pop =
+				git stash apply
+				git stash drop
     dosyayı önce stash'e kaydet sonra pull et, sonra stash'teki değişiklikleri geri al
       git stash
       git pull
@@ -681,6 +640,9 @@
   git clone into current directory
     git init .
     git remote add -t \* -f origin <repo-url>
+  get url of repo from local
+    git remote show origin
+    git remote -v
   hub
     # clone your own project
       git clone dotfiles
@@ -1269,11 +1231,6 @@
       show tables;
      
 
-# networking
-
-  domain name resolvers
-    These computers translate a domain name into an IP address. Also called DNS resolvers
-
 # nginx
 
   new domain/website
@@ -1314,8 +1271,8 @@
 
 # OpenShift
 
-  admin panel
-    openshift.com > login > openshift 2
+	admin panel
+		openshift.com > login > openshift 2
   ssh key
     id_rsa.pub ekle
   ssh connection: rhc
@@ -1381,11 +1338,6 @@
 
 
 ## Applications
-
-### iterm
-
-    highlight current row
-      View > Show Cursor Guide
 
 ### Multimedia
 
@@ -1564,10 +1516,10 @@ alternative
 
 # PostgreSQL
 
-  psql
-    psql -d dbname -h hostname -p port -U username
-    psql postgresql://dbmaster:5433/mydb
-    ~/.pgpass
+	psql
+		psql -d dbname -h hostname -p port -U username
+		psql postgresql://dbmaster:5433/mydb
+		~/.pgpass
 
 # Postman
 
@@ -2945,17 +2897,8 @@ install from local file system
   move windows
     bind c-o  rotate window up
     bind m-o  rotate windo down
-  resize
-    resize-pane -R 20
-      resize current pane right by 20 cells
-      -D -U -L -R
 
 # Unix
-
-## unclassified
-
-  get system version and linux distribution distro
-    cat /etc/*-release
 
 ## csvkit
 
@@ -2988,20 +2931,20 @@ install from local file system
 
 ## chmod
 
-  give permission to write/execute recursively
-    RUN chmod -R 777 /srv/app/data
-    in docker
-      RUN chmod -R 777 /srv/app/data
+	give permission to write/execute recursively
+		RUN chmod -R 777 /srv/app/data
+		in docker
+			RUN chmod -R 777 /srv/app/data
 
 ## date
 
   append date to filename
     http://unix.stackexchange.com/questions/96380/how-to-append-date-to-backup-file
-    echo "$(date +%Y%m%d_%H%M%S)"
-      20170922_164920
+		echo "$(date +%Y%m%d_%H%M%S)"
+			20170922_164920
     date +"%Y%m%d_%H%M%S"
-    echo "$(date)"
-      Fri Sep 22 16:51:14 UTC 2017
+		echo "$(date)"
+			Fri Sep 22 16:51:14 UTC 2017
     touch "foo.backup.$(date)"
     touch "foo.backup.$(date +%F_%R)"
 
@@ -3235,6 +3178,10 @@ install from local file system
 
 ## ffmpeg
 
+	convert mp4 to mp3
+		ffmpeg -i filename.mp4 filename.mp3
+		ffmpeg -i video.mp4 -b:a 192K -vn music.mp3
+		for f in ./*.mp4; ffmpeg -i "$f" -b:a 192K -vn "${f%.*}.mp3"
   concat videos with same codecs
     ffmpeg -f concat -i video_files.in -c copy output.mp4
     video_files.in
@@ -3347,9 +3294,9 @@ install from local file system
 
 ## grep
 
-  fixed word search
-    grep -F
-    == fgrep
+	fixed word search
+		grep -F
+		== fgrep
   grep a list of words
     search words in A in file B
       grep -f A B 
@@ -3402,17 +3349,6 @@ install from local file system
   check dimensions of an image
     identify intro-01.jpg
     intro-01.jpg JPEG 1280x720 1280x720+0+0 8-bit Gray 256c 41.6KB 0.000u 0:00.000  
-  layout images into a page
-    montage *.jpg -tile 2x2 -geometry 1000 all.pdf
-      put 2x2 images
-      -geometry: size and spacing 
-        default: 120x120>+4+3
-          fit any image into 120x120
-          if image larger shrink it
-          but don't resize smaller images (as per >)
-        
-    montage *.jpg -tile 2x2 -geometry 720x960>+4+3 all2.pdf
-    montage *.jpg -tile 1x3 -geometry 960x720>+4+3 all3.pdf
 
 ## jsonlint - formatter for json
 
@@ -3634,102 +3570,102 @@ install from local file system
 
 ## sed
 
-    global command
-      ex
-        sed -i -e '/^\s*#/!s/\\$val\>/$pid/g' getproc.pl 
-          Replace all variables $val with $pid in test.pl, except on commented lines. #SEDtember
-        sed "/re/d"
-      ed -s file <<< $'g/^\*/m$\nwq\n'
-      ex
-        >temp2 ed -s temp <<< $'g/[.:#]/d\n,p'  
-        >temp3 ed -s temp2 <<< $'v/]/d\n,p'
-        >temp4 sort -u temp3 
-        >temp5 ed -s temp4 <<< $'g/|/m0\n,p'
-      hints 
-        there is no pipe
-        at the end: \n,p
-        at start: $
-        regex:  
-          https://www.gnu.org/software/gnulib/manual/html_node/ed-regular-expression-syntax.html
-          http://www.regular-expressions.info/gnu.html
-    commands
-      find then sed
-        find . -maxdepth 1 -name "*.R" -exec sed -i "s/\<enum_id\>/enum_category_id/g" {} \;
-      replace in place
-        sed -i 's/test/sinav/g' temp
-      find replace 
-        sed 's/test/sinav/g' temp
-        echo day | sed s/day/night/
-        sed 's/day/night/' <old >new
-      global command like use (replace in matching lines)
-        Delete with d
-          sed '/WORD/d'
-        ilk 10 satırı bırak
-          sed '11,$ d' <file
-        multiple commands
-          sed -e '/match/ {s/: /:@@/ ; s/ /%20/g ; s/:@@/: /}' temp.md
-          sed -i -e '/searchstring/ s/mystring/1/ ; /searchstring/! s/mystring/0/' $target
-            /searchstring/!
-              non-matching lines
-      ilk ve son satırlara ekleme yap 
-        sed -i '1s/^/\nCOMMIT;\n/' data/sql/*.sql
-        sed -i '$s/$/\nCOMMIT;\n/' data/sql/*.sql
-      Append a line with 'a'
-        sed '/WORD/ a\
-        Add this line after every line with WORD
-        '
-      Insert a line with 'i'
-      Change a line with 'c'
-      You can combine all three actions using curly braces: 
-      #!/bin/sh
-        shebang
-        #!/usr/bin/env python3
-          portability için
-        #!/usr/local/bin python3
-          hardcoded ve statik
-        #!/usr/bin/env Rscript
-      sed '
-      /WORD/ {
-      i\
-      Add this line before
-      a\
-      Add this line after
-      c\
-      Change the line to this one
-      }'
-      Using & as the matched string
-      wrap the matched text in paranthesis:
-      sed 's/[a-z]*/(&)/' <old >new
-      \1 to keep part of the pattern
-      keep first match in a line, delete the rest
-      sed 's/\([a-z]*\).*/\1/'
-    examples
-      double every empty line
-      sed '/^$/ p'
-      act like grep
-      sed -n '/match/ p'
-      Reversing the restriction with !
-      sed -n '/match/ !p' </tmp/b
-      save inline
-      sed -i 's/test/sinav/g' temp
-      run recursively in subdirectories
-      find . -type f -print0 | xargs -0 sed -i 's/subdomainA.example.com/subdomainB.example.com/g'
-    range and lines
-      /begin/,/end/ {
-      line number
-      sed '3 s/[0-9][0-9]*//' <file >new
-      patterns
-      sed '/^#/ s/[0-9][0-9]*//'
-    flags
-      /g global replacement
-      /p print
-    options
-      no print by default
-      sed -n 's/pattern/&/p' <file
-      Multiple commands with -e
-      sed -e 's/a/a/' -e 's/b/B/' <old >new
-      run script file
-      sed -f scriptname
+global command
+  ex
+    sed -i -e '/^\s*#/!s/\\$val\>/$pid/g' getproc.pl 
+      Replace all variables $val with $pid in test.pl, except on commented lines. #SEDtember
+    sed "/re/d"
+  ed -s file <<< $'g/^\*/m$\nwq\n'
+  ex
+    >temp2 ed -s temp <<< $'g/[.:#]/d\n,p'  
+    >temp3 ed -s temp2 <<< $'v/]/d\n,p'
+    >temp4 sort -u temp3 
+    >temp5 ed -s temp4 <<< $'g/|/m0\n,p'
+  hints 
+    there is no pipe
+    at the end: \n,p
+    at start: $
+    regex:  
+      https://www.gnu.org/software/gnulib/manual/html_node/ed-regular-expression-syntax.html
+      http://www.regular-expressions.info/gnu.html
+commands
+  find then sed
+    find . -maxdepth 1 -name "*.R" -exec sed -i "s/\<enum_id\>/enum_category_id/g" {} \;
+  replace in place
+    sed -i 's/test/sinav/g' temp
+  find replace 
+    sed 's/test/sinav/g' temp
+    echo day | sed s/day/night/
+    sed 's/day/night/' <old >new
+  global command like use (replace in matching lines)
+    Delete with d
+      sed '/WORD/d'
+    ilk 10 satırı bırak
+      sed '11,$ d' <file
+    multiple commands
+      sed -e '/match/ {s/: /:@@/ ; s/ /%20/g ; s/:@@/: /}' temp.md
+      sed -i -e '/searchstring/ s/mystring/1/ ; /searchstring/! s/mystring/0/' $target
+        /searchstring/!
+          non-matching lines
+  ilk ve son satırlara ekleme yap 
+    sed -i '1s/^/\nCOMMIT;\n/' data/sql/*.sql
+    sed -i '$s/$/\nCOMMIT;\n/' data/sql/*.sql
+  Append a line with 'a'
+    sed '/WORD/ a\
+    Add this line after every line with WORD
+    '
+  Insert a line with 'i'
+  Change a line with 'c'
+  You can combine all three actions using curly braces: 
+  #!/bin/sh
+    shebang
+    #!/usr/bin/env python3
+      portability için
+    #!/usr/local/bin python3
+      hardcoded ve statik
+    #!/usr/bin/env Rscript
+  sed '
+  /WORD/ {
+  i\
+  Add this line before
+  a\
+  Add this line after
+  c\
+  Change the line to this one
+  }'
+  Using & as the matched string
+  wrap the matched text in paranthesis:
+  sed 's/[a-z]*/(&)/' <old >new
+  \1 to keep part of the pattern
+  keep first match in a line, delete the rest
+  sed 's/\([a-z]*\).*/\1/'
+examples
+  double every empty line
+  sed '/^$/ p'
+  act like grep
+  sed -n '/match/ p'
+  Reversing the restriction with !
+  sed -n '/match/ !p' </tmp/b
+  save inline
+  sed -i 's/test/sinav/g' temp
+  run recursively in subdirectories
+  find . -type f -print0 | xargs -0 sed -i 's/subdomainA.example.com/subdomainB.example.com/g'
+range and lines
+  /begin/,/end/ {
+  line number
+  sed '3 s/[0-9][0-9]*//' <file >new
+  patterns
+  sed '/^#/ s/[0-9][0-9]*//'
+flags
+  /g global replacement
+  /p print
+options
+  no print by default
+  sed -n 's/pattern/&/p' <file
+  Multiple commands with -e
+  sed -e 's/a/a/' -e 's/b/B/' <old >new
+  run script file
+  sed -f scriptname
 
 
 ## sponge
@@ -3887,10 +3823,6 @@ install from local file system
 
 # Vim
 
-  autocomplete
-    ^x^n
-      ^n ^p next/prev
-      ^y  yes accept selection
   speed up startup time
     vim --startuptime vim.log
       profiling times
@@ -3980,7 +3912,6 @@ install from local file system
       nnoremap: use default normal command S
 
 ## me - custom commands
-
   using space in file names
     custom commands:
       :W :Save :Cd
@@ -4080,24 +4011,16 @@ install from local file system
           http://blog.pivotal.io/data-science-pivotal/pivotal-people/pivotal-people-sarah-aerni-on-how-to-become-a-data-scientist?utm_content=buffer728c4&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer
           >
           http://blog.pivotal.io/data-science-pivotal/pivotal-people/pivotal-people-sarah-aerni-on-how-to-become-a-data-scientist
-  quantifiers
-    *
-    \+
-    \=  0 or 1
-    \{n,m}
-    \{n}
-    \{,m}
-    \{n,}
-  unicode chars in vim regex
-    \w doesn't match unicode chars
-    https://stackoverflow.com/questions/19385458/vim-regex-matches-unicode-characters-are-as-non-word
-      ASCII                           UTF-8
-      -----                           -----
-      \w                              [a-zA-Z\u0100-\uFFFF]
-      \W                              [^a-zA-Z\u0100-\uFFFF]
-    https://unix.stackexchange.com/questions/60481/match-word-containing-characters-beyond-a-za-z/60600#60600
-      \k matches all Latin accented chars 
-      see iskeyword option
+	unicode chars in vim regex
+		\w doesn't match unicode chars
+		https://stackoverflow.com/questions/19385458/vim-regex-matches-unicode-characters-are-as-non-word
+			ASCII                           UTF-8
+			-----                           -----
+			\w                              [a-zA-Z\u0100-\uFFFF]
+			\W                              [^a-zA-Z\u0100-\uFFFF]
+		https://unix.stackexchange.com/questions/60481/match-word-containing-characters-beyond-a-za-z/60600#60600
+			\k matches all Latin accented chars 
+			see iskeyword option
   use different separators 
     %s#reg#ex#g
   match multiline
@@ -4514,16 +4437,10 @@ default keymappings
     refresh indexes 
 
 ### netrw - vinegar - file explorer
-
-  tree style file browser
-    i  (push i multiple times after opening)
-    let g:netrw_liststyle = 3
-  tree project drawer
-    https://shapeshed.com/vim-netrw/
   shortcuts
     I   help
     i   file information
-    -   open explorer in current directory
+    -   open explorer
     enter     open file
     o         open horizontal split
     v         open vertical split
@@ -4552,25 +4469,6 @@ default keymappings
   :toc
 
 # Vimscript VimL
-
-  string
-    string interpolation
-      https://stackoverflow.com/questions/4596932/vim-cd-to-path-stored-in-variable#4597149
-      some commands require unquoted strings
-      ex:
-        cd path
-        # will change to "path" 
-        # path here is not a variable
-      opt1: execute
-        let cmd = 'cd ' . pathname
-        execute cmd
-      use backtick
-        command `shell command`
-        command `=vim_expression`
-      opt2: backtick
-        cd `=path`
-      opt3: safe and escaped
-        execute 'cd' fnameescape(path)
   functions
     return value
       return "value"

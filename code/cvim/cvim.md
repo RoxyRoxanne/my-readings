@@ -1,4 +1,27 @@
 
+    vim slides presentation tool
+    How to Do 90% of What Plugins Do (With Just Vim)-XA2WjJbmmoM.mp4
+      file navigating
+        set path+=**
+          search files through every subdirectory
+        :find <somefile>
+        :find *<name>
+          wildcard
+        :find *.js
+        :b <unique_substring>
+          if substring is unique for a file, it jumps into it directly
+      tag navigation
+        command! MakeTags !ctags -R .
+        :MakeTags 
+        g^]
+          when tags are ambigous
+      autocomplete
+        ^x^n for JUST this file
+        ^x^f for filenames (works with our path trick!)
+        ^x^] for tags only
+        ^n for anything specified by the 'complete' option
+      snippets
+        nnoremap ,html :-1read $HOME/.vim/.skeleton.html<CR>3jwf>a
     https://stackoverflow.com/questions/1218390/what-is-your-most-productive-shortcut-with-vim/1220118#1220118
       { }
         move to start/end of paragraph

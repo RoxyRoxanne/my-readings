@@ -124,3 +124,7 @@ running cyclejs examples
           [a,b,c] = new Set(['a','b','c'])
           a
 
+## Other
+
+    bir satırın nerelerden çağrıldığını nasıl buluruz?  
+      console.trace()

@@ -1,5 +1,5 @@
 
-_ id=r_lastid ccd_0002
+_ id=r_lastid ccd_0004
 
 ## stuff
 
@@ -84,6 +84,10 @@ _ id=r_lastid ccd_0002
       
 ## git
 
+    git pull vs git fetch
+      https://stackoverflow.com/questions/292357/what-is-the-difference-between-git-pull-and-git-fetch#292359
+      git pull = git fetch + git merge
+      git fetch never changes working copy
     different config files in branches
       https://stackoverflow.com/questions/24498844/using-conditional-configuration-files-with-git/24498888#24498888
       git attributes
@@ -926,6 +930,13 @@ _ id=r_lastid ccd_0002
    
 # unix
 
+    backtick ``
+      https://unix.stackexchange.com/questions/27428/what-does-backquote-backtick-mean-in-commands
+      not a quotation sign
+      it is evaluated by shell before main command
+      output is used instead
+    .d extension in init.d and other directories
+      .d in directory names typically indicates a directory containing many configuration files or scripts for a particular situation 
     memory usage of processes
       https://unix.stackexchange.com/questions/164653/actual-memory-usage-of-a-process
         ans1
@@ -1063,6 +1074,8 @@ _ id=r_lastid ccd_0002
 ## docker id=g_10120
 
     docker <url:file:///~/Dropbox/mynotes/content/code/ccode.md#r=g_10120>
+    list volumes
+      docker inspect -f '{{ json .Mounts  }}' <containerid> | python -m json.tool
     remove a container and its volumes
       https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
       docker rm -v vrp_nginx-router_1
@@ -3146,8 +3159,290 @@ _ id=r_lastid ccd_0002
          }
       )
 
-## nginx
+## nginx id=ccd_0004
   
+    nginx <url:#r=ccd_0004>
+    ref
+      SSL/TLS certificates <url:#r=ccd_0003>
+    HSTS: cache for browsers to remember to not try http instead of https
+      add_header Strict-Transport-Security "max-age=31536000";
+      # about 1 year
+    alias: replacement for location
+      http://nginx.org/en/docs/http/ngx_http_core_module.html#alias
+      ex
+        location /i/ {
+            alias /data/w3/images/;
+        }
+        # on request of “/i/top.gif”, the file /data/w3/images/top.gif will be sent
+    path for nginx web root
+      depends on nginx.conf
+      ex: 
+        /etc/nginx/nginx.conf
+          server {
+            listen 80;
+            server_name _; #
+            location / {
+              root /srv/;
+        -->
+        /srv/
+    ssl nginx
+      ref
+        SSL/TLS certificates <url:#r=ccd_0003>
+      Lets Encrypt with an nginx reverse proxy
+        https://serverfault.com/questions/768509/lets-encrypt-with-an-nginx-reverse-proxy#784940
+        ans
+          you can have nginx proxy requests to HTTP servers, and then itself respond to clients over HTTPS
+          getting certificate
+            modify "server" clause for ".well-known" subdirectory
+            server {
+                listen 80;
+                server_name sub.domain.com www.sub.domain.com;
+                […]
+                location /.well-known {
+                        alias /var/www/sub.domain.com/.well-known;
+                }
+                location / {
+                    # proxy commands go here
+                    […]
+                }
+            }
+            certbot with webroot plugin
+              certbot certonly --webroot -w /var/www/sub.domain.com/ -d sub.domain.com -d www.sub.domain.com
+          configurign nginx to use certificate
+            server {
+                listen 443 ssl;
+                # if you wish, you can use the below line for listen instead
+                # which enables HTTP/2
+                # requires nginx version >= 1.9.5
+                # listen 443 ssl http2;
+                server_name sub.domain.com www.sub.domain.com;
+                ssl_certificate /etc/letsencrypt/live/sub.domain.com/fullchain.pem;
+                ssl_certificate_key /etc/letsencrypt/live/sub.domain.com/privkey.pem;
+                # Turn on OCSP stapling as recommended at 
+                # https://community.letsencrypt.org/t/integration-guide/13123 
+                # requires nginx version >= 1.3.7
+                ssl_stapling on;
+                ssl_stapling_verify on;
+                # Uncomment this line only after testing in browsers,
+                # as it commits you to continuing to serve your site over HTTPS
+                # in future
+                # add_header Strict-Transport-Security "max-age=31536000";
+                access_log /var/log/nginx/sub.log combined;
+                # maintain the .well-known directory alias for renewals
+                location /.well-known {
+                    alias /var/www/sub.domain.com/.well-known;
+                }
+                location / {
+                    # proxy commands go here as in your port 80 configuration
+                    […]
+                }
+            }
+            service nginx reload
+            test:
+              https://sub.domain.com
+          Redirect HTTP requests to HTTPS
+            replace port 80 server clause with:
+              server {
+                  listen 80;
+                  server_name sub.domain.com www.sub.domain.com;
+                  rewrite     ^   https://$host$request_uri? permanent;
+              }
+      How To Use Certbot Standalone Mode to Retrieve Let's Encrypt SSL Certificates
+        https://www.digitalocean.com/community/tutorials/how-to-use-certbot-standalone-mode-to-retrieve-let-s-encrypt-ssl-certificates
+        install certbot
+          sudo add-apt-repository ppa:certbot/certbot
+          sudo apt-get update
+          sudo apt-get install certbot
+          sudo certbot certonly --standalone --preferred-challenges http -d example.com
+            The --preferred-challenges option instructs Certbot to use port 80 or port 443. If you're using port 80, you want --preferred-challenges http. For port 443 it would be --preferred-challenges tls-sni
+        renewal
+          sudo nano /etc/letsencrypt/renewal/example.com.conf
+            renew_hook = systemctl reload rabbitmq
+      How To Secure Nginx with Let's Encrypt on Ubuntu 16.04
+        https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+        install certbot
+          # not in debian:
+            sudo add-apt-repository ppa:certbot/certbot
+          sudo apt-get update
+          sudo apt-get install python-certbot-nginx
+        setup nginx
+          sudo nano /etc/nginx/sites-available/default
+            server_name example.com www.example.com;
+          sudo nginx -t
+          sudo systemctl reload nginx
+        allow https through firewall
+          sudo ufw status
+          sudo ufw allow 'Nginx Full'
+          sudo ufw delete allow 'Nginx HTTP'
+        get ssl certificate
+          sudo certbot --nginx -d example.com -d www.example.com
+        certbot auto-renewal
+          sudo certbot renew --dry-run
+          sudo certbot renew 
+      Setting up SSL with nginx (using a NameCheap EssentialSSL wildcard certificate on DigitalOcean) - Aral Balkan
+        https://ar.al/scribbles/setting-up-ssl-with-nginx-using-a-namecheap-essentialssl-wildcard-certificate-on-digitalocean/
+        on development machine
+          # create private key
+          openssl genrsa 2048 > key.pem
+          # create a key to use for forward secrecy
+          openssl dhparam -out dhparams.pem 2048
+          # create signing request
+          openssl req -new -key key.pem -out csr.pem
+          # buy EssintialSSL wildcard certificate from Namecheap
+          # send csr.pem content to the form on Namecheap
+          # create certificate bundle
+          # you will get:
+            STAR_yourdomain_ext.crt
+            COMODORSADomainValidationSecureServerCA.crt
+            COMODORSAAddTrustCA.crt
+            AddTrustExternalCARoot.crt
+          # bundle them
+          cat STAR_yourdomain_ext.crt COMODORSADomainValidationSecureServerCA.crt COMODORSAAddTrustCA.crt AddTrustExternalCARoot.crt > bundle.cer
+        on server
+          # place private key and certificate bundle
+          # copy keys
+          sudo mkdir /etc/nginx/ssl
+          sudo vim /etc/nginx/ssl/bundle.cer
+          # copy paste
+          sudo vim /etc/nginx/ssl/key.pem
+          # copy paste
+          sudo chmod 600 /etc/nginx/ssl
+          opt: put /etc/nginx under git
+        configuring nginx
+          sudo vim /etc/nginx/sites-available/default
+            server {
+              listen 80;
+              server_name yourdomain.ext;
+              return 301 https://yourdomain.ext$request_uri;
+            }
+            server {
+              listen 80;
+              server_name www.yourdomain.ext;
+              return 301 https://yourdomain.ext$request_uri;
+            }
+            server {
+              listen 443 ssl;
+              listen [::]:443 ipv6only=on;
+              ssl_certificate ssl/bundle.cer;
+              ssl_certificate_key ssl/key.pem;
+              root /path/to/the/root/of/your/site;
+              index index.html index.htm;
+              # Make site accessible from http://localhost/
+              server_name yourdomain.ext;
+              location / {
+              # More lines…
+        perfect forward secrecy and hsts
+          server {
+            # …
+            # Perfect forward secrecy
+            ssl_prefer_server_ciphers on;
+            ssl_dhparam /etc/nginx/ssl/dhparams.pem;
+            ssl_ciphers "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4 EECDH EDH+aRSA RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !RC4";
+            # HSTS
+            add_header Strict-Transport-Security "max-age=31536000; includeSubdomains";
+            # …
+          }
+          # what is HSTS (HTTP Strict Transport Security)
+            The ‘max-age’ values specifies how long, in seconds, you want the client to treat you as a HSTS host. That is, how long you want them to contact you using HTTPS exclusively. The value I’m using here is 1 year and each time the client visits my site and receives the header, the timer is reset back to a year. Assuming your browser is HSTS compliant, after the first page load over HTTPS, you will no longer be able to communicate with me via HTTP, the browser will prevent it
+        fixing poodle vulnerability in ssl3
+          # disable ssl3.0
+          ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        nginx.conf
+          sudo nano /etc/nginx/nginx.conf
+          # uncomment
+          server_names_hash_bucket_size 64;
+          sudo service nginx reload
+        file locations
+          nginx’s configuration files are in:
+          /etc/nginx
+          nginx config file:
+          /etc/nginx/nginx.conf
+          The default site is served from:
+          /usr/share/nginx/html
+          Default site config info:
+          /etc/nginx/sites-available/default
+      How To Create an SSL Certificate on Nginx for Ubuntu 14.04
+        https://www.digitalocean.com/community/tutorials/how-to-create-an-ssl-certificate-on-nginx-for-ubuntu-14-04
+        install nginx 
+          apt-get update
+          apt-get install nginx
+        get a certificate
+          sudo mkdir /etc/nginx/ssl
+          # self signed
+          sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt
+          # out:
+            nginx.key
+              private key
+            nginx.crt
+              certificate
+        configure nginx
+          # nginx.conf
+            server {
+                    listen 80 default_server;
+                    listen [::]:80 default_server ipv6only=on;
+                    listen 443 ssl;
+                    root /usr/share/nginx/html;
+                    index index.html index.htm;
+                    server_name your_domain.com;
+                    ssl_certificate /etc/nginx/ssl/nginx.crt;
+                    ssl_certificate_key /etc/nginx/ssl/nginx.key;
+                    location / {
+                            try_files $uri $uri/ =404;
+                    }
+            }
+        testing
+          http://server_domain_or_IP
+          https://server_domain_or_IP
+      How To Configure Nginx with SSL as a Reverse Proxy for Jenkins
+        https://www.digitalocean.com/community/tutorials/how-to-configure-nginx-with-ssl-as-a-reverse-proxy-for-jenkins
+        install nginx
+          apt-get update
+          apt-get install nginx
+          nginx -v
+        get a certificate
+          cd /etc/nginx
+          # self signed certificate
+          sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/cert.key -out /etc/nginx/cert.crt
+          # output:
+            cert.key
+            cert.crt
+        edit nginx config
+          sudo vim /etc/nginx/sites-enabled/default
+            server {
+                listen 443;
+                server_name jenkins.domain.com;
+                ssl_certificate           /etc/nginx/cert.crt;
+                ssl_certificate_key       /etc/nginx/cert.key;
+                ssl on;
+                ssl_session_cache  builtin:1000  shared:SSL:10m;
+                ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
+                ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+                ssl_prefer_server_ciphers on;
+                access_log            /var/log/nginx/jenkins.access.log;
+                location / {
+                  proxy_set_header        Host $host;
+                  proxy_set_header        X-Real-IP $remote_addr;
+                  proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header        X-Forwarded-Proto $scheme;
+                  # Fix the “It appears that your reverse proxy set up is broken" error.
+                  proxy_pass          http://localhost:8080;
+                  proxy_read_timeout  90;
+                  proxy_redirect      http://localhost:8080 https://jenkins.domain.com;
+                }
+              }
+    reload restart nginx
+      nginx -s signal
+      Where signal may be one of the following:
+        stop — fast shutdown
+        quit — graceful shutdown
+        reload — reloading the configuration file
+        reopen — reopening the log files
+        nginx -s reload
+      start
+        nginx -g daemon off
+    resolver
+      Configures name servers used to resolve names of upstream servers into addresses, for example:
+      resolver 127.0.0.1 [::1]:5353;
     error: 413 (Request Entity Too Large)
       POST yaptığım request kabul edilmiyor
       sebep:
@@ -3609,6 +3904,443 @@ _ id=r_lastid ccd_0002
           difference from normal function:
             compiler has to have a stack frame
             so that he comes back to it after 
+
+## SSL/TLS certificates id=ccd_0003
+
+  SSL/TLS certificates <url:#r=ccd_0003>
+  ref
+    nginx <url:#r=ccd_0004>
+  letsencrypt
+    LetsEncrypt Documentation: 
+      Getting Started
+        https://letsencrypt.org/getting-started/
+        intro
+          to enable HTTPS
+            you need a certificate (a file type)
+            from a Certificate Authority (CA)
+          letsencrypt is a CA
+          to get a certificate
+            you need to demonstrate control over a domain
+          letsencrypt does this using ACME protocol
+            it runs on web host
+        with shell accesss
+          use Certbot ACME client
+            it automates
+              certificate issuance
+              certificate installation
+        without shell 
+          manually
+            install Certbot locally
+            upload a specific file to website to prove control
+      How It Works
+        https://letsencrypt.org/how-it-works/
+        goal: set up an https server automatically
+          done by an agent (client) on the web server
+        two steps
+          1. agent proves to CA that web server controls a domain
+          2. agent requests, renews, revokes certificates for that domain
+        domain validation
+          1. agent asks lenc (letsencrypt) CA
+            what it needs to do
+          2. CA looks at domain name and issues challenges
+            ex
+              provisioning a dns record under example.com
+              provisioning an http resource on example.com
+            nonce: in cryptograph
+              http://en.wikipedia.org/index.php?q=aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvQ3J5cHRvZ3JhcGhpY19ub25jZQ
+              an arbitrary number that can be used once
+              it is issued in an authentication protocol
+                to ensure old communications cannot be reused
+              ex
+                client -> server.getNonce() : nonce
+                client -> server.login(username, nonce, hash(nonce+password)) : token
+            result: an authorized key pair for example.com
+        certificate issuance and revocation
+          now agent can request, renew, revoke certificates
+            by signing messages with authorized key pair
+      FAQ
+        for multiple domain names
+          SAN certificates (subject alternative name)
+        wildcard certificates
+          from 2018
+          require base domain validation
+      What is a Certificate
+        https://certbot.eff.org/docs/what.html
+        intro
+          public key = digital certificate (current name) = ssl certificate
+            uses a public key + a private key
+            to enable secure communication between client and server
+          certificate used 
+            to encrypt initial stage (secure key exchange)
+            to identify the server
+          certificate contains
+            information about key
+            information about server identity
+            digital signature of certificate issuer
+          is the issuer trusted by client? + is the signature valid?
+            then: use key to communicate
+          prevents man-in-the-middle attacks
+        certificates and lineages
+      Get Certbot
+        https://certbot.eff.org/docs/install.html
+      User Guide
+        Certbot Commands
+          Getting certificates
+            two types of plugins:
+              authenticators, installers
+            authenticators
+              "certonly" command
+              to obtain a certificate
+              validates that you control the domain
+              obtains a certificate
+              places it in the /etc/letsencrypt
+            installers
+              "install" command
+              modifies webserver's configuration
+            both
+              "run" command: default
+              combined with plugins:
+                --nginx
+                --webroot: writes to webroot directory of a webserver
+                  no install
+                --standalone: no install
+                --manual: no install. perform validation yourself
+            several ACME protocol challenges exist:
+              tls-sni-01: uses port 443
+              http-01: uses port 80
+              dns-01: requires DNS server on port 53
+              you can choose with: "--preferred-challenges"
+            standalone mode
+              "certonly" and "--standalone"
+                certbot certonly --standalone -d www.example.com -d example.com
+              needs 80 or 443 to perform domain validation
+                --preferred-challenges http
+                --preferred-challenges tls-sni
+            manual mode
+              perform domain validation yourself
+                certbot certonly --manual -d www.example.com -d example.com
+              "certonly" and "--manual"
+              "http" challenge
+                place a file in "/.well-known/acme-challenge/" in web root directory of webserver
+                  same as "webroot" plugin but manual
+              "dns" challenge
+                place a TXT DNS record under domain name
+              "tls-sni" challenge
+                uses SNI
+          Managing certificates
+            intro
+              certbot certificates
+                get list of certificates
+              run certonly certificates renew delete commands:
+                "--cert-name"
+                  specify a particular certificate
+              ex:
+                certbot certonly --cert-name example.com
+            Re-creating and Updating Existing Certificates
+              options:
+                --force-renewal
+                  request a new certificate for an existing certificate
+                --duplicate
+                  mostly not used
+                --expand
+                  update existing certificate
+                  certbot --expand -d existing.com,example.com,newdomain.com
+                  certbot --expand -d existing.com -d example.com -d newdomain.com
+          Changing a Certificate’s Domains
+            intro
+              --cert-name: can be used to modify domains of a certificate
+              certbot certonly --cert-name example.com -d example.com,www.example.org
+            Revoking certificates
+              ex
+                certbot revoke --cert-path /etc/letsencrypt/live/CERTNAME/cert.pem
+                certbot revoke --cert-path /etc/letsencrypt/live/CERTNAME/cert.pem --reason keycompromise
+              after revoking, it can be deleted
+                certbot delete --cert-name example.com
+              if not deleted, it can be renewed 
+            Renewing certificates
+              certbot renew
+                checks all installed certificates
+                renews the ones that expire in less than 30 days
+              hooks: to restart
+                certbot renew --pre-hook "service nginx stop" --post-hook "service nginx start"
+            Modifying the Renewal Configuration File
+          Where are my certificates?
+            /etc/letsencrypt/live/$domain
+              point your server to these files, not copy
+              archive/ keys/: previous keys and certificates
+              live/ symlinks to latest versions
+            files:
+              privkey.pem
+                pirvate key for certificate
+                must be secret
+                nginx: ssl_certificate_key
+              fullchain.pem
+                all certificates, including server certificate (leaf, end-entity)
+                nginx: ssl_certificate
+              cert.pem chain.pem (less common)
+            pem-encoded: all files
+          Pre and Post Validation Hooks
+        Log Rotation
+          /var/log/letsencrypt
+        Command Line Options
+          certbot --help all
+          nginx:
+            Nginx Web Server plugin - Alpha
+            --nginx-server-root NGINX_SERVER_ROOT
+                                  Nginx server root directory. (default: /etc/nginx)
+            --nginx-ctl NGINX_CTL
+                                  Path to the 'nginx' binary, used for 'configtest' and
+                                  retrieving nginx version number. (default: nginx)
+          standalone:
+            Spin up a temporary webserver
+          next
+            aynı domain için birden fazla cert alabilir miyim farklı yerlerden?
+              validasyonları geçersem alabilirim
+            validasyon yapamazsam cert alamamam lazım bu durumda
+              cert alabilirsin, fakat geçerli olmadığından "not secure" görünebilir browserda
+    How to configure HTTPS on Apache, AWS, EC2
+      https://medium.com/@nishantasthana/how-to-configure-https-on-apache-aws-ec2-5e483c1c1f15
+      note: SSL protocol is renewed as TLS
+      1. buy certificate from DigiCert
+      2. generate CSR on server
+      3. upload certificate
+      4. create dir /sslcert
+      5. edit /etc/httpd/conf.d
+      6. follow instructions
+      7. open port 443
+      8. restart apache
+      9. redirect http to https
+    Configuring HTTPS - nginx
+      http://nginx.org/en/docs/http/configuring_https_servers.html
+      nginx.conf
+        ssl parameter:
+          listen 443 ssl
+        locations of server certificate and private key
+          ssl_certificate example.com.crt
+          ssl_certificate_key example.com.key
+    How to properly configure your nginx for TLS
+      https://medium.com/@mvuksano/how-to-properly-configure-your-nginx-for-tls-564651438fe0
+      critical because
+        this is the waiting time user first senses
+      1. get TLS certificates
+      2. enable TLS and http2
+        listen 443 ssl http2
+      3. disable ssl (old protocol)
+        ssl_protocols TLSv1 TLSv1.1
+      4. optimise cipher suites. this is where encryption happens
+        ssl_prefer_server_ciphers on
+        ssl_ciphers ECDH+...
+      5. DH params: it is a protocol that allows two parties to talk a secret without ever making that secret open 
+        ssl_dhparam /etc/...
+        openssl dhParam 2048 -out ...
+      6. enable OCSP stapling: to verify that certificate is not revoked, browser contacts issuer of the certificate. nginx gets a signed message from OCSP sevrer. when initialising a connection with some browser, staple it to initial handshake.
+      7. enable HSTS
+        HSTS: allows a server to tell clients they should only use secure protocol HTTPS
+      8. optimize SSL session cache: reduce number of handshakes
+      9. enable session tickets: alternative to session cache. cache is stored in client
+    Let’s Encrypt: TLS for NGINX
+      https://www.nginx.com/blog/lets-encrypt-tls-nginx/
+      SSL Test
+        ssllabs.com/ssltest
+      Mixed Content Blocking
+        https page calls http resources
+      Too many CAs (certificate authorities)
+      Lets Enrcypt Mission
+        tries to solve all these problems
+        usability + security together
+        new certificate authority
+      TLS and HTTPS problem
+        no way to follow latest security news
+        better: provide an agent (client) that does these things correctly
+    NGINX, NODE.JS AND HTTPS VIA LET'S ENCRYPT
+      https://smalldata.tech/blog/2015/12/29/nginx-nodejs-and-https-via-letsencrypt
+    Certbot Documentation
+      https://certbot.eff.org/docs/
+    docker
+      jrcs: nginx letsencrypt
+        https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion
+        1. container: nginx-proxy
+          explain
+            writes to 3 volumes
+              certs: to create letsencrypt certificates
+              vhost.d: to change configuration of vhosts
+              html: to write challenge files
+            --label: st. letsencrypt container knows this
+          command
+            docker run -d -p 80:80 -p 443:443 \
+              --name nginx-proxy \
+              -v /path/to/certs:/etc/nginx/certs:ro \
+              -v /etc/nginx/vhost.d \
+              -v /usr/share/nginx/html \
+              -v /var/run/docker.sock:/tmp/docker.sock:ro \
+              --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
+              jwilder/nginx-proxy
+        2. container: letsencrypt 
+          command
+            docker run -d \
+              -v /path/to/certs:/etc/nginx/certs:rw \
+              -v /var/run/docker.sock:/var/run/docker.sock:ro \
+              --volumes-from nginx-proxy \
+              jrcs/letsencrypt-nginx-proxy-companion
+        3. container: proxied containers can be any image
+          command
+            docker run -d \
+              --name example-app \
+              -e "VIRTUAL_HOST=example.com,www.example.com,mail.example.com" \
+              -e "LETSENCRYPT_HOST=example.com,www.example.com,mail.example.com" \
+              -e "LETSENCRYPT_EMAIL=foo@bar.com" \
+              tutum/apache-php
+        Separate containers
+          nginx proxy can be run as two containers:
+            docker-gen
+            nginx
+          1. container: nginx
+            docker run -d -p 80:80 -p 443:443 \
+              --name nginx \
+              -v /etc/nginx/conf.d  \
+              -v /etc/nginx/vhost.d \
+              -v /usr/share/nginx/html \
+              -v /path/to/certs:/etc/nginx/certs:ro \
+              --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
+              nginx
+          2. container: docker-gen
+            docker run -d \
+              --name nginx-gen \
+              --volumes-from nginx \
+              -v /path/to/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro \
+              -v /var/run/docker.sock:/tmp/docker.sock:ro \
+              --label com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen \
+              jwilder/docker-gen \
+              -notify-sighup nginx -watch -wait 5s:30s /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+          3. container: letsencrypt
+            docker run -d \
+              --name nginx-letsencrypt \
+              --volumes-from nginx \
+              -v /path/to/certs:/etc/nginx/certs:rw \
+              -v /var/run/docker.sock:/var/run/docker.sock:ro \
+              jrcs/letsencrypt-nginx-proxy-companion
+          4. container: proxied containers
+            same as above
+        proxied container
+          environment variables:
+      evertramos examples
+        https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion
+        docker-compose.yml
+          1. nginx
+          2. nginx-gen
+          3. nginx-letsencrypt
+        .env
+          NGINX_FILES_PATH
+          YOUR_PUBLIC_IP
+        proxied containers:
+          ex
+            wordpress
+              expose:
+                - "443"
+              environment:
+                VIRTUAL_HOST: domain.com, www.domain.com
+                VIRTUAL_PROTO: https
+                VIRTUAL_PORT: 443
+                LETSENCRYPT_HOST: domain.com, www.domain.com
+                LETSENCRYPT_EMAIL: your_email@domain.com
+      george ilyes examples
+        https://github.com/gilyes/docker-nginx-letsencrypt-sample
+        docker-compose.yml
+          1. nginx
+          2. nginx-gen
+          3. nginx-letsencrypt
+        proxied containers
+          sample-api:
+            environment:
+              - VIRTUAL_HOST=sampleapi.example.com
+              - VIRTUAL_NETWORK=nginx-proxy
+              - VIRTUAL_PORT=3000
+              - LETSENCRYPT_HOST=sampleapi.example.com
+              - LETSENCRYPT_EMAIL=email@example.com
+          sample-website:
+            environment:
+              - VIRTUAL_HOST=samplewebsite.example.com
+              - VIRTUAL_NETWORK=nginx-proxy
+              - VIRTUAL_PORT=80
+              - LETSENCRYPT_HOST=sample.example.com
+              - LETSENCRYPT_EMAIL=email@example.com
+        debugging
+          view logs
+            docker logs nginx
+          view generated nginx configuration
+            docker exec -it nginx-gen cat /etc/nginx/conf.d/default.conf
+        explain
+          nginx
+            only publicly exposed container
+              routes traffic to servers
+              provides TLS termination
+            volumes
+              conf.d: generated config files
+              /nginx/html: used by letsencrypt for challenges from CA
+              /certs: written by letsencrypt for storing TLS certs
+          nginx-gen
+            this generates nginx configuration
+              first, it reads metadata (VIRTUAL_HOST) from other containers
+              then it generates nginx configuration using template file for main nginx
+            when a new container is run, this container detects that
+                generates configuration entries
+                restarts nginx
+            volume
+              /nginx.tmpl
+          letsencrypt
+            it inspects other containers too
+              it acquires letsencrypt certificates based on LETSENCRYPT_HOST and LETSENCRYPT_EMAIL
+              at regular intervals it renews certificates
+            volumes
+              /certs
+    jwilder: Automated Nginx Reverse Proxy for Docker
+      http://jasonwilder.com/blog/2014/03/25/automated-nginx-reverse-proxy-for-docker/
+      intro
+        reverse proxy server
+          sits in front of other web servers
+            to provide extra functionality
+          ex: extra functionality
+            SSL termination, load balancing, request routing, caching, AB testing
+      generating reverse proxy configs
+        manual configuration is time consuming
+        docker provides remote API
+          to inspect containers
+        docker provides realtime events PAI
+          to notify container start/stop
+        docker-gen: a utility
+          exposes container meta-data to templates
+          templates are rendered
+          restarts services
+      nginx reverse proxy for docker
+        nginx template
+          to generate a reverse proxy config 
+            using virtual hosts for routing
+        template: golang template package
+  intro
+    SSL Certificate Explained
+      https://www.youtube.com/watch?v=SJJmoDZ3il8
+      Firma Adı: Mustafa Boyacı Vizyon İletişim
+      Şehir: Samsun
+    Wildcard Certificate
+      http://en.0wikipedia.org/index.php?q=aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvV2lsZGNhcmRfY2VydGlmaWNhdGU
+      wildcard certificate is a public key certificate which can be used with multiple subdomains of a domain
+      single wildcard certificate for *.example.com, will secure all these domains:[2]
+        payment.example.com
+        contact.example.com
+      only one level of subdomain
+        not be valid for the certificate:
+        test.login.example.com
+    How To Secure Nginx with Let's Encrypt on Ubuntu 16.04 id=g_10164
+      How To Secure Nginx with Let's Encrypt on Ubuntu 16.04 <url:file:///~/Dropbox/mynotes/content/code/ccode.md#r=g_10164>
+      https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+      install certbot
+        sudo add-apt-repository ppa:certbot/certbot
+        sudo apt-get update
+        sudo apt-get install python-certbot-nginx
+      allow HTTPS through firewall
+        sudo ufw status
+      Obtaining an SSL Certificate
+        sudo certbot --nginx -d dentas2.i-terative.com
 
 ## startups
     
@@ -4281,278 +5013,6 @@ _ id=r_lastid ccd_0002
           +     new item
       Tutiorial
         02-02. cross-page-refactoring-tYrLwlxOKmA.mp4
-    letsencrypt
-      LetsEncrypt Documentation: 
-        Getting Started
-          https://letsencrypt.org/getting-started/
-          intro
-            to enable HTTPS
-              you need a certificate (a file type)
-              from a Certificate Authority (CA)
-            letsencrypt is a CA
-            to get a certificate
-              you need to demonstrate control over a domain
-            letsencrypt does this using ACME protocol
-              it runs on web host
-          with shell accesss
-            use Certbot ACME client
-              it automates
-                certificate issuance
-                certificate installation
-          without shell 
-            manually
-              install Certbot locally
-              upload a specific file to website to prove control
-        How It Works
-          https://letsencrypt.org/how-it-works/
-          goal: set up an https server automatically
-            done by an agent (client) on the web server
-          two steps
-            1. agent proves to CA that web server controls a domain
-            2. agent requests, renews, revokes certificates for that domain
-          domain validation
-            1. agent asks lenc (letsencrypt) CA
-              what it needs to do
-            2. CA looks at domain name and issues challenges
-              ex
-                provisioning a dns record under example.com
-                provisioning an http resource on example.com
-              nonce: in cryptograph
-                http://en.wikipedia.org/index.php?q=aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvQ3J5cHRvZ3JhcGhpY19ub25jZQ
-                an arbitrary number that can be used once
-                it is issued in an authentication protocol
-                  to ensure old communications cannot be reused
-                ex
-                  client -> server.getNonce() : nonce
-                  client -> server.login(username, nonce, hash(nonce+password)) : token
-              result: an authorized key pair for example.com
-          certificate issuance and revocation
-            now agent can request, renew, revoke certificates
-              by signing messages with authorized key pair
-        FAQ
-          for multiple domain names
-            SAN certificates (subject alternative name)
-          wildcard certificates
-            from 2018
-            require base domain validation
-      How to configure HTTPS on Apache, AWS, EC2
-        https://medium.com/@nishantasthana/how-to-configure-https-on-apache-aws-ec2-5e483c1c1f15
-        note: SSL protocol is renewed as TLS
-        1. buy certificate from DigiCert
-        2. generate CSR on server
-        3. upload certificate
-        4. create dir /sslcert
-        5. edit /etc/httpd/conf.d
-        6. follow instructions
-        7. open port 443
-        8. restart apache
-        9. redirect http to https
-      Configuring HTTPS - nginx
-        http://nginx.org/en/docs/http/configuring_https_servers.html
-        nginx.conf
-          ssl parameter:
-            listen 443 ssl
-          locations of server certificate and private key
-            ssl_certificate example.com.crt
-            ssl_certificate_key example.com.key
-      How to properly configure your nginx for TLS
-        https://medium.com/@mvuksano/how-to-properly-configure-your-nginx-for-tls-564651438fe0
-        critical because
-          this is the waiting time user first senses
-        1. get TLS certificates
-        2. enable TLS and http2
-          listen 443 ssl http2
-        3. disable ssl (old protocol)
-          ssl_protocols TLSv1 TLSv1.1
-        4. optimise cipher suites. this is where encryption happens
-          ssl_prefer_server_ciphers on
-          ssl_ciphers ECDH+...
-        5. DH params: it is a protocol that allows two parties to talk a secret without ever making that secret open 
-          ssl_dhparam /etc/...
-          openssl dhParam 2048 -out ...
-        6. enable OCSP stapling: to verify that certificate is not revoked, browser contacts issuer of the certificate. nginx gets a signed message from OCSP sevrer. when initialising a connection with some browser, staple it to initial handshake.
-        7. enable HSTS
-          HSTS: allows a server to tell clients they should only use secure protocol HTTPS
-        8. optimize SSL session cache: reduce number of handshakes
-        9. enable session tickets: alternative to session cache. cache is stored in client
-      Let’s Encrypt: TLS for NGINX
-        https://www.nginx.com/blog/lets-encrypt-tls-nginx/
-        SSL Test
-          ssllabs.com/ssltest
-        Mixed Content Blocking
-          https page calls http resources
-        Too many CAs (certificate authorities)
-        Lets Enrcypt Mission
-          tries to solve all these problems
-          usability + security together
-          new certificate authority
-        TLS and HTTPS problem
-          no way to follow latest security news
-          better: provide an agent (client) that does these things correctly
-      NGINX, NODE.JS AND HTTPS VIA LET'S ENCRYPT
-        https://smalldata.tech/blog/2015/12/29/nginx-nodejs-and-https-via-letsencrypt
-      Certbot Documentation
-        https://certbot.eff.org/docs/
-      docker
-        jrcs: nginx letsencrypt
-          https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion
-          1. container: nginx-proxy
-            explain
-              writes to 3 volumes
-                certs: to create letsencrypt certificates
-                vhost.d: to change configuration of vhosts
-                html: to write challenge files
-              --label: st. letsencrypt container knows this
-            command
-              docker run -d -p 80:80 -p 443:443 \
-                --name nginx-proxy \
-                -v /path/to/certs:/etc/nginx/certs:ro \
-                -v /etc/nginx/vhost.d \
-                -v /usr/share/nginx/html \
-                -v /var/run/docker.sock:/tmp/docker.sock:ro \
-                --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
-                jwilder/nginx-proxy
-          2. container: letsencrypt 
-            command
-              docker run -d \
-                -v /path/to/certs:/etc/nginx/certs:rw \
-                -v /var/run/docker.sock:/var/run/docker.sock:ro \
-                --volumes-from nginx-proxy \
-                jrcs/letsencrypt-nginx-proxy-companion
-          3. container: proxied containers can be any image
-            command
-              docker run -d \
-                --name example-app \
-                -e "VIRTUAL_HOST=example.com,www.example.com,mail.example.com" \
-                -e "LETSENCRYPT_HOST=example.com,www.example.com,mail.example.com" \
-                -e "LETSENCRYPT_EMAIL=foo@bar.com" \
-                tutum/apache-php
-          Separate containers
-            nginx proxy can be run as two containers:
-              docker-gen
-              nginx
-            1. container: nginx
-              docker run -d -p 80:80 -p 443:443 \
-                --name nginx \
-                -v /etc/nginx/conf.d  \
-                -v /etc/nginx/vhost.d \
-                -v /usr/share/nginx/html \
-                -v /path/to/certs:/etc/nginx/certs:ro \
-                --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
-                nginx
-            2. container: docker-gen
-              docker run -d \
-                --name nginx-gen \
-                --volumes-from nginx \
-                -v /path/to/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro \
-                -v /var/run/docker.sock:/tmp/docker.sock:ro \
-                --label com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen \
-                jwilder/docker-gen \
-                -notify-sighup nginx -watch -wait 5s:30s /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
-            3. container: letsencrypt
-              docker run -d \
-                --name nginx-letsencrypt \
-                --volumes-from nginx \
-                -v /path/to/certs:/etc/nginx/certs:rw \
-                -v /var/run/docker.sock:/var/run/docker.sock:ro \
-                jrcs/letsencrypt-nginx-proxy-companion
-            4. container: proxied containers
-              same as above
-          proxied container
-            environment variables:
-        evertramos examples
-          https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion
-          docker-compose.yml
-            1. nginx
-            2. nginx-gen
-            3. nginx-letsencrypt
-          .env
-            NGINX_FILES_PATH
-            YOUR_PUBLIC_IP
-          proxied containers:
-            ex
-              wordpress
-                expose:
-                  - "443"
-                environment:
-                  VIRTUAL_HOST: domain.com, www.domain.com
-                  VIRTUAL_PROTO: https
-                  VIRTUAL_PORT: 443
-                  LETSENCRYPT_HOST: domain.com, www.domain.com
-                  LETSENCRYPT_EMAIL: your_email@domain.com
-        george ilyes examples
-          https://github.com/gilyes/docker-nginx-letsencrypt-sample
-          docker-compose.yml
-            1. nginx
-            2. nginx-gen
-            3. nginx-letsencrypt
-          proxied containers
-            sample-api:
-              environment:
-                - VIRTUAL_HOST=sampleapi.example.com
-                - VIRTUAL_NETWORK=nginx-proxy
-                - VIRTUAL_PORT=3000
-                - LETSENCRYPT_HOST=sampleapi.example.com
-                - LETSENCRYPT_EMAIL=email@example.com
-            sample-website:
-              environment:
-                - VIRTUAL_HOST=samplewebsite.example.com
-                - VIRTUAL_NETWORK=nginx-proxy
-                - VIRTUAL_PORT=80
-                - LETSENCRYPT_HOST=sample.example.com
-                - LETSENCRYPT_EMAIL=email@example.com
-          debugging
-            view logs
-              docker logs nginx
-            view generated nginx configuration
-              docker exec -it nginx-gen cat /etc/nginx/conf.d/default.conf
-          explain
-            nginx
-              only publicly exposed container
-                routes traffic to servers
-                provides TLS termination
-              volumes
-                conf.d: generated config files
-                /nginx/html: used by letsencrypt for challenges from CA
-                /certs: written by letsencrypt for storing TLS certs
-            nginx-gen
-              this generates nginx configuration
-                first, it reads metadata (VIRTUAL_HOST) from other containers
-                then it generates nginx configuration using template file for main nginx
-              when a new container is run, this container detects that
-                  generates configuration entries
-                  restarts nginx
-              volume
-                /nginx.tmpl
-            letsencrypt
-              it inspects other containers too
-                it acquires letsencrypt certificates based on LETSENCRYPT_HOST and LETSENCRYPT_EMAIL
-                at regular intervals it renews certificates
-              volumes
-                /certs
-      jwilder: Automated Nginx Reverse Proxy for Docker
-        http://jasonwilder.com/blog/2014/03/25/automated-nginx-reverse-proxy-for-docker/
-        intro
-          reverse proxy server
-            sits in front of other web servers
-              to provide extra functionality
-            ex: extra functionality
-              SSL termination, load balancing, request routing, caching, AB testing
-        generating reverse proxy configs
-          manual configuration is time consuming
-          docker provides remote API
-            to inspect containers
-          docker provides realtime events PAI
-            to notify container start/stop
-          docker-gen: a utility
-            exposes container meta-data to templates
-            templates are rendered
-            restarts services
-        nginx reverse proxy for docker
-          nginx template
-            to generate a reverse proxy config 
-              using virtual hosts for routing
-          template: golang template package
     DataFiller: generate sample data
       https://www.cri.ensmp.fr/people/coelho/datafiller.html
     Ports & Adapters Architecture
@@ -4615,6 +5075,20 @@ _ id=r_lastid ccd_0002
         export/download
     golem: cloud sharing
       https://golem.network
+    CommonCrawl: web crawler that shares all data
+      http://commoncrawl.org/
+    CloudCraft: cloud/network diagram visualization
+      https://cloudcraft.co
+    Hands-on TensorBoard
+      https://www.youtube.com/watch?v=eBbEDRsCmv4
+      TensorFlow graph visualization
+    3D models to navigate
+      https://poly.google.com
+    link fish: turn websites into structured data
+      scrape web sites
+      https://link.fish/api/
+    Wordpress Knowledge Base Plugin: Helpie
+      http://helpie.pauple.com/demo/
 
 
 

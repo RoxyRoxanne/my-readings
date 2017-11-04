@@ -1,8 +1,97 @@
     <url:file:///~/Dropbox (Personal)/mynotes/content/articles/articles_db.md>
 
-_ id=r_lastid adb_005
+_ id=r_lastid adb_009
 
 # Articles DB
+
+## OReilly.Designing.Data-Intensive.Applications.1449373321.pdf
+
+    Preface
+      data intensive app
+        data is its primary challenge
+          quantity, complexity, speed of data
+        as opposed to compute-intensive
+          where processing speed is bottleneck
+    CHAPTER 1 Reliable, Scalable, and Maintainable Applications
+      common functionality of data-intensive applications
+        store and find data (databases)
+        remember the result of expensive operations (caches)
+        search by keyword (search indexes)
+        send message to another process (stream processing)
+        crunch large amount of accumulated data (batch processing)
+      Thinking About Data Systems
+        data systems
+          why umbrella term data systems?
+          any new tools emerged
+            datastore used as message queues (redis)
+            message queues with database-like durability (kafka)
+          wide-ranging requirements not fulfilled by a single tool
+            ex: application managed caching layer (memcached)
+              full text search server (elasticsearch, solr)
+              application's responsibility: to keep them in sync with main database
+            when you combine several tools
+              new special-purpose data system
+            then you are both application developer + data system designer
+        3 critical concerns:
+          reliability: synstem should work correctly even in the face of adversity (errors)
+          scalability: as system (volume, speed, complexity) grows, ways to deal with it
+          maintainability: 
+      Reliability
+        reliability: continuing to work correctly, even when things go wrong
+        faults: the things that can go wrong
+        fault-tolerant or resilient: to cope with faults
+        failure: system as a whole stops providing service
+          fault: component of a system deviates from its spec
+        goal: to prevent faults from causing failures
+        Hardware Faults
+          MTTF (mean time to failure): 10-50 years
+          redundancy
+        Software Errors
+        Human Errors
+          make it easy to do right thing
+          sandbox environments
+          test thoroughly
+          allow easy recovery
+          monitoring: telemetry
+        How Important is Reliability?
+      Scalability
+        describing Load
+          load parameters:
+            ex: requests per second to a web server
+              ration of reads to writes in a database
+              number of simultaneously active users in 
+              hit rate on a cache
+            ex: twitter
+              post tweet: 12k req/sec
+              home timeline: 300k req/sec
+              2 approaches
+                classical relational
+                write to memcached home timelines
+              /Users/mertnuhoglu/Dropbox/public/img/ss-240.png
+              better: to do more work at write time and less at read time
+                write 312k tweet/sec to each timeline cache
+                makes reading simpler
+        describing performance
+          what happens when load increases
+            two ways:
+            1. increase load and keep resources unchanged. how is performance?
+            2. increase load. how much to increase resources to keep performance unchanged?
+          hadoop: batch processing system
+            we care about throughput
+              number of records to process per second
+          online systems: 
+            we care: response time
+              time between a request sending and response receiving
+          latency and response time:
+            response time: time to process request (service time). includes network and queuing delays
+            latency: time a request waits to be handled (awaiting service)
+          percentile: 99.9 percentile
+            99.9% of users have response time of ...
+          SLO: service level objectives
+          SLA: service level agreements
+            service is considered to be up if it has a median response time of less than 200 ms and a 99th percentile under 1 s
+            service is required to be up at least 99.9% of the time
+          queueing delays
 
 ## GraphQL
 
@@ -11,6 +100,113 @@ _ id=r_lastid adb_005
 
 ## PostgreSQL
 
+    json_populate_record
+      select * from json_populate_record(null::x, '{"a":1,"b":2}')  
+       a | b
+      ---+---
+       1 | 2
+    select into 
+      pgsql doesn't create table with "select into"
+        https://stackoverflow.com/questions/11979154/select-into-to-create-a-table-in-pl-pgsql
+          use: create table as
+            CREATE TEMP TABLE mytable AS
+            SELECT *
+            FROM orig_table;
+          https://www.postgresql.org/docs/current/static/sql-selectinto.html
+          note: CREATE TABLE AS is functionally similar to SELECT INTO. CREATE TABLE AS is the recommended syntax, since this form of SELECT INTO is not available in ECPG or PL/pgSQL, because they interpret the INTO clause differently. Furthermore, CREATE TABLE AS offers a superset of the functionality provided by SELECT INTO.
+      https://www.w3schools.com/SQl/sql_select_into.asp
+        ex: copy all columns into new table
+          SELECT *
+          INTO newtable [IN externaldb]
+          FROM oldtable
+          WHERE condition;
+        ex: creates a backup copy
+          SELECT * INTO CustomersBackup2017
+          FROM Customers;
+        ex: backup in another database
+          SELECT * INTO CustomersBackup2017 IN 'Backup.mdb'
+          FROM Customers;
+      http://www.dofactory.com/sql/select-into
+        ex
+          SELECT column-names
+            INTO new-table-name
+            FROM table-name
+           WHERE EXISTS 
+                (SELECT column-name
+                   FROM table-name
+                  WHERE condition)
+    record type
+      https://www.postgresql.org/docs/9.0/static/plpgsql-declarations.html#PLPGSQL-DECLARATION-RECORDS
+      <name> RECORD;
+      similar to row-type variables
+        but have no predefined structure
+        like tuple
+        they take row structure of the row they are assigned during a SELECT or FOR
+      it is not a true data type, only a placeholder
+      when pgsql function returns type record
+        record variable can change its row structure on the fly
+    change current_schema
+      first schema in search path is current schema
+      ex
+        set search_path = data, public;
+        select settings.set('auth.data-schema', current_schema);
+    store check passwords crypt()
+      https://www.postgresql.org/docs/current/static/pgcrypto.html
+        Example of setting a new password:
+          UPDATE ... SET pswhash = crypt('new password', gen_salt('bf'));
+        Example of authentication:
+          SELECT (pswhash = crypt('entered password', pswhash)) AS pswmatch FROM ... ;
+        This returns true if the entered password is correct.
+    list tables: \dt
+      ex:
+        # \dt settings.
+        List of relations
+        Schema  |  Name   | Type  |   Owner
+       ----------+---------+-------+-----------
+       settings | secrets | table | superuser
+    list functions: \df
+      ex:
+        # \df settings.
+        List of functions
+        Schema  | Name | Result data type | Argument data types |  Type
+        ----------+------+------------------+---------------------+--------
+        settings | get  | text             | text                | normal
+        settings | set  | void             | text, text          | normal 
+    single quote vs double quote for text variables
+      single quote vs. double quote
+        strings: always single quoted
+          double quote as: '' (double single quote)
+        double quotes used only for quoted identifiers
+      ex
+        # SELECT settings.get('jwt_secret');
+          get
+          ----------------------------------
+          reallyreallyreallyreallyverysafe
+        # SELECT settings.get("jwt_secret");
+          error: column "jwt_secret" does not exist
+    echo variables of psql
+      ex:
+        # \set test1 hello
+        # \echo :test1
+        hello
+      ex
+        # \setenv base_dir :DIR
+        # \set test2 `echo $base_dir`
+        # \echo :test2
+        :DIR
+    Difference between set, \set and \pset in psql
+      https://stackoverflow.com/questions/29593908/difference-between-set-set-and-pset-in-psql#29594391
+      SET: sql command
+      \set \pset: psql meta-commands
+      SET
+        to change runtime params
+        executed on server
+      \set psql local variables 
+      \pset: affecting the output of query result tables
+      ex: 
+        SET ROLE dba;
+        \set time 'select current_timestamp'
+        \pset border 2
     GRANT USAGE
       https://stackoverflow.com/questions/2126225/why-is-a-grant-usage-created-the-first-time-i-grant-a-user-privileges#3972085
         USAGE === "no privileges"
@@ -1056,7 +1252,6 @@ _ id=r_lastid adb_005
         35.63. view_table_usage
         35.64. views
 
-
 ## PostgreSQL Up and Running 1491963417 id=g_10157
 
     PostgreSQL Up and Running 1491963417 <url:file:///~/Dropbox/mynotes/content/articles/articles_db.md#r=g_10157>
@@ -1159,6 +1354,11 @@ _ id=r_lastid adb_005
         types
           type = data type
           ex: integer, character, array
+          numeric types
+            int
+            numeric(precision)
+            real double float(precision)
+            serial
           pgs has composite types
             ex: complex numbers, coordinates, vectors, tensors
           a composite type for each table
@@ -3336,7 +3536,7 @@ _ id=r_lastid adb_005
         npm install -g subzero-cli
         subzero dashboard
       connect db
-        credentials
+        credentials - datagrip intellij
           DB_NAME=app
           DB_SCHEMA=api
           SUPER_USER=superuser
@@ -3504,4 +3704,2228 @@ _ id=r_lastid adb_005
           how much code did we write 
             cloc --include-lang=SQL db/src/api/views_and_procedures.sql db/src/data/tables.sql db/src/authorization/privileges.sql db/src/libs/util/
       next
+
+## Other
+
+    Return setof record (virtual table) from function
+      https://stackoverflow.com/questions/955167/return-setof-record-virtual-table-from-function
+      code
+        CREATE OR REPLACE FUNCTION f_foo(open_id numeric)
+          RETURNS TABLE (a int, b int, c int) AS
+        $func$
+        BEGIN
+           -- do something with open_id?
+           RETURN QUERY VALUES
+             (1,2,3)
+           , (3,4,5)
+           , (3,4,5);
+        END
+        $func$  LANGUAGE plpgsql IMMUTABLE ROWS 3;
+      Call:
+        SELECT * FROM f_foo(1);
+      major points
+        Use RETURNS TABLE to define an ad-hoc row type to return.
+        Or RETURNS SETOF mytbl to use a pre-defined row type.
+        Use RETURN QUERY to return multiple rows with one command.
+        Use a VALUES expression to enter multiple rows manually. This is standard SQL and has been around for ever.
+        Use a parameter name (open_id numeric) instead of ALIAS, which is discouraged for standard parameter names. In the example the parameter isn't used and just noise ...
+        No need for double-quoting perfectly legal identifiers. Double-quotes are only needed to force otherwise illegal names (mixed-case, illegal characters or reserved words).
+    Debugging your PL_pgSQL code-pOb-7JZQoW4.webm
+      pgAdmin
+        breakpoints inside functions
+      plprofiler
+        runs a query inside profiler
+    Upsert
+      INSERT ..
+      ON CONLICT(pk_field)
+      UPDATE ..
+    SQL and Business Logic
+      http://tapoueh.org/blog/2017/06/sql-and-business-logic/
+      pgloader:
+        load csv, mysql etc files like copy
+    SQL Joins with On or Using
+      https://lornajane.net/posts/2012/sql-joins-with-on-or-using
+      why: you use ON for most things, but USING is a handy shorthand for the situation where the column names are the same
+      ex:
+        select owners.name as owner, pets.name as pet, pets.animal 
+          from owners join pets USING (owners_id);
+        ===
+        select owners.name as owner, pets.name as pet, pets.animal 
+          from owners join pets ON (pets.owners_id = owners.owners_id);
+    Becoming a SQL Guru-cL8QZ2yyFCM.mp4
+      Set Operations
+        Union vs union all
+          union: distinct rows only
+          ex:
+            select city from customers
+            UNION ALL
+            select city from suppliers
+          ex:
+            select city from customers
+            UNION 
+            select city from suppliers
+        Except vs intersect
+          ex:
+            select city from customers
+            EXCEPT
+            select city from suppliers
+          ex:
+            select city from customers
+            INTERSECT
+            select city from suppliers
+      Filtered Aggregates
+        before:
+          select 
+            sum(revenue) as total_revenue,
+            sum(CASE
+              WHEN country = 'USA'
+                THEN revenue
+              ELSE 0
+              END) as USA_revenue
+          from suppliers
+        after:
+          select 
+            sum(revenue) as total_revenue,
+            sum(revenue) FILTER (where country = 'USA') as USA_revenue
+          from suppliers
+    Grouping Sets, Cube, Rollup
+      like pivot tables
+      Grouping sets: allows creation of sets wherein a subtotal is calculated for each set
+      Rollup: allows for creating of hierarchical 
+      Cube: 
+    Example Questions from Stackoverflow
+      how people ask questions?
+        opt1: equivalent of the following mysql command
+        opt2: i want to do this: select * ... but there is an error. 
+        opt3: i can do this. but i want more in addition to it: ...
+        opt4: i do this. but sometimes i get this error. how can i do this?
+        opt5: show table sample and table ddl
+          id | fixture
+         ----|----------
+           1 |    1
+           1 |    2
+           2 |    3
+         CREATE TABLE channel(
+           id INT NOT NULL PRIMARY KEY,
+           fixture INT NOT NULL
+           );
+        opt6: prepare sqlfiddle page
+        opt7: \d+ bss.amplifier_saturation
+      https://stackoverflow.com/questions/653714/insert-results-of-a-stored-procedure-into-a-temporary-table
+      https://stackoverflow.com/questions/452859/inserting-multiple-rows-in-a-single-sql-query
+      https://stackoverflow.com/questions/63447/how-do-i-perform-an-if-then-in-an-sql-select
+        q
+          How do I perform an IF...THEN in an SQL SELECT statement?
+          For example:
+          SELECT IF(Obsolete = 'N' OR InStock = 'Y' ? 1 : 0) AS Saleable, * FROM Product
+      https://stackoverflow.com/questions/109325/postgresql-describe-table
+        q
+          How do you perform the equivalent of Oracle's DESCRIBE TABLE in PostgreSQL (using the psql command)?
+      https://stackoverflow.com/questions/769683/show-tables-in-postgresql
+        q
+          What's the alternative to SHOW TABLES (from MySQL) in PostgreSQL?
+      https://stackoverflow.com/questions/1109061/insert-on-duplicate-update-in-postgresql
+        q
+          Several months ago I learned from an answer on Stack Overflow how to perform multiple updates at once in MySQL using the following syntax:
+          INSERT INTO table (id, field, field2) VALUES (1, A, X), (2, B, Y), (3, C, Z)
+          ON DUPLICATE KEY UPDATE field=VALUES(Col1), field2=VALUES(Col2);
+      https://stackoverflow.com/questions/7869592/how-to-do-an-update-join-in-postgresql
+        q
+          Basically, I want to do this:
+          UPDATE vehicles_vehicle v 
+              JOIN shipments_shipment s on v.shipment_id=s.id 
+          SET v.price=s.price_per_vehicle;
+      https://stackoverflow.com/questions/2596670/how-do-you-find-the-row-count-for-all-your-tables-in-postgres
+        q
+          I'm looking for a way to find the row count for all my tables in Postgres. I know I can do this one table at a time with:
+          SELECT count(*) FROM table_name;
+          but I'd like to see the row count for all the tables and then order by that to get an idea of how big all my tables are.
+      https://stackoverflow.com/questions/4069718/postgres-insert-if-does-not-exist-already
+        q
+          because some of my rows are identical, I get the following error:
+            psycopg2.IntegrityError: duplicate key value  
+              violates unique constraint "hundred_pkey"
+          How can I write an 'INSERT unless this row already exists' SQL statement?
+          I've seen complex statements like this recommended:
+          ...
+      https://stackoverflow.com/questions/16677191/sql-one-to-many
+        q
+          I cannot have a table :
+           id | fixture
+          ----|----------
+            1 |    1
+            1 |    2
+            2 |    3
+          CREATE TABLE channel(
+            id INT NOT NULL PRIMARY KEY,
+            fixture INT NOT NULL
+            );
+          ...
+      https://stackoverflow.com/questions/10292355/how-do-i-create-a-real-one-to-one-relationship-in-sql-server
+        q
+          I have two tables tableA and tableB, I set tableB's primary key as foreign key which references  tableA's primary. But when I use Entity Framework database-first, the model is 1 to 0..1.
+          Any one know how to create real 1 to 1 relationship in database?
+      https://stackoverflow.com/questions/15251761/sql-query-one-to-many-relationship
+        q
+          Example Employee table
+          ╔════╦══════╗
+          ║ ID ║ NAME ║
+          ╠════╬══════╣
+          ║  1 ║ Bob  ║
+          ║  2 ║ Tom  ║
+          ║  3 ║ John ║
+          ╚════╩══════╩
+      https://dba.stackexchange.com/questions/90128/unused-index-in-range-of-dates-query/90183#90183
+        code
+          mustang=# \d+ bss.amplifier_saturation
+                                                         Table "bss.amplifier_saturation"
+           Column |           Type           |                             Modifiers                             | Storage | Description 
+          --------+--------------------------+-------------------------------------------------------------------+---------+-------------
+           value  | integer                  | not null                                                          | plain   | 
+           target | integer                  | not null                                                          | plain   | 
+      next
+        https://stackoverflow.com/questions/17946221/sql-join-and-different-types-of-joins
+    Subquery Examples
+      http://www.zentut.com/sql-tutorial/sql-subquery/
+        WHERE set
+          SELECT ... WHERE field IN (SELECT field2 FROM ...)
+        expression
+          to substitute an expression in SQL
+            SELECT field1, 
+              (SELECT AVG(unitprice) FROM products AS 'avg_price'),
+              (unitprice - (SELECT AVG(unitprice) FROM products)) as diff
+            FROM products
+            WHERE category_id = 1
+        these subqueries execute independently
+          alternative: correlated subquery
+            executed dependently of some outer query
+      http://www.zentut.com/sql-tutorial/understanding-correlated-subquery/
+        in SELECT clause
+          for each row of Customers table runs the subquery
+          SELECT 
+              companyname,
+              city,
+              (SELECT SUM(unitprice * quantity)
+               FROM orders
+               INNER JOIN orderdetails ON orderdetails.orderid = orders.orderid
+               WHERE orders.customerid = customers.customerid) AS total
+          FROM customers
+          ORDER BY total DESC
+          LIMIT 5;
+        in WHERE clause
+          SELECT companyname, city
+          FROM customers
+          WHERE 100000 < (
+                  SELECT SUM(unitprice * quantity)
+                  FROM orders
+                  INNER JOIN orderdetails ON orderdetails.orderid = orders.orderid
+                  WHERE orders.customerid = customers.customerid);
+        in HAVING clause
+          SELECT t1.categoryID, categoryName
+          FROM products t1
+          INNER JOIN categories c ON c.categoryID = t1.categoryID
+          GROUP BY categoryID
+          HAVING MAX(unitprice) > ALL (
+             SELECT  2 * AVG(unitprice)
+             FROM products t2
+             WHERE t1.categoryID = t2.categoryID)
+    Optimize GROUP BY query to retrieve latest record per user id=adb_007
+      Optimize GROUP BY query to retrieve latest record per user <url:#r=adb_007>
+      https://stackoverflow.com/questions/25536422/optimize-group-by-query-to-retrieve-latest-record-per-user/25536748#25536748
+      code
+        CREATE TABLE user_msg_log (
+            aggr_date DATE,
+            user_id INTEGER,
+            running_total INTEGER
+        );
+        SELECT user_id, max(aggr_date), max(running_total) 
+        FROM user_msg_log 
+        WHERE aggr_date <= :mydate 
+        GROUP BY user_id
+      index: user_msg_log(aggr_date)
+      query very slow. what index to define?
+      multicolumn index
+        CREATE INDEX user_msg_log_combo_idx
+          ON user_msg_log (user_id, aggr_date DESC NULLS LAST)
+      recursive cte
+        WITH RECURSIVE cte AS (
+           (
+           SELECT u  -- whole row
+           FROM   user_msg_log u
+           WHERE  aggr_date <= :mydate
+           ORDER  BY user_id, aggr_date DESC NULLS LAST
+           LIMIT  1
+           )
+           UNION ALL
+           SELECT (SELECT u1  -- again, whole row
+                   FROM   user_msg_log u1
+                   WHERE  user_id > (c.u).user_id  -- parentheses to access row type
+                   AND    aggr_date <= :mydate     -- repeat predicate
+                   ORDER  BY user_id, aggr_date DESC NULLS LAST
+                   LIMIT  1)
+           FROM   cte c
+           WHERE  (c.u).user_id IS NOT NULL        -- any NOT NULL column of the row
+           )
+        SELECT (u).*                               -- finally decompose row
+        FROM   cte
+        WHERE  (u).user_id IS NOT NULL             -- any column defined NOT NULL
+        ORDER  BY (u).user_id;
+    Index-only scans
+      https://wiki.postgresql.org/wiki/Index-only_scans
+      allows certain queries to be run just by getting data from indexes, not from tables
+      Example queries where index-only scans could be used in principle
+        select count(*) from categories;
+          assuming: an index on a column
+        select 1st_indexed_col, 2nd_indexed_col from categories;
+          assuming: composite index 1. 2. col
+    Unused index in range of dates query
+      https://dba.stackexchange.com/questions/90128/unused-index-in-range-of-dates-query/90183#90183
+      code
+        mustang=# \d+ bss.amplifier_saturation
+                                                       Table "bss.amplifier_saturation"
+         Column |           Type           |                             Modifiers                             | Storage | Description 
+        --------+--------------------------+-------------------------------------------------------------------+---------+-------------
+         value  | integer                  | not null                                                          | plain   | 
+         target | integer                  | not null                                                          | plain   | 
+      code
+        The query/plan:
+        mustang=# explain select max(lddate) from bss.amplifier_saturation
+        where start >= '1987-12-31 00:00:00'
+        and   start <= '1988-04-09 00:00:00';
+      best index:
+        (lddate, start)
+      why lddate IS NOT NULL
+        Index Cond: ((lddate IS NOT NULL) AND ...
+        Why does Postgres have to exclude NULL values?
+        Because NULL sorts after the greatest value in ASCENDING or before in DESCENDING order. The maximum non-null value which is returned by the aggregate function max() is not at the beginning / end of the index if there are NULL values.  
+        DESC NULLS LAST is the beter choice.
+    What is the difference between LATERAL and a subquery in PostgreSQL? id=adb_006
+      What is the difference between LATERAL and a subquery in PostgreSQL? <url:#r=adb_006>
+      https://stackoverflow.com/questions/28550679/what-is-the-difference-between-lateral-and-a-subquery-in-postgresql#28557803
+      ref
+        Optimize GROUP BY query to retrieve latest record per user <url:#r=adb_007>
+      LATERAL: more like a correlated subquery
+        subquery has to be evaluated many times, once for each row in lhs
+    Modern SQL
+      https://www.slideshare.net/MarkusWinand/modern-sql
+      Modern SQL in PostgreSQL-nFfS1HmiWCM.webm
+      LATERAL
+        ref
+          What is the difference between LATERAL and a subquery in PostgreSQL? <url:#r=adb_006>
+        before:
+          SELECT ...
+            , (SELECT column1 
+              FROM t1)
+            ...
+          wrong: SELECT column1, column2
+          wrong: more than one row returned 
+        after:
+          SELECT ..., ldt.*
+            FROM t2
+            LEFT JOIN LATERAL 
+              (SELECT column_1, column_2
+              FROM t1
+              WHERE t1.x = t2.y
+              ) AS ldt
+              ON (true) ...
+          new:
+            lift both limitations
+            and can be correlated
+        before:
+          inline views can't refer to outside view:
+            SELECT *
+              FROM t1
+              JOIN (SELECT *
+                FROM t2
+                WHERE t2.x = t1.x
+                ) inline view
+          WHERE t2.x = t1.x
+            this refers to outside view
+            this was wrong
+          solution
+            SELECT *
+              FROM t1
+              JOIN (SELECT *
+                FROM t2
+                ) inline view
+              ON (inline_view.x = t1.x)
+        now:
+          inline views can refer to outside view
+            SELECT *
+              FROM t1
+              JOIN LATERAL 
+                (SELECT *
+                  FROM t2
+                  WHERE t2.x = t1.x
+                  ) inline view
+              ON (true)   -- useless but still required
+        why? where to use?
+          usecase1: calling table functions with args from previously mentioned tables
+            SELECT t1.id, tf.*
+              FROM t1
+              JOIN LATERAL table_function(t1.id) tf
+              ON (true)
+            LATERAL is optional here
+          usecase2: limiting data set
+            SELECT top_products.*
+              FROM categories c
+              JOIN LATERAL 
+                (SELECT *
+                  FROM products p
+                  WHERE p.cat = c.cat
+                  ORDER BY p.rank DESC
+                  LIMIT 3
+                  ) top_products
+            no way to do without limit
+            ex: get 10 most recent news
+              SELECT n.*
+                FROM news n
+                JOIN subscriptions s
+                ON (n.topic = s.topic)
+                WHERE s.user = ?
+                ORDER BY n.created DESC
+                LIMIT 10
+              # this joins 900 K rows. we only need 10 recent subscriptions
+              SELECT n.*
+                FROM subscriptions s
+                JOIN LATERAL 
+                  (SELECT *
+                    FROM news n
+                    WHERE n.topic = s.topic
+                    ORDER BY n.created DESC
+                    LIMIT 10
+                    ) top_news ON (true)
+                WHERE s.user_id = ?
+                ORDER BY n.created DESC
+                LIMIT 10
+        nutshell
+          LATERAL is "for each" loop of SQL
+            executed predefined number of times
+          plays well with outer joins
+          great for TOP-N suqueries
+          can join table functions (unnest)
+      GROUPING SETS
+        before:
+          only one GROUP BY operation at a time
+          SELECT year, month, sum(revenue)
+            FROM tbl
+            GROUP BY year, month
+          SELECT year
+            , sum(revenue)
+            FROM tbl
+            GROUP BY year
+          both together:
+            SELECT year, month, sum(revenue)
+              FROM tbl
+              GROUP BY year, month
+            UNION ALL
+            SELECT year
+              , null
+              , sum(revenue)
+              FROM tbl
+              GROUP BY year
+        after:
+          SELECT year, month, sum(revenue)
+            FROM tbl
+            GROUP BY 
+              GROUPING SETS (
+                (year, month)
+                , (year)
+                )
+        nutshell
+          multiple GROUP BY
+          () "empty brackets" build a group over all rows
+          Permutations can be created using ROLLUP and CUBE
+            (ROLLUP(a,b,c) = GROUPING SETS ((a,b,c), (a,b),(a),()))
+            https://stackoverflow.com/questions/25274879/when-to-use-grouping-sets-cube-and-rollup#25276123
+              CUBE is the same of GROUPING SETS with all possible combinations
+              if you don't really need all combinations, you should use GROUPING SETS rather than CUBE
+              GROUP BY CUBE (C1, C2, C3, ..., Cn-2, Cn-1, Cn)
+              ===
+              GROUP BY GROUPING SETS (
+                   (C1, C2, C3, ..., Cn-2, Cn-1, Cn) -- All dimensions are included.
+                  ,( , C2, C3, ..., Cn-2, Cn-1, Cn) -- n-1 dimensions are included.
+                  ,(C1, C3, ..., Cn-2, Cn-1, Cn)
+                  …
+      WITH (common table expressions CTE)
+        nested subqueries are hard to read
+        syntax
+          WITH
+            a (c1, c2) -- column names optional
+            AS (SELECT c1, c2 FROM ...)
+        before:
+          nested queries are hard to read:
+            SELECT ...
+              FROM (SELECT ...
+                FROM t1
+                JOIN (SELECT ... FROM ...
+                  ) a ON (...)
+              ) b
+              ...
+        after
+          CTEs are statement-scoped views
+            WITH
+              a (c1, c2, c3)
+              AS (SELECT c1, c2, c3 FROM ...),
+              b (c4, ...)
+              AS (SELECT c4, ... FROM ... JOIN a ON (...)),
+            SELECT ...
+              FROM b JOIN a ON (...)
+        nutshell
+          they are like private methods of SQL
+          views can be referred
+          allows chaining instead of nesting
+          allowed where SELECT is allowed
+            INSERT INTO tbl
+            WITH ... SELECT ...
+        but
+          pgs: WITH views are like materialized views
+        INSERT, UPDATE, DELETE inside WITH
+        WITH deleted_rows AS (
+          DELETE FROM source_tbl
+          RETURNING *
+          )
+          INSERT INTO destination_tbl
+          SELECT * FROM deleted_rows;
+        issue: performance 
+          CTE doesn't know about outer filters
+      WITH RECURSIVE
+        this also part of making SQL, turing complete
+        before:
+          too hard
+        after
+          WITH RECURSIVE cte (n)
+            AS 
+              (SELECT 1
+                UNION ALL
+                SELECT n+1
+                FROM cte
+                WHERE n < 3)
+            SELECT * FROM cte;
+        use cases
+          row generators
+          for graph processing
+          loops that
+            pass data to next iteration
+            need a dynamic abort condition
+        nutshell
+          WITH RECURSIVE is while of SQL
+          supports infinite loops
+      OVER and PARTITION BY
+        together with recursive CTE SQL became turing complete with over feature
+        /Users/mertnuhoglu/Dropbox/public/img/ss-249.png
+          | sql                                          | merge rows | aggregate |
+          | select * from t                              | false      | false     |
+          | select distinct c1 from t                    | true       | false     |
+          | select * from t join (select .. group by ..) | false      | true      |
+          | select sum(c1) from t group by ..            | true       | true      |
+          better:
+            select * from t join (select .. group by ..) 
+            -->
+            select sum(c2) over (partition by c1) from t
+        before:
+          WITH total_salary_by_department
+            AS (SELECT dep, SUM(salary) total
+              FROM emp
+              GROUP BY dep)
+            SELECT dep, emp_id, salary,
+              salary/ts.total*100 "% of dep"
+              FROM emp
+              JOIN total_salary_by_department ts
+              ON (emp.dep = ts.dep)
+        what if we add:
+          WHERE emp.dep = ?
+        before: there was no chance to collect aggregates but not collapse rows
+        after:
+          SELECT dep, emp_id, salary,
+            salary/SUM(salary) OVER (PARTITION BY dep) * 100 "% of dep"
+            FROM emp
+        notes:
+          PARTITION BY seggregates like GROUP BY does
+          OVER () aggregates over all result set
+        nutshell
+          any aggregate function ok
+      OVER and ORDER BY
+        before: calculating a running total
+          SELECT txid, value,
+            (SELECT SUM(value)
+              FROM transactions tx2
+              WHERE tx2.acnt = tx1.acnt
+              AND tx2.txid <= tx1.txid) bal
+            FROM transactions tx1
+            WHERE acnt = ?
+            ORDER BY txid
+          # issues
+            requires a scalar subselect or selfjoin
+            poor maintenance
+            poor performance
+            better: do it in application
+        after:
+          SELECT txid, value,
+            SUM(value)
+              OVER(ORDER BY txid
+                ROWS
+                BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) bal
+            FROM transactions tx1
+            WHERE acnt = ?
+            ORDER BY txid
+        new functions makes sense with OVER(ORDER BY ...)
+          ROW_NUMBER
+          ranking:
+            RANK, DENSE_RANK, CUME_DIST
+        use cases:
+          aggregates without GROUP BY
+          running totals, moving averages
+          ranking
+            top-n per group
+          avoiding self-joins
+      WITHIN GROUP
+        grouped rows cannot be ordered prior aggregation
+          how to get middle value (median) of a set
+        before:
+          ...
+        after:
+          SELECT PERCENTILE_DISC 0.5
+            WITHIN GROUP (ORDER BY val)
+          FROM data
+        hypothetical set-functions
+          SELECT RANK(123)
+            WITHIN GROUP (ORDER BY val)
+          FROM data
+      OVER
+        before: calculate difference to previous row
+          WITH numbered_data AS (
+            SELECT *,
+              ROW_NUMBER() OVER(ORDER BY x) rn
+              FROM data)
+            SELECT cur.*, cur.balance - prev.balance
+              FROM numbered_data cur
+              LEFT JOIN numbered_data prev 
+              ON (cur.rn = prev.rn - 1)
+        after:
+          SELECT *, balance - LAG(balance) OVER (ORDER BY x)
+            FROM data
+        other functions
+          LEAD/LAG
+          FIRST_VALUE / LAST_VALUE
+          NTH_VALUE(col, n) FROM FIRST/LAST RESPECT/IGNORE NULLS
+      FETCH FIRST
+        like LIMIT but SQL standard
+        before:
+          SELECT *
+            FROM (SELECT *,
+              ROW_NUMBER() OVER(ORDER BY x) rn
+              FROM data) numbered_data
+            WHERE rn <= 10
+        after:
+          SELECT *
+            FROM data
+            ORDER BY x
+            FETCH FIRST 10 ROWS ONLY
+      OFFSET
+        OFFSET is EVIL
+          comparison to sleep
+          problem: renumbering rows 
+        before: skip 10 rows, then get next 10
+          SELECT *
+            FROM (SELECT *,
+              ROW_NUMBER() OVER(ORDER BY x) rn
+              FROM data
+              FETCH FIRST 20 ROWS ONLY
+            ) numbered_data
+            WHERE rn > 10
+        after:
+          don't use offset
+        alternative to OFFSET:
+          http://use-the-index-luke.com/no-offset
+            db still fetches these rows and bring them in order before it can send the following ones
+            use where clause that filters the data you look for
+            sql
+              SELECT ...
+              FROM ...
+              WHERE ...
+              AND id < ?last_seen_id
+              ORDER BY id DESC
+              FETCH FIRST 10 ROWS ONLY
+          http://use-the-index-luke.com/sql/partial-results/fetch-next-page
+            how to do proper pagination
+            opt1: offset
+              SELECT *
+                FROM sales
+               ORDER BY sale_date DESC
+              OFFSET 10
+               FETCH NEXT 10 ROWS ONLY
+              costs
+                db counts all rows from beginning until requested page
+                  pages drift when inserting new rows
+                  response time increases when browsing further back
+            opt2: seek
+              SELECT *
+                FROM sales
+               WHERE sale_date < ?
+               ORDER BY sale_date DESC
+               FETCH FIRST 10 ROWS ONLY
+              benefits:
+                doesn't get already shown pages
+                where condition uses index
+                you get stable results if new rows are inserted
+      AS OF
+        before: changing data was destructive
+        after: tables can be system versioned
+          CREATE TABLE t (...,
+            start_ts TIMESTAMP(9) GENERATED ALWAYS AS ROW START,
+            end_ts TIMESTAMP(9) GENERATED ALWAYS AS ROW END,
+            PERIOD FOR SYSTEM TIME (start_ts, end_ts)
+          ) WITH SYSTEM VERSIONING
+        ex:
+          INSERT ... (ID, DATA) VALUES (1, 'x')
+            | ID | Data | start_ts | end_ts |
+            | 1  | x    | 10:00    |        |
+          UPDATE ... SET DATA = 'y' ...
+            | ID | Data | start_ts | end_ts |
+            | 1  | x    | 10:00    | 11:00  |
+            | 1  | y    | 11:00    |        |
+        with AS OF you can query:
+          SELECT *
+            FROM t FOR SYSTEM_TIME AS OF
+              TIMESTAMP '2015-04-02 10:30:00'
+            | ID | Data | start_ts | end_ts |
+            | 1  | x    | 10:00    | 11:00  |
+      WITHOUT OVERLAPS
+        how to avoid overlapping periods
+          | id | begin | end   |
+          | 1  | 9:00  | 11:00 |
+          | 1  | 10:00 | 12:00 |
+        before:
+          using triggers 
+        after:
+          PRIMARY KEY (id, period WITHOUT OVERLAPS)
+          ===
+          EXCLUDE USING gist (id WITH =, period WITH &&)
+      Temporal/Bi-Temporal SQL
+      LIST_AGG
+        ex:
+          | grp | val |
+          | 1   | B   |
+          | 1   | A   |
+          | 1   | C   |
+          | 2   | X   |
+          SELECT grp
+            , LIST_AGG(val, ', ')
+              WITHIN GROUP (ORDER BY val)
+            FROM t
+            GROUP By grp
+          -->
+          | grp | val     |
+          | 1   | A, B, C |
+          | 2   | X       |
+    Temporal Features in Sql 2011
+      http://cs.ulb.ac.be/public/_media/teaching/infoh415/tempfeaturessql2011.pdf
+      Introduction
+      Temporal data support
+        Periods
+          an interval on timeline
+          period definitions are metadata to tables
+            pair of columns: period start and period end time
+    Assign Names to Columns Without Known Name
+      http://modern-sql.com/use-case/naming-unnamed-columns
+      table functions produce columns with no names:
+        ex: unnest, values 
+      opt1: using aliases in the from Clause
+        SELECT COUNT(c1)
+             , COUNT(*)
+          FROM (VALUES (1)
+                     , (NULL)
+               ) t1(c1)
+        t1: table alias
+          c1: column alias for first column
+      opt2: Using CTE
+        WITH t1 (c1) AS (
+             VALUES (1)
+                  , (NULL)
+        )
+        SELECT COUNT(c1)
+             , COUNT(*)
+          FROM t1
+    Literate SQL
+      http://modern-sql.com/use-case/literate-sql
+      WITH has two properties:
+        names come first
+        subqueries are unnested
+      Names first
+        meaningful names: very important
+        ex: name is out of sight
+          SELECT ...
+            FROM (SELECT ...
+                    FROM ...
+                 ) intention_revealing_name
+             ...
+        after: name put before the code (like programming languages)
+          WITH intention_revealing_name AS (
+               SELECT ...
+                 FROM ...
+               )
+          SELECT ...
+            FROM intention_revealing_name irn
+             ...
+      Order of human logic
+        turn nesting into chaining
+        with is a prefix for SELECT
+    Unit Tests on Transient Data
+      http://modern-sql.com/use-case/unit-tests-on-transient-data
+      opt1: Open Transactions
+      opt2: with and values
+        1. with creates table with the same name
+        2. with generates test data
+        ex
+          WITH cart (product_id, qty) AS (
+               VALUES (1, 2)
+          )
+          SELECT ...
+            FROM cart
+             ...
+    with — Organize Complex Queries
+      http://modern-sql.com/feature/with
+      you can use 'with' as prefix for select everywhere:
+        WITH query_name (column_name1, ...) AS
+             (SELECT ...)
+        SELECT ...
+      WITH is like CREATE VIEW
+    case — Conditional Expressions
+      http://modern-sql.com/feature/case
+      code
+        CASE WHEN <condition> THEN <result>
+            [WHEN <condition> THEN <result>
+             ...]
+            [ELSE <result>]
+        END
+      handling NULL
+        note: null = null is not true
+          thus 'when null' never applies
+        opt1: coalesce
+          COALESCE(a, b)
+          ===
+          CASE WHEN a IS NOT NULL THEN a
+               ELSE b
+          END
+        opt2: nullif
+          x / NULLIF(y, 0)
+          ===
+          x / CASE WHEN y = 0 THEN null 
+                   ELSE y
+              END
+    EXTRACT expression
+      http://modern-sql.com/feature/extract
+      code
+        EXTRACT(<field> FROM <expression>)
+      fields
+        Year  YEAR
+        Month MONTH
+        Day of month  DAY
+        24 hour HOUR
+        Minute  MINUTE
+        Seconds (including fractions) SECOND
+        Time zone hour  TIMEZONE_HOUR
+        Time zone minute  TIMEZONE_MINUTE
+      related:
+        EXTRACT gets single field
+        to extract multiple fields, CAST can be used
+      CAST
+        CAST(<timestamp> AS [DATE|TIME])
+      anti-patterns
+        string formatting functions
+        inappropriate use in WHERE
+          ex: consider
+            WHERE EXTRACT(YEAR FROM some_date) = 2016
+            last time unit is not known
+            resolution unknown
+            no index can be utilized
+          better:
+            WHERE some_date >= DATE'2016-01-01'
+              AND some_date <  DATE'2017-01-01'
+    FILTER clause
+      http://modern-sql.com/feature/filter
+      ex:
+        SUM(<expression>) FILTER (WHERE <condition>)
+        SUM(<expression>) FILTER (WHERE <condition>) OVER (...)
+    The FILTER clause in Postgres 9.4
+      https://medium.com/little-programming-joys/the-filter-clause-in-postgres-9-4-3dd327d3c852
+      before:
+        SELECT
+          COUNT(*) AS unfiltered,
+          SUM( CASE WHEN i < 5 THEN 1 ELSE 0 END ) AS filtered
+        FROM generate_series(1,10) AS s(i);
+      after:
+        SELECT
+          COUNT(*) AS unfiltered,
+          COUNT(*) FILTER (WHERE i < 5) AS filtered
+        FROM generate_series(1,10) AS s(i);
+      ex: sellers sales counters based on purchase states
+        SELECT purchases.seller_id,
+          SUM(CASE WHEN state IN ('authorized', 'reversed') THEN 1 ELSE 0 END) AS sales_count,
+          SUM(CASE WHEN state = 'authorized' THEN 1 ELSE 0 END) AS successful_sales_count
+        FROM purchases
+        GROUP BY purchases.seller_id
+        -->
+        SELECT purchases.seller_id,
+          COUNT(1) FILTER (WHERE state IN ('authorized', 'reversed')) AS sales_count,
+          COUNT(1) FILTER (WHERE state = 'authorized') AS successful_sales_count
+        FROM purchases
+        GROUP BY purchases.seller_id
+    https://blog.jooq.org/2014/12/30/the-awesome-postgresql-9-4-sql2003-filter-clause-for-aggregate-functions/
+      ex: get number of countries with GDP higher than 40000 for each year
+        CREATE TABLE countries (
+          code CHAR(2) NOT NULL,
+          year INT NOT NULL,
+          gdp_per_capita DECIMAL(10, 2) NOT NULL
+        );
+        SELECT
+          year,
+          count(*) FILTER (WHERE gdp_per_capita >= 40000)
+        FROM countries
+        GROUP BY year
+        -->
+        year   count
+        ------------
+        2012   4
+        2011   5
+      ex: use as window function
+        SELECT
+          year,
+          code,
+          gdp_per_capita,
+          count(*) 
+            FILTER (WHERE gdp_per_capita >= 40000) 
+            OVER   (PARTITION BY year)
+        FROM
+          countries
+        -->
+        year   code   gdp_per_capita   count
+        ------------------------------------
+        2009   CA           40764.00       4
+        2009   DE           40270.00       4
+    filter by count of records
+      http://sqlfiddle.com/#!12/bbbdd/3
+      schema
+        CREATE TABLE states
+          ("name" int, "admin" int)
+        ;
+        INSERT INTO states
+          ("name", "admin")
+        VALUES
+          (1, 1),
+          (2, 1),
+          (3, 1),
+          (4, 2),
+          (5, 3)
+        ;
+      code:
+        SELECT s.name,s.admin 
+        FROM states s
+        INNER JOIN (
+        SELECT ss.admin
+        FROM states ss
+        GROUP BY ss.admin
+        HAVING COUNT(*) < 100
+        ) a ON a.admin = s.admin
+        ORDER BY s.admin ASC;
+      out
+        name  admin
+        4 2
+        5 3
+    Table Column Aliases
+      http://modern-sql.com/feature/table-column-aliases
+      code
+        FROM … [AS] alias [(<derived column list>)]
+      issues:
+        you have to alias all columns in the table in order
+      use case: unnest, values table functions
+      ex: WITH clause can be used to name columns
+        WITH t1 (c1) AS (
+             VALUES (1)
+                  , (NULL)
+        )
+        SELECT COUNT(c1)
+             , COUNT(*)
+          FROM t1
+    listagg Function
+      http://modern-sql.com/feature/listagg
+      rows to delimited strings
+      used to denormalize rows into a string of csv values
+      issue: no way to escape separator
+      ...
+    match_recognize Clause
+      http://modern-sql.com/feature/match_recognize
+    values Clause   
+      http://modern-sql.com/feature/values
+      can be used where SELECT is allowed
+    SELECT without FROM
+      instead of non-conforming select without from:
+        SELECT CURRENT_DATE
+      use VALUES without INSERT
+        VALUES (CURRENT_DATE)
+      better because: can return multiple rows 
+        SELECT without FROM can return 1 row
+      opt: conforming
+        SELECT *
+          FROM (VALUES (1,2)
+                     , (3,4)
+               ) t1 (c1, c2)
+    Processing graphs
+      http://aprogrammerwrites.eu/?p=1391#.Wfgzdj_EeRs
+      shortest route from person A to B in LinkedIn/Facebook
+      for certain classes of graphs: relational db can offer better performance than graph databases
+    Use the Index Luke
+      http://use-the-index-luke.com/sql/table-of-contents
+      Preface — Why is indexing a development task?
+        some say: sql is inherently slow
+          why is performance problems commonplace
+        sql: most successful 4GL programming language
+          separates: what and how
+            SELECT date_of_birth
+              FROM employees
+             WHERE last_name = 'WINAND'
+          side effect: we need to know "how" to solve performance problems
+        only thing you need to learn: how to index
+          database indexing: a development task
+          because it depends on how application queries the data
+        most important index type: B-tree index
+          works identically in most db
+        Chapter 1: fundamental structure of an index
+          essential don't skip it
+      Anatomy of an Index — What does an index look like?
+        intro
+          index: a distinct structure in db
+            built using: "create index" statement
+            has own disk space
+            holds a copy of indexed table data
+            thus it is pure redundancy
+              does not change table data
+              create new data structure that refers to table
+          it is like: phonebook directory
+            difference: insert, delete, update keeps index order without moving data
+        The Leaf Nodes — A doubly linked list
+          main purpose of index: ordered representation of indeexd data
+            not possible to store data sequentially
+              because insert would need to move following entries
+            solution: build a logical order independent of physical order
+          logical order
+            built via doubly linked list
+            each node
+              has links to two neighboring entries
+                like a chain
+            new nodes: inserted between two existing nodes
+              by updating their links
+            doubly linked: node refers to preceding and following node
+            doubly linked lists:
+              java.util.LinkedList
+              databases use them for index leaf nodes
+          leaf node:
+            stored in a database block/page
+              smallest storage unit
+              a few kb
+          structure:
+            doubly linked list of leaf nodes
+              index entries inside each leaf node
+          /Users/mertnuhoglu/Dropbox/public/img/ss-250.png
+        The B-Tree — It's a balanced tree
+          leaf nodes are in arbitrary order
+            position in disk is independent of logical position of index order
+            it is like shuffled pages
+          how to find entry among shuffled pages?
+            a balanced search tree: B-tree
+          /Users/mertnuhoglu/Dropbox/public/img/ss-251.png
+            root node
+              branch nodes
+                leaf nodes
+            branch nodes: 
+              each branch node entry: corresponds to biggest value in respective leaf node
+            each layer built similarly
+              repeats until all keys fit into a single node: root node
+            structure is balanced search tree
+              because tree depth is equal at every position
+              unlike a binary tree
+          /Users/mertnuhoglu/Dropbox/public/img/ss-252.png
+            search for the key: 57
+          tree traversal
+            very efficient
+            first power of indexing
+              because: tree balance and logarithmic growth of tree depth
+                ie. tree depth grows very slowly
+        Slow Indexes, Part I — Two ingredients make the index slow
+          still there are cases where an index lookup is slow
+            myth of "degenerated index"
+              solution: rebuilding index
+              this has no effect in fact
+          first factor for slowness: leaf node chain
+            ex: search for 57 in previous example
+              two entries are same
+              db must read next leaf node to see if there are any more matching entries
+          second factor: accessing the table
+            there is additional table access for each hit
+          index lookup consists of 3 steps:
+            1. tree traversal
+            2. following leaf node chain
+            3. fetching table data
+            only tree traversal has upper bound
+      The Where Clause — Indexing to improve search performance
+        intro
+          poorly written where clause => slowness
+        The Equals Operator — Exact key lookup
+          Primary Keys — Verifying index usage
+            simplest where clause: primary key lookup
+            ex:
+              CREATE TABLE employees (
+                 employee_id   NUMBER         NOT NULL,
+                 first_name    VARCHAR2(1000) NOT NULL,
+                 last_name     VARCHAR2(1000) NOT NULL,
+                 date_of_birth DATE           NOT NULL,
+                 phone_number  VARCHAR2(1000) NOT NULL,
+                 CONSTRAINT employees_pk PRIMARY KEY (employee_id)
+              )
+            db automatically creates an index for pk
+            ex:
+              SELECT first_name, last_name
+                FROM employees
+               WHERE employee_id = 123
+            execution plan:
+              Index Scan using employees_pk on employees 
+                 (cost=0.00..8.27 rows=1 width=14)
+                 Index Cond: (employee_id = 123::numeric)
+          Concatenated Keys — Multi-column indexes
+            if the key consists of multiple columns
+            /Users/mertnuhoglu/Dropbox/public/img/ss-253.png
+            thus ordering of columns for index is important
+            ex:
+              CREATE UNIQUE INDEX EMPLOYEES_PK 
+                  ON EMPLOYEES (SUBSIDIARY_ID, EMPLOYEE_ID)
+              this index is used for it as well:
+                where SUBSIDIARY_ID = 20
+          Slow Indexes, Part II — The first ingredient, revisited
+      Execution Plans
+        PostgreSQL
+          Getting an Execution Plan
+            put "explain" command in front of a sql statement
+              for bind parameters:
+                put "prepare" first
+                ex:
+                  PREPARE stmt(int) AS SELECT $1
+                    "$n" used for bind parameters
+                  EXPLAIN EXECUTE stmt(1)
+            for other statements:
+              EXPLAIN SELECT 1
+            out
+              Result  (cost=0.00..0.01 rows=1 width=0)
+                operation name: Result
+                related cost
+                  two cost values:
+                    first: cost for startup
+                    second: execution cost if all rows are retrieved
+                row count estimate
+                expected row width
+            opt2: ANALYZE
+              it executes actually
+                so data is modified for INSERT, UPDATE, DELETE
+              to prevent it:
+                enclose in transaction
+                perform a rollback afterwards
+              ex:
+                BEGIN 
+                EXPLAIN ANALYZE EXECUTE stmt(1)
+                ROLLBACK
+              out
+                Result  (cost=0.00..0.01 rows=1 width=0)
+                       (actual time=0.002..0.002 rows=1 loops=1)
+                Total runtime: 0.020 ms
+              prints estimated+actual cost
+            prepared statements must be closed:
+              DEALLOCATE stmt
+          Operations
+            Index and Table Access
+              Seq Scan
+                scans entire relation (table) as stored on disk
+              Index Scan
+                performs a b-tree traversal
+                fetches corresponding table data
+            Join Operations
+              "table" ≅ "intermediate result"
+              nested loops
+                query other table for each row from the first
+              hash join / hash
+                "Hash" in plan
+                loads candidate records into a hash table
+                probes for each record of the other side
+              merge join
+                both sides must be presorted
+            Sorting and Grouping
+              sort / sort key
+                needs large memory to materialize intermediate result
+              GroupAggregate
+              HashAggregate
+            Top-N Queries
+              Limit
+              WindowAgg
+          Distinguishing Access and Filter-Predicates
+            3 different methos to apply where clauses (predicates)
+            Access predicate ("Index Cond")
+              express start and stop conditions of leaf node traversal
+            Index Filter Predicate ("Index Cond")
+              applied during leaf node traversal only
+            Table level filter predicate ("Filter")
+              for unindexed columns
+      Bind Parameters
+        Parameterized Queries
+      Tips
+        Visualizing index
+          code
+            SELECT <INDEX COLUMN LIST> 
+              FROM <TABLE>  
+             ORDER BY <INDEX COLUMN LIST>
+             FETCH FIRST 100 ROWS ONLY
+          get a sample from the index
+    sof questions
+      Select first row in each GROUP BY group?
+        https://stackoverflow.com/questions/3800551/select-first-row-in-each-group-by-group/7630564#7630564
+        q
+          SELECT * FROM purchases;
+          id | customer | total
+          ---+----------+------
+           1 | Joe      | 5
+           2 | Sally    | 3
+          query: something like this
+            SELECT FIRST(id), customer, FIRST(total)
+            FROM  purchases
+            GROUP BY customer
+            ORDER BY total DESC;
+            FIRST(id) | customer | FIRST(total)
+            ----------+----------+-------------
+                    1 | Joe      | 5
+        ans1:
+          opt1
+            SELECT DISTINCT ON (customer)
+                   id, customer, total
+            FROM   purchases
+            ORDER  BY customer, total DESC, id;
+          opt2
+            SELECT DISTINCT ON (2)
+                   id, customer, total
+            FROM   purchases
+            ORDER  BY 2, 3 DESC, 1;
+          opt3: if total can be NULL
+            ...
+            ORDER  BY customer, total DESC NULLS LAST, id;
+          major points
+            DISTINCT ON 
+            CREATE INDEX purchases_3c_idx ON purchases (customer, total DESC, id);
+      PostgreSQL error: Fatal: role “username” does not exist
+        https://stackoverflow.com/questions/11919391/postgresql-error-fatal-role-username-does-not-exist/11919677#11919677
+        q
+          Fatal: role h9uest does not exist
+        ans
+          use system user 'postgres' to create your db
+          sudo -u postgres -i
+      escaping single quotes
+        https://stackoverflow.com/questions/12316953/insert-text-with-single-quotes-in-postgresql/12320729#12320729
+        ans
+          opt1:
+            double ': ''
+            'user''s log'
+          opt2: dollar-quoted strings
+            $$escape ' with '' $$
+      How do I (or can I) SELECT DISTINCT on multiple columns?
+        https://stackoverflow.com/questions/54418/how-do-i-or-can-i-select-distinct-on-multiple-columns/12632129#12632129
+        ans
+          opt1:
+            UPDATE sales
+            SET    status = 'ACTIVE'
+            WHERE  (saleprice, saledate) IN (
+                SELECT saleprice, saledate
+                FROM   sales
+                GROUP  BY saleprice, saledate
+                HAVING count(*) = 1 
+                );
+          opt2: much faster: NOT EXISTS
+            UPDATE sales s
+            SET    status = 'ACTIVE'
+            WHERE  NOT EXISTS (
+               SELECT 1
+               FROM   sales s1
+               WHERE  s.saleprice = s1.saleprice
+               AND    s.saledate  = s1.saledate
+               AND    s.id <> s1.id                     -- except for row itself
+               );
+            AND    s.status IS DISTINCT FROM 'ACTIVE';  -- avoid empty updates. see below
+      PostgreSQL Crosstab Query
+        https://stackoverflow.com/questions/3002499/postgresql-crosstab-query/11751905#11751905
+        q
+          how to create crosstab queries
+          ex:
+            Section    Status    Count
+            A          Active    1
+            A          Inactive  2
+            B          Active    4
+            B          Inactive  5
+            -->
+            Section    Active    Inactive
+            A          1         2
+            B          4         5
+        ans
+          install 'tablefunc'
+            it provides crosstab()
+          test case
+            CREATE TEMP TABLE t (
+              section   text
+            , status    text
+            , ct        integer  -- don't use "count" as column name.
+            );
+            INSERT INTO t VALUES 
+              ('A', 'Active', 1), ('A', 'Inactive', 2)
+            , ('B', 'Active', 4), ('B', 'Inactive', 5)
+                                , ('C', 'Inactive', 7);  -- 'C' with 'Active' is missing
+          sql
+            SELECT *
+            FROM   crosstab(
+               'SELECT section, status, ct
+                FROM   t
+                ORDER  BY 1,2'  -- needs to be "ORDER BY 1,2" here
+               ) AS ct ("Section" text, "Active" int, "Inactive" int);
+            -->
+            Section | Active | Inactive
+            ---------+--------+----------
+            A       |      1 |        2
+            B       |      4 |        5
+            C       |      7 |           -- !!
+      Select rows which are not present in other table
+        https://stackoverflow.com/questions/19363481/select-rows-which-are-not-present-in-other-table/19364694#19364694
+        q
+          two postgresql tables:
+            table name     column names
+            -----------    ------------------------
+            login_log      ip | etc.
+            ip_location    ip | location | hostname | etc.
+          query like
+            SELECT login_log.ip 
+            FROM login_log 
+            WHERE NOT EXIST (SELECT ip_location.ip
+                             FROM ip_location
+                             WHERE login_log.ip = ip_location.ip)
+        ans
+          opt1: NOT EXISTS (fastest) = anti-join
+            SELECT ip 
+            FROM   login_log l 
+            WHERE  NOT EXISTS (
+               SELECT 1              -- it's mostly irrelevant what you put here
+               FROM   ip_location i
+               WHERE  l.ip = i.ip
+               );
+          opt2: LEFT JOIN - shortest
+            SELECT l.ip 
+            FROM   login_log l 
+            LEFT   JOIN ip_location i USING (ip)  -- short for: ON i.ip = l.ip
+            WHERE  i.ip IS NULL;
+          opt3: EXCEPT: not for complex queries
+            SELECT ip 
+            FROM   login_log
+            EXCEPT ALL               -- ALL, to keep duplicate rows and make it faster
+            SELECT ip
+            FROM   ip_location;
+          opt4: NOT IN: only if no NULL values exist
+            SELECT ip 
+            FROM   login_log
+            WHERE  ip NOT IN (
+               SELECT DISTINCT ip  -- DISTINCT is optional
+               FROM   ip_location
+               );
+      What is easier to read in EXISTS subqueries? [closed]
+        https://stackoverflow.com/questions/7710153/what-is-easier-to-read-in-exists-subqueries
+        SELECT foo FROM bar WHERE EXISTS (SELECT * FROM baz WHERE baz.id = bar.id);
+          better because
+            *: not relevant
+            semi-join
+        SELECT foo FROM bar WHERE EXISTS (SELECT 1 FROM baz WHERE baz.id = bar.id);
+      What is semi-join
+        http://www.answers.com/Q/What_is_semi_join_in_SQL
+        ex
+          select * 
+          from Customers C 
+          where exists ( 
+          select * 
+          from Sales S 
+          where S.Cust_Id = C.Cust_Id 
+          ) 
+      Find records where join doesn't exist
+        https://stackoverflow.com/questions/14251180/find-records-where-join-doesnt-exist/14260510#14260510
+        NULL trap of NOT IN
+        ans
+          WHERE NOT EXISTS (
+             SELECT 1
+             FROM   votes v
+             WHERE  v.some_id = base_table.some_id
+             AND    v.user_id = ?
+             )
+          NOT EXISTS () vs NOT IN ()
+            result of NULL in NOT IN is null
+            
+      How to check if a table exists in a given schema
+        https://stackoverflow.com/questions/20582500/how-to-check-if-a-table-exists-in-a-given-schema/24089729#24089729
+        How to check whether a table (or view) exists, and the current user has access to it?
+          opt1: information_schema
+            SELECT EXISTS (
+               SELECT 1
+               FROM   information_schema.tables 
+               WHERE  table_schema = 'schema_name'
+               AND    table_name = 'table_name'
+               );
+          opt2: pg_tables
+            SELECT EXISTS (
+               SELECT 1 
+               FROM   pg_tables
+               WHERE  schemaname = 'schema_name'
+               AND    tablename = 'table_name'
+               );
+      How to implement a many-to-many relationship in PostgreSQL?
+        https://stackoverflow.com/questions/9789736/how-to-implement-a-many-to-many-relationship-in-postgresql/9790225#9790225
+        ans
+          The DDL statements could look like this:
+            CREATE TABLE product (
+              product_id serial PRIMARY KEY  -- implicit primary key constraint
+            , product    text NOT NULL
+            , price      numeric NOT NULL DEFAULT 0
+            );
+            CREATE TABLE bill (
+              bill_id  serial PRIMARY KEY
+            , bill     text NOT NULL
+            , billdate date NOT NULL DEFAULT CURRENT_DATE
+            );
+            CREATE TABLE bill_product (
+              bill_id    int REFERENCES bill (bill_id) ON UPDATE CASCADE ON DELETE CASCADE
+            , product_id int REFERENCES product (product_id) ON UPDATE CASCADE
+            , amount     numeric NOT NULL DEFAULT 1
+            , CONSTRAINT bill_product_pkey PRIMARY KEY (bill_id, product_id)  -- explicit pk
+            );
+          major points
+            use: IDENTITY instead of serial
+            Another widespread anti-pattern would be just id as column name.
+              I am not sure what the name of a bill would be. Maybe bill_id can be the name in this case.
+            ON UPDATE CASCADE ON DELETE CASCADE
+              you cannot delete product rows. but if you wish, you can mark them as "obsolete"
+            sequence of key columns is relevant in multicolumn keys
+              (bill_id, product_id) assumes queries look for bill_id always 
+      PostgreSQL 10 identity columns explained
+        https://blog.2ndquadrant.com/postgresql-10-identity-columns/
+        PK columns should be IDENTITY to conform SQL standard
+        before:
+          CREATE TABLE test_old (
+              id serial PRIMARY KEY,
+              payload text
+          );
+          INSERT INTO test_old (payload) VALUES ('a'), ('b'), ('c') RETURNING *;
+        now: 
+          CREATE TABLE test_new (
+              id int GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+              payload text
+          );
+          INSERT INTO test_new (payload) VALUES ('a'), ('b'), ('c') RETURNING *;
+        managing sequences:
+          before
+            ALTER SEQUENCE test_old_id_seq RESTART WITH 1000;
+          now: With an identity column, you don’t need to know the name of the sequence:
+            ALTER TABLE test_new ALTER COLUMN id RESTART WITH 1000;
+      How do I query using fields inside the new PostgreSQL JSON datatype?
+        https://stackoverflow.com/questions/10560394/how-do-i-query-using-fields-inside-the-new-postgresql-json-datatype/10560761#10560761
+        ans
+          ex
+            SELECT *
+            FROM   json_array_elements(
+              '[{"name": "Toby", "occupation": "Software Engineer"},
+                {"name": "Zaphod", "occupation": "Galactic President"} ]'
+              ) AS elem
+            WHERE elem->>'name' = 'Toby';
+          major points:
+            always use jsonb instead of json
+      Check if value exists in Postgres array
+        https://stackoverflow.com/questions/11231544/check-if-value-exists-in-postgres-array/11231965#11231965
+        q
+          Edit: Just realized I could do this
+            select '{1,2,3}'::int[] @> ARRAY[value_variable::int]
+          This is much better and I believe will suffice, but if you have other ways to do it please share.
+        ans
+          ex
+            SELECT value_variable = ANY ('{1,2,3}'::int[])
+          ANY rhs: can be a set or an array
+          points:
+            does not work with NULL elements
+      Index for finding an element in a JSON array
+        https://stackoverflow.com/questions/18404055/index-for-finding-an-element-in-a-json-array/18405706#18405706
+        q
+          CREATE TABLE tracks (id SERIAL, artists JSON);
+          INSERT INTO tracks (id, artists) 
+            VALUES (1, '[{"name": "blink-182"}]');
+          INSERT INTO tracks (id, artists) 
+            VALUES (2, '[{"name": "The Dirty Heads"}, {"name": "Louis Richards"}]');
+          SELECT * FROM tracks
+            WHERE 'The Dirty Heads' IN 
+              (SELECT value->>'name' FROM json_array_elements(artists))
+          this does a full table scan
+        ans
+          GIN index:
+            CREATE TABLE tracks (id serial, artists jsonb);
+            CREATE INDEX tracks_artists_gin_idx ON tracks USING gin (artists);
+          No need for a function to convert the array. This would support a query:
+            SELECT * FROM tracks WHERE artists @> '[{"name": "The Dirty Heads"}]';
+          @> being the new jsonb "contains" operator, which can use the GIN index.
+      Check if NULL exists in Postgres array
+        https://stackoverflow.com/questions/34848009/check-if-null-exists-in-postgres-array/34848472#34848472
+        opt 
+          array_replace(ar, NULL, 0) <> ar
+          array_remove(ar, NULL) <> ar
+          array_position(ar, NULL) IS NOT NULL
+        test case
+          SELECT num, ar, expect
+              , array_replace(ar, NULL, 0) <> ar                       AS t_93a --  99 ms
+              , array_remove(ar, NULL) <> ar                           AS t_93b --  96 ms
+              , cardinality(array_remove(ar, NULL)) <> cardinality(ar) AS t_94  --  81 ms
+              , COALESCE(array_position(ar, NULL::int), 0) > 0         AS t_95a --  49 ms
+              , array_position(ar, NULL) IS NOT NULL                   AS t_95b --  45 ms
+              , CASE WHEN ar IS NOT NULL
+                     THEN array_position(ar, NULL) IS NOT NULL END     AS t_95c --  48 ms
+         FROM  (
+            VALUES (1, '{1,2,NULL}'::int[], true)     -- extended test case
+                 , (2, '{-1,NULL,2}'      , true)
+                 , (3, '{NULL}'           , true)
+                 , (4, '{1,2,3}'          , false)
+                 , (5, '{-1,2,3}'         , false)
+                 , (6, NULL               , null)
+            ) t(num, ar, expect);
+        Function wrapper
+          For repeated use:
+            CREATE OR REPLACE FUNCTION f_array_has_null (anyarray)
+              RETURNS bool LANGUAGE sql IMMUTABLE AS
+             'SELECT array_position($1, NULL) IS NOT NULL';
+          points
+            Using a polymorphic input type this works for any array type, not just int[].
+            Make it IMMUTABLE to allow performance optimization and index expressions
+      Polymorphic Types
+        https://www.postgresql.org/docs/current/static/extend-type-system.html#extend-types-polymorphic
+        Five pseudo-types of special interest are anyelement, anyarray, anynonarray, anyenum, and anyrange, which are collectively called polymorphic types. 
+        Any function declared using these types is said to be a polymorphic function
+      Best way to select random rows PostgreSQL
+        https://stackoverflow.com/questions/8674718/best-way-to-select-random-rows-postgresql/8675160#8675160
+        q
+          I want a random selection of rows in PostgreSQL, I tried this:
+            select * from table where random() < 0.01;
+          But some other recommend this:
+            select * from table order by random() limit 1000;
+        ans
+          SELECT *
+          FROM  (
+              SELECT DISTINCT 1 + trunc(random() * 5100000)::integer AS id
+              FROM   generate_series(1, 1100) g
+              ) r
+          JOIN   big USING (id)
+          LIMIT  1000;
+      Fast way to discover the row count of a table in PostgreSQL
+        https://stackoverflow.com/questions/7943233/fast-way-to-discover-the-row-count-of-a-table-in-postgresql/7945274#7945274
+        ans
+          counting can be slow
+            precise number: needs full count of rows
+              due to MVCC: concurrency control
+          ex: exact count (slow)
+            SELECT count(*) AS exact_count FROM myschema.mytable;
+          ex: estimate (fast)
+            SELECT reltuples::bigint AS estimate FROM pg_class where relname='mytable';
+          ex: better (specify schema)
+            SELECT c.reltuples::bigint AS estimate
+            FROM   pg_class c
+            JOIN   pg_namespace n ON n.oid = c.relnamespace
+            WHERE  c.relname = 'mytable'
+            AND    n.nspname = 'myschema'
+          ex: better, more elegant
+            SELECT reltuples::bigint AS estimate
+            FROM   pg_class
+            WHERE  oid = 'myschema.mytable'::regclass;
+          better:
+            to_regclass('myschema.mytable') 
+          ex:
+            Postgres actually stops counting beyond the given limit, you get an exact and current count for up to n rows (500000 in the example), and n otherwise
+            SELECT count(*) FROM (SELECT 1 FROM token LIMIT 500000) t;
+      Double colon (::) notation in SQL
+        https://stackoverflow.com/questions/5758499/double-colon-notation-in-sql
+        b.date_completed >  a.dc::date + INTERVAL '1 DAY 7:20:00'
+        the :: converts a.dc to a date type of date.
+        cast to a data type
+      How to concatenate columns in a Postgres SELECT?
+        https://stackoverflow.com/questions/19942824/how-to-concatenate-columns-in-a-postgres-select/19943343#19943343
+        q
+          I have two string columns a and b.
+          So select a,b from foo returns values a and b. However, concatenation of a and b does not work. I tried :
+            select a || b from foo
+          and
+            select  a||', '||b from foo
+        ans
+          SELECT a::text || ', ' || b::text AS ab FROM foo;
+          if NULL exists:
+            SELECT concat_ws(', ', a::text, b::text) AS ab FROM foo;
+            Or just concat() if you don't need separators:
+            SELECT concat(a::text, b::text) AS ab FROM foo;
+      Combine two columns and add into one new column
+        https://stackoverflow.com/questions/12310986/combine-two-columns-and-add-into-one-new-column/12320369#12320369
+        q
+          I want to use an SQL statement to combine two columns and create a new column from them.
+          I'm thinking about using concat(...), but is there a better way?
+        ans1
+          ddl
+            CREATE TABLE tbl
+              (zipcode text NOT NULL, city text NOT NULL, state text NOT NULL);
+            INSERT INTO tbl VALUES ('10954', 'Nanuet', 'NY');
+          before
+            \pset border 2
+            SELECT * FROM tbl;
+            +---------+--------+-------+
+            | zipcode |  city  | state |
+            +---------+--------+-------+
+            | 10954   | Nanuet | NY    |
+            +---------+--------+-------+
+          Now add a function with the desired "column name" which takes the record type of the table as its only parameter:
+            CREATE FUNCTION combined(rec tbl)
+              RETURNS text
+              LANGUAGE SQL
+            AS $$
+              SELECT $1.zipcode || ' - ' || $1.city || ', ' || $1.state;
+            $$;
+          after
+            This creates a function which can be used as if it were a column of the table, as long as the table name or alias is specified, like this:
+            SELECT *, tbl.combined FROM tbl;
+            +---------+--------+-------+--------------------+
+            | zipcode |  city  | state |      combined      |
+            +---------+--------+-------+--------------------+
+            | 10954   | Nanuet | NY    | 10954 - Nanuet, NY |
+            +---------+--------+-------+--------------------+
+        ans2
+          if NULL exists:
+            use concat()
+          difficult to read:
+            SELECT COALESCE(col_a, '') || COALESCE(col_b, '');
+          elegant:
+            SELECT concat(col_a, col_b);
+      Any downsides of using data type “text” for storing strings?
+        https://stackoverflow.com/questions/20326892/any-downsides-of-using-data-type-text-for-storing-strings/20334221#20334221
+        q
+          3 data-types for character data:
+            character varying(n), varchar(n)  variable-length with limit
+            character(n), char(n)             fixed-length, blank padded
+            text                              variable unlimited length
+        ans
+          text is optimum
+          to enforce maximum length, use CHECK constraint
+            ALTER TABLE tbl ADD CONSTRAINT tbl_col_len CHECK (length(col) < 100);
+          CHECK can do more, pretty much anything
+      Change PostgreSQL columns used in views
+        https://stackoverflow.com/questions/8524873/change-postgresql-columns-used-in-views/8527792#8527792
+        q
+          Let's say I have the following:
+            CREATE TABLE monkey
+            (
+              "name" character varying(50) NOT NULL,
+            )
+            CREATE OR REPLACE VIEW monkey_names AS 
+             SELECT name
+               FROM monkey
+          I really just want to do the following in a migration script without having to drop and recreate the view.
+            ALTER TABLE monkey ALTER COLUMN "name" character varying(100) NOT NULL
+        ans
+          use: "text" without length specifier
+          CREATE TABLE monkey(name text NOT NULL)
+          If you really want to enforce a maximum length, create a CHECK constraint:
+            ALTER TABLE monkey 
+              ADD CONSTRAINT monkey_name_len CHECK (length(name) < 101);
+          points:
+            view is not just an alias to subquery
+              views are special tables with a rule:
+                ON SELECT TO my_view DO INSTEAD
+              you can GRANT, add comments, define column defaults
+      Best way to check for “empty or null value”
+        https://stackoverflow.com/questions/23766084/best-way-to-check-for-empty-or-null-value/23767625#23767625
+        q
+          i use:
+            coalesce( trim(stringexpression),'')=''
+        ans
+          stringexpression = '' yields:
+            TRUE   .. for '' (or for any string consisting of only spaces with the data type char(n))
+            NULL   .. for NULL
+            FALSE .. for anything else
+          So to check for: "stringexpression is either NULL or empty":
+            (stringexpression = '') IS NOT FALSE
+            Or the reverse approach (may be easier to read):
+              (stringexpression <> '') IS NOT TRUE
+          opt
+            coalesce(stringexpression, '') = ''
+          the opposite: stringexpression is neither NULL nor empty" is even simpler:
+            stringexpression <> ''
+          test
+            SELECT stringexpression 
+                  ,stringexpression = ''                    AS simple_test
+                  ,(stringexpression = '')  IS NOT FALSE    AS test1
+                  ,(stringexpression <> '') IS NOT TRUE     AS test2
+                  ,coalesce(stringexpression, '') = ''      AS test_coalesce1
+                  ,coalesce(stringexpression, '  ') = '  '  AS test_coalesce2
+                  ,coalesce(stringexpression, '') = '  '    AS test_coalesce3
+            FROM  (
+               VALUES
+                 ('foo'::char(5))
+               , ('')
+               , (NULL)
+               , ('   ')                -- not different from '' in char(n)
+               ) sub(stringexpression);
+      Does PostgreSQL support “accent insensitive” collations?
+        https://stackoverflow.com/questions/11005036/does-postgresql-support-accent-insensitive-collations/11007216#11007216
+        q
+          sql server: which means that it's possible for a query like
+            SELECT * FROM users WHERE name LIKE 'João'
+          to find a row with a Joao name.
+        ans
+          Use the unaccent module for that
+            CREATE EXTENSION unaccent;
+          ex
+            SELECT *
+            FROM   users
+            WHERE  unaccent(name) = unaccent('João');
+          index
+            Postgres only accepts IMMUTABLE functions for indexes. If a function can return a different result for the same input, the index could silently break.
+            unaccent() is only STABLE, not IMMUTABLE
+          Best for now
+            Create a wrapper function with the two-parameter form and "hard-wire" the schema for function and dictionary:
+            CREATE OR REPLACE FUNCTION f_unaccent(text)
+              RETURNS text AS
+            $func$
+            SELECT public.unaccent('public.unaccent', $1)  -- schema-qualify function and dictionary
+            $func$  LANGUAGE sql IMMUTABLE;
+      Are PostgreSQL column names case-sensitive?
+        https://stackoverflow.com/questions/20878932/are-postgresql-column-names-case-sensitive/20880247#20880247
+        ans
+          yes: All identifiers (including column names) that are not double-quoted are folded to lower case in PostgreSQL
+          SELECT * FROM persons WHERE "first_Name" = 'xyz';
+          Values (string literals) are enclosed in single quotes.
+      Query a parameter (postgresql.conf setting) like “max_connections”
+        https://stackoverflow.com/questions/8288823/query-a-parameter-postgresql-conf-setting-like-max-connections/8288860#8288860
+        ans
+          opt
+            SHOW max_connections;
+            SHOW ALL;
+            SELECT *
+              FROM   pg_settings
+              WHERE  name = 'max_connections';
+      How to filter SQL results in a has-many-through relation
+        https://stackoverflow.com/questions/7364969/how-to-filter-sql-results-in-a-has-many-through-relation/7774879#7774879
+        q
+          student {
+              id
+              name
+          }
+          club {
+              id
+              name
+          }
+          student_club {
+              student_id
+              club_id
+          }
+          goal
+            SELECT student.*
+            FROM   student
+            INNER  JOIN student_club sc ON student.id = sc.student_id
+            LEFT   JOIN club c ON c.id = sc.club_id
+            WHERE  c.id = 30 AND c.id = 50
+        ans
+          ddl
+            ALTER TABLE student ADD CONSTRAINT student_pkey PRIMARY KEY(stud_id );
+            ALTER TABLE student_club ADD CONSTRAINT sc_pkey PRIMARY KEY(stud_id, club_id);
+            ALTER TABLE club       ADD CONSTRAINT club_pkey PRIMARY KEY(club_id );
+            CREATE INDEX sc_club_id_idx ON student_club (club_id);
+          opt1: JOIN twice
+            SELECT s.stud_id, s.name
+            FROM   student s
+            JOIN   student_club x ON s.stud_id = x.stud_id
+            JOIN   student_club y ON s.stud_id = y.stud_id
+            WHERE  x.club_id = 30
+            AND    y.club_id = 50;
+          opt2: IN
+            SELECT s.stud_id,  s.name
+            FROM   student s
+            WHERE  s.stud_id IN (SELECT stud_id FROM student_club WHERE club_id = 30)
+            AND    s.stud_id IN (SELECT stud_id FROM student_club WHERE club_id = 50);
+          opt3: EXISTS
+            SELECT s.stud_id,  s.name
+            FROM   student s
+            WHERE  EXISTS (SELECT * FROM student_club
+                           WHERE  stud_id = s.stud_id AND club_id = 30)
+            AND    EXISTS (SELECT * FROM student_club
+                           WHERE  stud_id = s.stud_id AND club_id = 50);
+          opt4: EXISTS
+            SELECT s.*
+            FROM   student s
+            JOIN   student_club x USING (stud_id)
+            WHERE  sc.club_id = 10                 -- member in 1st club ...
+            AND    EXISTS (                        -- ... and membership in 2nd exists
+               SELECT *
+               FROM   student_club AS y
+               WHERE  y.stud_id = s.stud_id
+               AND    y.club_id = 14
+               )
+      Export specific rows from a PostgreSQL table as INSERT SQL script
+        https://stackoverflow.com/questions/12815496/export-specific-rows-from-a-postgresql-table-as-insert-sql-script/12824831#12824831
+        ans
+          COPY
+            For a data-only export use COPY.
+            You get a file with one table row per line as plain text (not INSERT commands), it's smaller and faster:
+            COPY (SELECT * FROM nyummy.cimory WHERE city = 'tokio') TO '/path/to/file.csv';
+          Import 
+            COPY other_tbl FROM '/path/to/file.csv';
+          COPY vs pg_dump/psql
+            COPY: runs on server
+            pg_dump, psql: runs on client
+          \copy
+            run by client
+            runs an SQL COPY command
+            psql reads/writes
+      https://stackoverflow.com/questions/22736742/query-for-array-elements-inside-json-type/22737710#22737710
+      PostgreSQL sort by datetime asc, null first?
+        https://stackoverflow.com/questions/9510509/postgresql-sort-by-datetime-asc-null-first/9511492#9511492
+        ans
+          NULLS FIRST | LAST keywords for the ORDER BY clause to cater for that need exactly:
+          ORDER BY last_updated NULLS FIRST
+      PostgreSQL unnest() with element number
+        https://stackoverflow.com/questions/8760419/postgresql-unnest-with-element-number/8767450#8767450
+        q
+          myTable
+            id | elements
+            ---+------------
+            1  |ab,cd,efg,hi
+            2  |jk,lm,no,pq
+            3  |rstuv,wxyz
+          select id, unnest(string_to_array(elements, ',')) AS elem
+          from myTable
+            id | elem
+            ---+-----
+            1  | ab
+            1  | cd
+            1  | efg
+            1  | hi
+            2  | jk
+            ...
+          How can I include element numbers? I.e.:
+            id | elem | nr
+            ---+------+---
+            1  | ab   | 1
+            1  | cd   | 2
+            1  | efg  | 3
+        ans
+          opt
+            SELECT t.id, a.elem, a.nr
+            FROM   tbl t, unnest(t.arr) WITH ORDINALITY a(elem, nr);
+          opt
+            SELECT t.id, a.elem, a.nr
+            FROM   tbl AS t
+            LEFT   JOIN LATERAL unnest(string_to_array(t.elements, ','))
+                                WITH ORDINALITY AS a(elem, nr) ON TRUE;
+      Concatenate multiple result rows of one column into one, group by another column [duplicate]
+        https://stackoverflow.com/questions/15847173/concatenate-multiple-result-rows-of-one-column-into-one-group-by-another-column/15850510#15850510
+        q
+          Movie   Actor   
+            A       1
+            A       2
+            A       3
+            B       4
+          -->
+          Movie   ActorList
+           A       1, 2, 3
+        ans
+          SELECT movie, string_agg(actor, ', ') AS actor_list
+          FROM   tbl
+          GROUP  BY 1;
+          The 1 in GROUP BY 1 is a positional reference and a shortcut for GROUP BY movie in this case.
+      How to update selected rows with values from a CSV file in Postgres?
+        https://stackoverflow.com/questions/8910494/how-to-update-selected-rows-with-values-from-a-csv-file-in-postgres/8910810#8910810
+        ans
+          I would COPY the file to a temporary table and update the actual table from there. Could look like this:
+            CREATE TEMP TABLE tmp_x (id int, apple text, banana text); -- but see below
+            COPY tmp_x FROM '/absolute/path/to/file' (FORMAT csv);
+            UPDATE tbl
+            SET    banana = tmp_x.banana
+            FROM   tmp_x
+            WHERE  tbl.id = tmp_x.id;
+            DROP TABLE tmp_x; -- else it is dropped at end of session automatically
+          If the imported table matches the table to be updated exactly, this may be convenient:
+            CREATE TEMP TABLE tmp_x AS SELECT * FROM tbl LIMIT 0;
+      PL/pgSQL checking if a row exists
+        https://stackoverflow.com/questions/11892233/pl-pgsql-checking-if-a-row-exists/11892796#11892796
+          ans
+            IF EXISTS (SELECT 1 FROM people WHERE person_id = my_person_id) THEN
+              -- do something
+            END IF;
+      Create PostgreSQL ROLE (user) if it doesn't exist
+        https://stackoverflow.com/questions/8092086/create-postgresql-role-user-if-it-doesnt-exist/8099557#8099557
+        ans
+          DO
+          $body$
+          BEGIN
+             IF NOT EXISTS (
+                SELECT                       -- SELECT list can stay empty for this
+                FROM   pg_catalog.pg_user
+                WHERE  usename = 'my_user') THEN
+
+                CREATE ROLE my_user LOGIN PASSWORD 'my_password';
+             END IF;
+          END
+          $body$;
+          Unlike, for instance, with CREATE TABLE there is no IF NOT EXISTS clause for CREATE ROLE (yet). And you cannot execute dynamic DDL statements in plain SQL.
+      Which data type for latitude and longitude
+        ans
+          point in geography
+      How to select id with max date group by category in PostgreSQL
+        https://stackoverflow.com/questions/16914098/how-to-select-id-with-max-date-group-by-category-in-postgresql/16920077#16920077
+        ans
+          SELECT DISTINCT ON (category)
+                 id
+          FROM   tbl
+          ORDER  BY category, "date" DESC;
+          points
+            If the column can be NULL, you may want to add NULLS LAST
+      Postgres FOR LOOP
+        https://stackoverflow.com/questions/19145761/postgres-for-loop/19147320#19147320
+        ans
+          DO
+          $do$
+          BEGIN 
+          FOR i IN 1..25 LOOP
+             INSERT INTO playtime.meta_random_sample (col_i, col_id) -- use col names
+             SELECT i, id
+             FROM   tbl
+             ORDER  BY random()
+             LIMIT  15000;
+          END LOOP;
+          END
+          $do$;
+      What is the difference between LATERAL and a subquery in PostgreSQL
+        https://stackoverflow.com/questions/28550679/what-is-the-difference-between-lateral-and-a-subquery-in-postgresql/28557803#28557803
+        ans
+          A LATERAL join (Postgres 9.3+) is more like a correlated subquery, not a plain subquery. Like @Andomar pointed out, a function or subquery to the right of a LATERAL join typically has to be evaluated many times - once for each row left of the LATERAL join
+          examples:
+            Optimize GROUP BY query to retrieve latest record per user <url:#r=adb_007>
+          Things a subquery can't do
+            correlated subquery can
+              return one value (no multiple columns and rows)
+            So this works, but cannot easily be replaced with a subquery:
+              CREATE TABLE tbl (a1 int[], a2 int[]);
+              SELECT *
+              FROM   tbl t
+                   , unnest(t.a1, t.a2) u(elem1, elem2);  -- implicit LATERAL
+            The comma (,) in the FROM clause is short notation for CROSS JOIN.
+              LATERAL is assumed automatically for table functions like unnest().)
+              ref
+                How do you declare a set-returning-function to only be allowed in the FROM clause? <url:#r=adb_008>
+          Set-returning functions in the SELECT list
+            SELECT *, unnest(t.a1) AS elem1, unnest(t.a2) AS elem2
+            FROM   tbl t;
+              http://dbfiddle.uk/?rdbms=postgres_10&fiddle=b78160f4899d95444e2a605a9609cf8f
+      How do you declare a set-returning-function to only be allowed in the FROM clause? id=adb_008
+        How do you declare a set-returning-function to only be allowed in the FROM clause? <url:#r=adb_008>
+        https://dba.stackexchange.com/questions/160309/how-do-you-declare-a-set-returning-function-to-only-be-allowed-in-the-from-claus/160310#160310
+        q
+          "unnest" is only allowed in FROM clause
+          unnest is set-returning function
+          How does one declare their set returning function to be FROM-clause only, or is this only permissible with unnest?
+        ans
+          this is only for unnest()
+          unnest() with multiple parameters is a special Postgres feature, that's internally rewritten into multiple unnest() calls
+          The special table function UNNEST may be called with any number of array parameters, and it returns a corresponding number of columns, as if UNNEST (Section 9.18) had been called on each parameter separately and combined using the ROWS FROM construct.
+          If you try unnest() with multiple parameters in the SELECT list, you get:
+            ERROR: function unnest(text[], text[]) does not exist
+          In fact, there is no unnest() function with multiple parameters registered in the system:
+            SELECT proname, proargtypes, proargtypes[0]::regtype
+            FROM   pg_proc
+            WHERE  proname = 'unnest';
+             proname | proargtypes | proargtypes
+            ---------+-------------+-------------
+             unnest  | 2277        | anyarray
+             unnest  | 3614        | tsvector
+      Postgres - array for loop
+        https://stackoverflow.com/questions/9783422/postgres-array-for-loop/9784986#9784986
+        ans
+          Since PostgreSQL 9.1 there is the convenient FOREACH:
+            DO
+            $do$
+            DECLARE
+               m   varchar[];
+               arr varchar[] := array[['key1','val1'],['key2','val2']];
+            BEGIN
+               FOREACH m SLICE 1 IN ARRAY arr
+               LOOP
+                  RAISE NOTICE 'another_func(%,%)',m[1], m[2];
+               END LOOP;
+            END
+            $do$
+          Solution for older versions:
+            DO
+            $do$
+            DECLARE
+               arr varchar[] := '{{key1,val1},{key2,val2}}';
+            BEGIN
+               FOR i IN array_lower(arr, 1) .. array_upper(arr, 1)
+               LOOP
+                  RAISE NOTICE 'another_func(%,%)',arr[i][1], arr[i][2];
+               END LOOP;
+            END
+            $do$
+      Table name as a PostgreSQL function parameter
+        https://stackoverflow.com/questions/10705616/table-name-as-a-postgresql-function-parameter/10711349#10711349
+        ans
+          function
+            CREATE OR REPLACE FUNCTION some_f(_tbl regclass, OUT result boolean) AS
+            $func$
+            BEGIN
+            EXECUTE format('SELECT EXISTS (SELECT 1 FROM %s WHERE id = 1)', _tbl)
+            INTO result;
+            END
+            $func$ LANGUAGE plpgsql;
+          call
+            SELECT some_f('myschema.mytable');  -- would fail with quote_ident()
+          points
+            Use an OUT parameter to simplify the function. You can directly select the result of the dynamic SQL into it and be done.
+            I use the object identifier type regclass as input type for _tbl. That does everything quote_ident(_tbl) or format('%I', _tbl) would do, but better, because:
+              it prevents SQL injection just as well.
+              it fails immediately and more gracefully if the table name is invalid / does not exist / is invisible to the current user.
+              it works with schema-qualified table names, where a plain quote_ident(_tbl) or format(%I) would fail because they cannot resolve the ambiguity.
+      SQL Injection with user input
+        http://sqlfiddle.com/#!15/39ef7/3
+        schema
+          CREATE TABLE foo (id serial, data text);
+          INSERT INTO foo (data) VALUES ('Important data');
+          CREATE FUNCTION unsafe_add_table(text)
+            RETURNS void AS
+          $func$
+          BEGIN
+             EXECUTE 'CREATE TABLE ' || $1 || '(item_1 int, item_2 int)';
+          END
+          $func$  LANGUAGE plpgsql;
+        code
+          TABLE foo;
+          -- malicious call with SQL injection
+          SELECT unsafe_add_table('bar(id int); DELETE FROM foo; CREATE TABLE baz');
+          TABLE foo;
+      SQL injection in Postgres functions vs prepared queries
+        https://dba.stackexchange.com/questions/49699/sql-injection-in-postgres-functions-vs-prepared-queries
+        ans
+          With SQL functions (LANGUAGE sql), the answer is generally yes. Passed parameters are treated as values and SQL-injection is not possible - as long as you don't call unsafe functions from within and pass parameters.
+          With PL/pgSQL functions (LANGUAGE plpgsql), the answer is normally yes.
+            However, PL/pgSQL allows for dynamic SQL where passed parameters (or parts) can be treated as identifiers or code, which makes SQL injection possible. You cannot tell from outside whether the function body deals with that properly. 
+          If parameters should be treated as values or plain text in dynamic SQL with EXECUTE, use
+            the USING clause. Example.
+              function
+                CREATE OR REPLACE FUNCTION get_stuff(_param text, _orderby text, _limit int)
+                  RETURNS SETOF stuff AS
+                $BODY$
+                BEGIN
+                RETURN QUERY EXECUTE '
+                    SELECT *
+                    FROM   stuff
+                    WHERE  col = $1
+                    ORDER  BY ' || quote_ident(_orderby) || '
+                    LIMIT  $2'
+                USING _param, _limit;
+                END;
+                $BODY$
+                  LANGUAGE plpgsql;
+              Call:
+                SELECT * FROM get_stuff('hello', 'col2', 100);
+            format() with %L. The format specifier %s is only good for safe text, not for user input.
+              ref
+                Postgresql manual: format() <url:#r=adb_009>
+            quote_literal() or quote_nullable()
+          If parameters should be treated as identifiers, properly sanitize them with one of these tools:
+            format() with %I
+            quote_ident(_tbl)
+            A cast to a registered type (regclass) _tbl::regclass. Example.
+      Postgresql manual: format() id=adb_009
+        Postgresql manual: format() <url:#r=adb_009>
+        https://www.postgresql.org/docs/current/static/functions-string.html#FUNCTIONS-STRING-OTHER
+        type (required)
+          s formats the argument value as a simple string. A null value is treated as an empty string.
+          I treats the argument value as an SQL identifier, double-quoting it if necessary. It is an error for the value to be null (equivalent to quote_ident).
+          L quotes the argument value as an SQL literal. A null value is displayed as the string NULL, without quotes (equivalent to quote_nullable).
+        %%: for literal %
+        ex
+          SELECT format('Hello %s', 'World');
+          Result: Hello World
+          SELECT format('Testing %s, %s, %s, %%', 'one', 'two', 'three');
+          Result: Testing one, two, three, %
+          SELECT format('INSERT INTO %I VALUES(%L)', 'Foo bar', E'O\'Reilly');
+          Result: INSERT INTO "Foo bar" VALUES('O''Reilly')
+          SELECT format('INSERT INTO %I VALUES(%L)', 'locations', E'C:\\Program Files');
+          Result: INSERT INTO locations VALUES(E'C:\\Program Files')
+      PostgreSQL: SQL Injection
+        http://bobby-tables.com/postgresql
+        ex1: plpgsql
+          CREATE OR REPLACE FUNCTION user_access (p_uname TEXT)
+            RETURNS timestamp LANGUAGE plpgsql AS
+          $func$
+          BEGIN
+              RETURN accessed_at FROM users WHERE username = p_uname;
+          END
+          $func$;
+        ex2: sql
+          CREATE OR REPLACE FUNCTION user_access (p_uname TEXT)
+            RETURNS timestamp LANGUAGE sql AS
+          $func$
+              SELECT accessed_at FROM users WHERE username = $1
+          $func$;
+        ex3: dynamic sql - vulnerable
+          CREATE OR REPLACE FUNCTION get_users(p_column TEXT, p_value TEXT)
+            RETURNS SETOF users LANGUAGE plpgsql AS
+          $func$
+          DECLARE
+              query TEXT := 'SELECT * FROM users';
+          BEGIN
+              IF p_column IS NOT NULL THEN
+                  query := query || ' WHERE ' || p_column
+                        || $_$ = '$_$ || p_value || $_$'$_$;
+              END IF;
+              RETURN QUERY EXECUTE query;
+          END
+          $func$;
+        ex4: better: USING
+          CREATE OR REPLACE FUNCTION get_users(p_column TEXT, p_value TEXT)
+            RETURNS SETOF users LANGUAGE plpgsql AS
+          $func$
+          DECLARE
+              query TEXT := 'SELECT * FROM users';
+          BEGIN
+              IF p_column IS NOT NULL THEN
+                  query := query || ' WHERE ' || quote_ident(p_column) || ' = $1';
+              END IF;
+              RETURN QUERY EXECUTE query
+              USING p_value;
+          END;
+          $func$;
+      Sort NULL values to the end of a table
+        https://stackoverflow.com/questions/7621205/sort-null-values-to-the-end-of-a-table/7622046#7622046
+        ans:
+          NULL are sorted last in default ascending order
+          in descending: NULL first
+            ORDER BY col DESC NULLS LAST
+      What are '$$' used for in PL/pgSQL
+        https://stackoverflow.com/questions/12144284/what-are-used-for-in-pl-pgsql/12172353#12172353
+        ans
+          dollar signs: used for dollar quoting
+          opt: use single quotes for function body
+            CREATE OR REPLACE FUNCTION check_phone_number(text)
+            RETURNS boolean AS
+            '
+            BEGIN
+              IF NOT $1 ~  e''^\\+\\d{3}\\ \\d{3} \\d{3} \\d{3}$'' THEN
+                RAISE EXCEPTION ''Malformed string "%". Expected format is +999 999'';
+              END IF;
+              RETURN true; 
+            END
+            ' LANGUAGE plpgsql STRICT IMMUTABLE;
+          ex: better use $$ or $token$
+            CREATE OR REPLACE FUNCTION check_phone_number(text)
+              RETURNS boolean  
+            AS
+            $func$
+            BEGIN
+             ...
+            END
+            $func$  LANGUAGE plpgsql STRICT IMMUTABLE;
+      PostgreSQL: Which Datatype should be used for Currency
+        ans
+          personally: store currency as "integer" representing Cents
+      Discard millisecond part from timestamp
+      Optimize GROUP BY query to retrieve latest record per user
+        https://stackoverflow.com/questions/25536422/optimize-group-by-query-to-retrieve-latest-record-per-user/25536748#25536748
+        ans
+      Order varchar string as numeric
+      Creating temporary tables in SQL
+        https://stackoverflow.com/questions/15691243/creating-temporary-tables-in-sql/15700736#15700736
+        ans
+          CREATE TEMP TABLE temp1 AS
+          SELECT dataid
+               , register_type
+               , timestamp_localtime
+               , read_value_avg
+          FROM   rawdata.egauge
+          WHERE  register_type LIKE '%gen%'
+          ORDER  BY dataid, timestamp_localtime
+          This creates a temporary table and copies data into it. A static snapshot of the data, mind you. It's just like a regular table, but resides in RAM if temp_buffers is set high enough, is only visible within the current session and dies at the end of it. When created with ON COMMIT DROP it dies at the end of the transaction.
+          Temp tables comes first in the default schema search path, hiding other visible tables of the same name unless schema-qualified:
+      Grant all on a specific schema in the db to a group role in PostgreSQL
+        https://stackoverflow.com/questions/10352695/grant-all-on-a-specific-schema-in-the-db-to-a-group-role-in-postgresql/10353730#10353730
+        ans
+          GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA foo TO staff;
+          not:
+            GRANT ALL ON SCHEMA foo TO staff;
+            GRANT ALL ON DATABASE mydb TO staff;
+          note that ALL TABLES is considered to include views and foreign tables).
+          for serial columns, also do:
+            GRANT USAGE ON ALL SEQUENCES IN SCHEMA foo TO mygrp;
+          what about new objects:
+            ALTER DEFAULT PRIVILEGES IN SCHEMA foo GRANT ALL PRIVILEGES ON TABLES TO staff;
+            ALTER DEFAULT PRIVILEGES IN SCHEMA foo GRANT USAGE          ON SEQUENCES TO staff;
+            ALTER DEFAULT PRIVILEGES IN SCHEMA foo REVOKE ...;
+      How to return result of a SELECT inside a function in PostgreSQL
+        https://stackoverflow.com/questions/7945932/how-to-return-result-of-a-select-inside-a-function-in-postgresql/7945958#7945958
+        ans
+          Use RETURN QUERY:
+          function
+            CREATE OR REPLACE FUNCTION word_frequency(_max_tokens int)
+              RETURNS TABLE (
+                txt   text   -- visible as OUT parameter inside and outside function
+              , cnt   bigint
+              , ratio bigint) AS
+            $func$
+            BEGIN
+               RETURN QUERY
+               SELECT t.txt
+                    , count(*) AS cnt  -- column alias only visible inside
+                    , (count(*) * 100) / _max_tokens  -- I added brackets
+               FROM  (
+                  SELECT t.txt
+                  FROM   token t
+                  WHERE  t.chartype = 'ALPHABETIC'
+                  LIMIT  _max_tokens
+                  ) t
+               GROUP  BY t.txt
+               ORDER  BY cnt DESC;  -- note the potential ambiguity 
+            END
+            $func$  LANGUAGE plpgsql;
+          Call:
+            SELECT * FROM word_frequency(123);
+          points
+            It is much more practical to explicitly define the return type than simply declaring it as record. This way you don't have to provide a column definition list with every function call. RETURNS TABLE is one way to do that
+      Running PostgreSQL in memory only
+      PostgreSQL: running count of rows for a query 'by minute'
+      Calculating Cumulative Sum in PostgreSQL
+      Split comma separated column data into additional columns
+      Select first row in each GROUP BY group
+      What are the pros and cons of performing calculations in sql vs. in your application
+      Auto increment SQL function
+      PostgreSQL IF statement
+      Computed / calculated columns in PostgreSQL
+      Store common query as column
+      vim
+        %s/\w\{3\} \d\d\? '\d\{2\} at \d\d\?:\d\d \d\d /\r/g
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
