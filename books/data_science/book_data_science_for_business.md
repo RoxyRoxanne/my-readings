@@ -1,4 +1,8 @@
-Notes from Data Science for Business Book
+---
+title: Notes from Book: Data Science for Business 
+file_path: <url:file:///~/Dropbox/mynotes/content/books/data_science/book_data_science_for_business.md>
+url: http://datascience.mertnuhoglu.com/post/notes_from_book_big_data_at_work/
+---
 
 ## chapter 01. “Introduction: Data-Analytic Thinking”
 

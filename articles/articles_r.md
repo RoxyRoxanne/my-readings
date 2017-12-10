@@ -298,9 +298,9 @@
 
   study code
     /Users/mertnuhoglu/projects/study/study_evammoa/study_shiny
-      /Users/mertnuhoglu/Dropbox/projects/study/study_evammoa/study_shiny.R
-      /Users/mertnuhoglu/Dropbox/projects/study/study_evammoa/shiny01/server.R
-      /Users/mertnuhoglu/Dropbox/projects/study/study_evammoa/study_shiny/app.R
+      /Users/mertnuhoglu/projects/study/study_evammoa/study_shiny.R
+      /Users/mertnuhoglu/projects/study/study_evammoa/shiny01/server.R
+      /Users/mertnuhoglu/projects/study/study_evammoa/study_shiny/app.R
 
 ### shiny tutorial _shiny
 
@@ -316,7 +316,7 @@
       server script
         server.R
   ex
-    /Users/mertnuhoglu/Dropbox/projects/study/study/r/shiny/lesson01/server.R
+    /Users/mertnuhoglu/projects/study/r/shiny/lesson01/server.R
   run app
     runApp("my_app")
       my_app/ is the directory to look

@@ -1,5 +1,86 @@
+_ id=r_lastid cvim_002
 
     vim slides presentation tool
+    navigate help topics in vim's documentation
+      https://vi.stackexchange.com/questions/2136/how-do-i-navigate-to-topics-in-vims-documentation
+      ans1
+        1. :help
+          :help help
+        2. autocomplete with <Tab>
+          :help buf<Tab>
+          :help :w<C-d>
+            list possible completions
+            2017-11-27_10-42-20.png
+          :help key-notation
+            special keys :help key-notation <url:#r=cvim_002>
+        3. :helpgrep <keyword>
+          search for help
+          :copen
+        4. syntax to search
+          commands
+            :h :command                        " help for ex-command 'command'
+            :h 'option'                        " help for option 'option'
+            :h function()                      " help for function 'function'
+            :h modifier-key                    " help for 'modifier'-'key' in normal mode
+            :h mode_modifier-key               " help for 'modifier'-'key' in 'mode'
+            :h mode_modifier-key_modifier-key  " help for 'modifier'-'key' 'modifier'-'key' in 'mode'
+          Examples:
+            :h :sort
+            :h 'ai                " only one quote needed
+            :h bufnr(             " no need for both parenthesis
+            :h v_ctrl-g
+            :h i_ctrl-x_ctrl-o
+            :h ctrl-w             " no mode required for normal mode
+        5. anatomy of a :help section
+          /Users/mertnuhoglu/Dropbox/public/img/ss-255.png
+            red: tags
+            green: long/short form
+            first line in white: it's a boolean option
+              :help options
+            second line in white: option is global
+              :help option-summary
+        6. :help list-functions
+        7. RTFM: Read The Fantastic Manual before asking
+    special keys :help key-notation id=cvim_002
+      special keys :help key-notation <url:#r=cvim_002>
+      *key-notation* *key-codes* *keycodes*
+      notation  meaning       equivalent  decimal value(s)  ~
+      -----------------------------------------------------------------------
+      <Nul>   zero      CTRL-@    0 (stored as 10) *<Nul>*
+      <BS>    backspace   CTRL-H    8 *backspace*
+      <Tab>   tab     CTRL-I    9 *tab* *Tab*
+                    *linefeed*
+      <NL>    linefeed    CTRL-J   10 (used for <Nul>)
+      <FF>    formfeed    CTRL-L   12 *formfeed*
+      <CR>    carriage return   CTRL-M   13 *carriage-return*
+      <Return>  same as <CR>        *<Return>*
+      <Enter>   same as <CR>        *<Enter>*
+      <Esc>   escape      CTRL-[   27 *escape* *<Esc>*
+      <Space>   space        32 *space*
+      <lt>    less-than   <  60 *<lt>*
+      <Bslash>  backslash   \  92 *backslash* *<Bslash>*
+      <Bar>   vertical bar    | 124 *<Bar>*
+      <Del>   delete        127
+      <CSI>   command sequence intro  ALT-Esc 155 *<CSI>*
+      <xCSI>    CSI when typed in the GUI   *<xCSI>*
+      <EOL>   end-of-line (can be <CR>, <LF> or <CR><LF>,
+      <Up>    cursor-up     *cursor-up* *cursor_up*
+      <Down>    cursor-down     *cursor-down* *cursor_down*
+      <Left>    cursor-left     *cursor-left* *cursor_left*
+      <Right>   cursor-right      *cursor-right* *cursor_right*
+      <S-Up>    shift-cursor-up
+      <S-Down>  shift-cursor-down
+      <S-Left>  shift-cursor-left
+      <S-Right> shift-cursor-right
+      <C-Left>  control-cursor-left
+      <C-Right> control-cursor-right
+      <F1> - <F12>  function keys 1 to 12   *function_key* *function-key*
+      <S-F1> - <S-F12> shift-function keys 1 to 12  *<S-F1>*
+      <S-...>   shift-key     *shift* *<S-*
+      <C-...>   control-key     *control* *ctrl* *<C-*
+      <M-...>   alt-key or meta-key   *meta* *alt* *<M-*
+      <A-...>   same as <M-...>     *<A-*
+      <D-...>   command-key (Macintosh only)  *<D-*
     How to Do 90% of What Plugins Do (With Just Vim)-XA2WjJbmmoM.mp4
       file navigating
         set path+=**

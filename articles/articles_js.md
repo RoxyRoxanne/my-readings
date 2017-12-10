@@ -580,6 +580,11 @@
             npx mocha # uses local
             mocha # uses global
   npm package.json
+    using npm installed cli programs globally
+      add npm/bin path to $PATH
+      ex:
+        where npm
+        export PATH =$PATH:/Users/mertnuhoglu/.nvm/versions/node/v7.7.4/bin/
     npm package.json doc
       https://docs.npmjs.com/files/package.json
       name

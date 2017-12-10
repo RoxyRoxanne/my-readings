@@ -1,7 +1,8 @@
-Developing Analytic Talent - Vincent Granville
-
-
-Developing.Analytic.Talent.Becoming.a.Data.Scientist.1118810082.pdf
+---
+title: Developing Analytic Talent - Vincent Granville
+file_path: ~/Dropbox/mynotes/content/books/data_science/book_developing_analytic_talent.md
+url: http://datascience.mertnuhoglu.com/post/book_developing_analytic_talent/
+---
 
 ## ch 01 - What Is Data Science?
 

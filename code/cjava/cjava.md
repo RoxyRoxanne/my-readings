@@ -70,7 +70,7 @@
   Getting Started
     http://www.dropwizard.io/1.1.2/docs/getting-started.html
       ref
-        /Users/mertnuhoglu/Dropbox/projects/study/study/java/dropwizard01/
+        /Users/mertnuhoglu/projects/study/java/dropwizard01/
       run
         http://localhost:8080/hello-world
         http://localhost:8080/hello-world?name=Successful+Dropwizard+User

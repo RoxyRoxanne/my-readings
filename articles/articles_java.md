@@ -507,7 +507,7 @@
 
     code examples
       ref
-        /Users/mertnuhoglu/projects/study/study/java/rxjava
+        /Users/mertnuhoglu/projects/study/java/rxjava
       steps
         what are basic concepts
           Action

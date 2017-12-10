@@ -148,9 +148,6 @@
             http://okmij.org/ftp/Computation/monadic-shell.html
           lua
             http://bugra.github.io/work/notes/2015-05-09/learning-lua-as-a-python-developer/
-          make
-            Minimal make
-              http://kbroman.org/minimal_make/
         games
           Örnek oyunlar ve kodları
             http://programarcadegames.com/index.php?lang=en
@@ -1318,5 +1315,10 @@
       Vsauce
       Minute Physics
       2 Minute Papers 
+    scihub: open access/open science articles database
+      https://scihub.org
+    planet: earth photos from satellites
+      https://www.planet.com/products/monitoring/
+    New Zealand's Rise as a Tech Giant (Hello World - Episode 1)-jKvZPpdGjiM.mp4
 
 

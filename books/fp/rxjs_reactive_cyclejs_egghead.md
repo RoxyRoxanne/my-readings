@@ -1,11 +1,13 @@
-  <url:file:///~/Dropbox (Personal)/mynotes/content/books/fp/fp/rxjs_reactive_cyclejs_egghead.md>
+---
+title: Notes from Training: RxJs CycleJs Reactive Trainings Egghead - Andre Staltz
+file_path: <url:file:///~/Dropbox (Personal)/mynotes/content/books/fp/fp/rxjs_reactive_cyclejs_egghead.md>
+url: http://mertnuhoglu.com/tech/rxjs_reactive_cyclejs_egghead/
+---
 
-# RxJs CycleJs Reactive Trainings Egghead
+## Introduction to Reactive Programming
 
-  Introduction to Reactive Programming
     ref
       https://egghead.io/courses/introduction-to-reactive-programming
-      /Users/mertnuhoglu/Movies/fp/next/rxjs_intro_to_reactive_programming/
       https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
       http://jsfiddle.net/staltz/8jFJH/48/
     01
@@ -310,9 +312,10 @@
       suggestion3Stream.subscribe(function (suggestedUser) {
           renderSuggestion(suggestedUser, '.suggestion3');
       });
-  Cycle.js Fundamentals
+
+## Cycle.js Fundamentals
+
     https://egghead.io/courses/cycle-js-fundamentals
-    /Users/mertnuhoglu/Movies/fp/next/rxjs_cyclejs_fundamentals/
     01
       ex
         Rx.Observable.timer(0, 1000) // 0--1--2--3
@@ -1039,9 +1042,10 @@
       in real apps
         we don't use <script>
       next
-  RxJS Beyond the Basics: Creating Observables from scratch
+
+## RxJS Beyond the Basics: Creating Observables from scratch
+
     https://egghead.io/courses/rxjs-beyond-the-basics-creating-observables-from-scratch
-    /Users/mertnuhoglu/Movies/fp/next/rxjs-beyond-the-basics-creating-observables/
     01
       Observable type
       different ways to create
@@ -1373,9 +1377,10 @@
           }, 4500)
       13:
       next
-  RxJS Beyond the Basics: Operators in Depth
+
+## RxJS Beyond the Basics: Operators in Depth
+
     https://egghead.io/courses/rxjs-beyond-the-basics-operators-in-depth
-    /Users/mertnuhoglu/Movies/fp/next/rxjs-operators-in-depth/
     01
       ex: map, filter, merge, combineLatest
       input: observable
@@ -1747,9 +1752,13 @@
         --a--b--c--d----a--b--c--d----a--b--c--d--   
     20: retry, retryWhen
     next
-  RxJS Subjects and Multicasting Operators
+
+## RxJS Subjects and Multicasting Operators
+
+![img/ss-174.png](/assets/img/ss-174.png)
+![img/ss-172.png](/assets/img/ss-172.png)
+
     https://egghead.io/courses/rxjs-subjects-and-multicasting-operators
-    /Users/mertnuhoglu/Movies/fp/next/rxjs-subjects/
     01
       each Observable has only one observer
         observable.subscribe(observerA)
@@ -1785,12 +1794,14 @@
         subject.subscribe(observerA)
         /Users/mertnuhoglu/Dropbox/public/img/ss-172.png
     03: use subject as an event bus
-  Use Higher Order Observables in RxJS Effectively
+
+## Use Higher Order Observables in RxJS Effectively
+
     https://egghead.io/courses/use-higher-order-observables-in-rxjs-effectively
-    /Users/mertnuhoglu/Movies/fp/next/rxjs-higher-order-observables/
-  Step-by-Step Async JavaScript with RxJS
+
+## Step-by-Step Async JavaScript with RxJS
+
     https://egghead.io/courses/step-by-step-async-javascript-with-rxjs
-    /Users/mertnuhoglu/Movies/fp/next/rxjs_step_by_step_async/
     ch01
       Rx.Observable.timer(0, 100)
         .map(i => `Seconds ${i}`)

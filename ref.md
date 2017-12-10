@@ -393,7 +393,7 @@
       /srv/www/veribilimi.mertnuhoglu.com/html
     deployment scripts
       deployhugo
-      /Users/mertnuhoglu/Dropbox/projects/stuff/bash
+      /Users/mertnuhoglu/projects/stuff/bash
   ssh and add new user
     settings > reset password
     ssh root@ > passwd
@@ -437,8 +437,8 @@
   ref
     docker <url:file:///~/Dropbox/mynotes/content/code/ccode.md#r=g_10120>
   run docker command inside container
-    -v /var/run/docker.sock:/var/run/docker.sock 
-    -v $(which docker):/usr/bin/docker 
+    -v /var/run/docker.sock:/var/run/docker.sock
+    -v $(which docker):/usr/bin/docker
       in general
     - "/usr/bin/docker:/usr/bin/docker"
       osx
@@ -457,7 +457,7 @@
     docker ps -a | tail -n +2 | awk '{print $NF}'
   config: show config file
     docker-compose config
-      this puts env variables into placeholders 
+      this puts env variables into placeholders
   turn interactive mode off - exit
     ^p^q
   tasks
@@ -681,6 +681,9 @@
   git clone into current directory
     git init .
     git remote add -t \* -f origin <repo-url>
+  get url of repo from local
+    git remote show origin
+    git remote -v
   hub
     # clone your own project
       git clone dotfiles
@@ -746,7 +749,7 @@
     github pages <url:file:///~/Dropbox/mynotes/ref.otl#r=g_10032>
     Publishing Web Site and Blog <url:file:///~/Dropbox/mynotes/general/processes.md#r=g_10033>
     github pages <url:file:///~/Dropbox/mynotes/content/articles/articles.md#r=g_10027>
-    Jekyll <url:file:///~/Dropbox/mynotes/ref.otl#r=g_10028>
+    Jekyll <url:file:///~/Dropbox/mynotes/content/ref.md#r=g_10028>
 
 # Google Cloud App Engine
 
@@ -919,103 +922,110 @@
 
 # Jekyll id=g_10028
 
-  ref
-    Jekyll <url:file:///~/Dropbox/mynotes/ref.otl#r=g_10028>
-    Publishing Web Site and Blog <url:file:///~/Dropbox/mynotes/general/processes.md#r=g_10033>
+    ref
+      Jekyll <url:file:///~/Dropbox/mynotes/ref.otl#r=g_10028>
+      Publishing Web Site and Blog <url:file:///~/Dropbox/mynotes/general/processes.md#r=g_10033>
 
-  new project
-    best
-      clone jekyll_skeleton
-      update its repo
-    from scratch
-      1. create a repo
-      2. only gh-pages branch is published
-        git checkout -b gh-pages
-      3. publish content
-        echo “Hello, world” > index.html
-          git add
-          git commit 
-          git push
-      4. open mertnuhoglu.github.io/blog_datascience
-    fork jekyll_skeleton
-      fork a repo multiple times <url:#r=n_011>
-      git clone git@github.com:mertnuhoglu/jekyll_skeleton.git
-      (new repo)
-      git remote rename origin upstream
-      git remote add origin git@github.com:mertnuhoglu/new_repo.git
-      git remote -v
-      git push -u origin master
-  updating a site
-    jekyll serve
-      or jekyll build
-    git add
-    git commit
-    git push origin master
-    git subtree push --prefix=_site git@github.com:mertnuhoglu/blog_datascience.git gh-pages
-      gsp
-  custom subdomain for project github pages
-    1: in git repo create file "CNAME"
-      echo "veribilimi.mertnuhoglu.com" > CNAME
-    2: in webfaction, create a CNAME record
-      datascience.mertnuhoglu.com 
-      pointing to
-        mertnuhoglu.github.io
-    3: test it
-      dig datascience.mertnuhoglu.com +nostats +nocomments +nocmd
-    4: open 
-      datascience.mertnuhoglu.com 
-  Putting _site into gh-pages branch
-    Putting _site into gh-pages branch <url:#r=n_010>
-    (do these after each change)
-      add all 
-        git add -A
-      commit push to master
-      push _site subtree to gh-pages
-        git subtree push --prefix=_site git@github.com:mertnuhoglu/jekyll_skeleton.git gh-pages
-  google analytics setup on jekyll
-    jekyll-now
-    steps
-      cp analytics.html
-        cp jekyll-now/_includes/analytics.html blog_datascience/_includes
-      put into _layouts/default.html before </body>
-        {% include analytics.html %}
-      _config.yml
-        google_analytics: ''
-  Putting _site into gh-pages branch id=n_010
-    Putting _site into gh-pages branch <url:#r=n_010>
-    adapted from
-      http://gohugo.io/tutorials/github-pages-blog/
-    steps
-      remove _site from .gitignore
-      new orphand branch
-        git co --orphan gh-pages
-      unstage all files
-        git rm --cached $(git ls-files)
-      grab one file
-        git co master README.md
-      add that file
-        git add README.md
-      commit that file
-      push to gh-pages
-        git push origin gh-pages
-      checkout master
-        git co master
-          if error, then move all the files to tmp except README.md
-      remove _site folder to make room for gh-pages subtree
-        rm -rf _site
-      add gh-pages branch. it will look as a folder named _site
-        git subtree add --prefix=_site git@github.com:mertnuhoglu/blog_veribilimi.git gh-pages --squash
-          if error
-            git rm -rf _site
+    new project
+      best
+        clone jekyll_skeleton
+        update its repo
+      from scratch
+        1. create a repo
+        2. only gh-pages branch is published
+          git checkout -b gh-pages
+        3. publish content
+          echo “Hello, world” > index.html
+            git add
             git commit 
-      pull the file just committed
-        git subtree pull --prefix=_site git@github.com:mertnuhoglu/blog_veribilimi.git gh-pages
-      run jekyll
-      add all (do these after each change)
-        git add -A
-      commit push to master
-      push _site subtree to gh-pages
-        git subtree push --prefix=_site git@github.com:mertnuhoglu/blog_veribilimi.git gh-pages
+            git push
+        4. open mertnuhoglu.github.io/blog_datascience
+      fork jekyll_skeleton
+        fork a repo multiple times <url:#r=n_011>
+        git clone git@github.com:mertnuhoglu/jekyll_skeleton.git
+        (new repo)
+        git remote rename origin upstream
+        git remote add origin git@github.com:mertnuhoglu/new_repo.git
+        git remote -v
+        git push -u origin master
+    updating a site
+      jekyll serve
+        or jekyll build
+      git add
+      git commit
+      git push origin master
+      git subtree push --prefix=_site git@github.com:mertnuhoglu/blog_datascience.git gh-pages
+        gsp
+    custom subdomain for project github pages
+      1: in git repo create file "CNAME"
+        echo "veribilimi.mertnuhoglu.com" > CNAME
+      2: in webfaction, create a CNAME record
+        datascience.mertnuhoglu.com 
+        pointing to
+          mertnuhoglu.github.io
+      3: test it
+        dig datascience.mertnuhoglu.com +nostats +nocomments +nocmd
+      4: open 
+        datascience.mertnuhoglu.com 
+    Putting `_site` into gh-pages branch
+      Putting `_site` into gh-pages branch <url:#r=n_010>
+      (do these after each change)
+        add all 
+          git add -A
+        commit push to master
+        push `_site` subtree to gh-pages
+          git subtree push --prefix=_site git@github.com:mertnuhoglu/jekyll_skeleton.git gh-pages
+    google analytics setup on jekyll
+      jekyll-now
+      steps
+        cp analytics.html
+          cp jekyll-now/_includes/analytics.html blog_datascience/_includes
+        put into `_layouts/default.html` before </body>
+          {% include analytics.html %}
+        `_config.yml`
+          google_analytics: ''
+    Putting `_site` into gh-pages branch id=n_010
+      Putting `_site` into gh-pages branch <url:#r=n_010>
+      adapted from
+        http://gohugo.io/tutorials/github-pages-blog/
+      steps
+        remove `_site` from .gitignore
+        new orphand branch
+          git co --orphan gh-pages
+        unstage all files
+          git rm --cached $(git ls-files)
+        grab one file
+          git co master README.md
+        add that file
+          git add README.md
+        commit that file
+        push to gh-pages
+          git push origin gh-pages
+        checkout master
+          git co master
+            if error, then move all the files to tmp except README.md
+        remove `_site` folder to make room for gh-pages subtree
+          `rm -rf _site`
+        add gh-pages branch. it will look as a folder named `_site`
+          git subtree add --prefix=_site git@github.com:mertnuhoglu/blog_veribilimi.git gh-pages --squash
+            if error
+              `git rm -rf _site`
+              git commit 
+        pull the file just committed
+          git subtree pull --prefix=_site git@github.com:mertnuhoglu/blog_veribilimi.git gh-pages
+        run jekyll
+        add all (do these after each change)
+          git add -A
+        commit push to master
+        push `_site` subtree to gh-pages
+          git subtree push --prefix=_site git@github.com:mertnuhoglu/blog_veribilimi.git gh-pages
+
+# Hugo
+
+    new blog post
+      hugo new posts/my_post.md
+      # set draft=false in yaml
+      ./deploy.sh
 
 # Keynote
 
@@ -1333,9 +1343,13 @@
     sudo lsof -iTCP -sTCP:LISTEN -n -P
     lsof -i tcp:8080 
   disk wasn't ejected
-    sudo lsof | grep /Volumes/myDrive
+    sudo lsof | grep /Volumes/Seagate7
       find open files
-  usb disk does not mount
+      mds: spotlight
+  usb disk does not mount/invisible
+    https://apple.stackexchange.com/questions/16456/ejecting-disk-after-failed-mounting
+      diskutil list
+      diskutil eject disk#
     https://apple.stackexchange.com/questions/183003/usb-drive-will-not-mount-not-listed-in-disk-utilities-but-found-in-system-prof
       activity monitor > fsck_exfat: kill
       disk util > first aid
@@ -1403,7 +1417,7 @@
   stackedit.io
     online editor
 
-## excel
+### excel
 
   shortcuts osx
     sort/filter
@@ -1419,9 +1433,9 @@
   edit cell
     ^u
 
-## intellij
+### intellij
 
-### custom
+#### custom
 
   by f keyboard
     Project from existing sources
@@ -1460,17 +1474,17 @@
     !tab  next splitter
     #n    new class (in project), new code (in editor)
 
-### editor
+#### editor
 
   highlight usages of variable at caret
     Prefs > General > Identifier under Caret > .Background
 
-### run/debug
+#### run/debug
 
   show variable values when caret on top
     debug window > settings > Show Value On Selection Change 
 
-### shortcuts
+#### shortcuts
 
   http://www.jetbrains.com/idea/docs/IntelliJIDEA_ReferenceCard_Mac.pdf
   ++  search everywhere
@@ -1528,14 +1542,14 @@
     #.  folding toggle
     ^ok next tab
 
-## LaunchBar
+### LaunchBar
 
   clipboard history (copy)
   show  #!x
   select  ^#x
   paste ^#!x
 
-# Screenshot
+### Screenshot
 
   snagit:
     shows in editor then save manually
@@ -1548,14 +1562,18 @@
     #!+s  screen
     #^!+s repeat
 
-## Screen Annotation and Presentation Tools
+### Screen Annotation and Presentation Tools
 
   http://ink2go.org/
   http://www.swordsoft.idv.tw/screenink/
   http://magnifier.sourceforge.net/#
   http://www.zoomitapp.com/zoom-it.html
 
-## Hammerspoon
+### Vivaldi
+
+  F2  quick command
+
+### Hammerspoon
 
 setup
   Prefences > security > Privacy > Allow apps: Hammerspoon
@@ -2942,6 +2960,7 @@ install from local file system
       send current pane to window 3
   join session
     tmux attach -t 0
+    tmux attach
   move windows
     bind c-o  rotate window up
     bind m-o  rotate windo down
@@ -3007,7 +3026,8 @@ install from local file system
 
 ## dos2unix
 
-   ^M karakterini temizleme
+  
+ ^M karakterini temizleme
     http://unix.stackexchange.com/questions/134695/what-is-the-m-character-called
     http://stackoverflow.com/questions/5843495/what-does-m-character-mean-in-vim
     dos2unix 'file.txt'
@@ -3102,6 +3122,9 @@ install from local file system
 
 ## ag
 
+  --(no)numbers
+    print numbers
+  --(no)column
   -f --follow symlinks
   limit file types
     ack mertnuhoglu_wpmn -G "wp-config\.php$"
@@ -3235,6 +3258,10 @@ install from local file system
 
 ## ffmpeg
 
+  convert mp4 to mp3
+    ffmpeg -i filename.mp4 filename.mp3
+    ffmpeg -i video.mp4 -b:a 192K -vn music.mp3
+    for f in ./*.mp4; ffmpeg -i "$f" -b:a 192K -vn "${f%.*}.mp3"
   concat videos with same codecs
     ffmpeg -f concat -i video_files.in -c copy output.mp4
     video_files.in
@@ -3601,6 +3628,10 @@ install from local file system
     -n  no header
     -d  delimiter
 
+## rg: ack ag alternative
+
+    -L --follow symlinks
+
 ## rsync
 
   örnek
@@ -3805,6 +3836,12 @@ install from local file system
 
   wget -i file
     dl urls in file
+  -P --directory-prefix
+    dl to directory
+    wget -P "`python -m site --user-site`" https://raw.github.com/cjdrake/ipython-magic/master/gvmagic.py
+  -O 
+    dl to file path
+    wget -O /some/path/file.py https://raw.github.com/cjdrake/ipython-magic/master/gvmagic.py
 
 ## zip
 
@@ -3887,6 +3924,12 @@ install from local file system
 
 # Vim
 
+  horizontal scrolling
+    help scroll-horizontal
+    zL  half-screen left
+    zH  half-screen right
+    zl  one char left
+    zh  one char right
   autocomplete
     ^x^n
       ^n ^p next/prev
@@ -4435,249 +4478,259 @@ default keymappings
   MinCol
 
 ### Voom votl
-  outline navigation in tree
-    click    move
-    i I    beginning of node
-    space    toggle node
-    left/right    to parent/child
-  voomgrep
-    very sophisticated search tool
-  moving
-    ^^  ^up  üu
-    --  ^dn  üd
-    <<  ^lf  ül
-    >>  ^rg  ür
-    yy  "+ register
-    dd
-    pp
+
+    outline navigation in tree
+      click    move
+      i I    beginning of node
+      space    toggle node
+      left/right    to parent/child
+    voomgrep
+      very sophisticated search tool
+    moving
+      ^^  ^up  üu
+      --  ^dn  üd
+      <<  ^lf  ül
+      >>  ^rg  ür
+      yy  "+ register
+      dd
+      pp
 
 ### Surround
 
-  asterisk (*) = cursor position
-    Old text                  Command     New text ~
-    "Hello *world!"           ds"         Hello world!
-    [123+4*56]/2              cs])        (123+456)/2
-    "Look ma, I'm *HTML!"     cs"<q>      <q>Look ma, I'm HTML!</q>
-    if *x>3 {                 ysW(        if ( x>3 ) {
-  commands
-    | delete surroundings | ds  |
-    | change surroundings | cs  |
-    | you sorround        | ys  |
-    | you surround line   | yss |
-    | visual surround     | S   |
-  grammar
-    command + object + paranthesis
-    cs 5w ])
+    asterisk (*) = cursor position
+      Old text                  Command     New text ~
+      "Hello *world!"           ds"         Hello world!
+      [123+4*56]/2              cs])        (123+456)/2
+      "Look ma, I'm *HTML!"     cs"<q>      <q>Look ma, I'm HTML!</q>
+      if *x>3 {                 ysW(        if ( x>3 ) {
+    commands
+      | delete surroundings | ds  |
+      | change surroundings | cs  |
+      | you sorround        | ys  |
+      | you surround line   | yss |
+      | visual surround     | S   |
+    grammar
+      command + object + paranthesis
+      cs 5w ])
 
 ### Table Mode - Table Generator
 
-  https://github.com/dhruvasagar/vim-table-mode
-  start using
-    :TableModeToggle
-      ütm
-  table mode
-    enter first line
-      | col1 | col2 |
-    second line
-      ||
-    body lines
-      | content 1 |
-    last line
-      ||
-  convert existing content into a table
-    :Tableize
-      ütt
-    default separator: ,
-      g:table_mode_tableize_map
-    :Tableize/;
-      separator: ;
-      üT
-        take input from cmd line
-  examples
-    | col 1 | col 2  |
-    |-------|--------|
-    | pg1   | pg 2   |
-    | cl15  | cl35_a |
-    |-------|--------|
+    https://github.com/dhruvasagar/vim-table-mode
+    start using
+      :TableModeToggle
+        ütm
+    table mode
+      enter first line
+        | col1 | col2 |
+      second line
+        ||
+      body lines
+        | content 1 |
+      last line
+        ||
+    convert existing content into a table
+      :Tableize
+        ütt
+      default separator: ,
+        g:table_mode_tableize_map
+      :Tableize/;
+        separator: ;
+        üT
+          take input from cmd line
+    examples
+      | col 1 | col 2  |
+      |-------|--------|
+      | pg1   | pg 2   |
+      | cl15  | cl35_a |
+      |-------|--------|
 
 ### transpose
 
-  TransposeTab
-  :Transpose (for character array transposition),
-  :TransposeWords (for word array transposition),
-  :TransposeTab (for tab-separated table transposition),
-  :TransposeCSV (for general delimited text transposition), and
-  :TransposeInteractive (for custom transposition).
+    TransposeTab
+    :Transpose (for character array transposition),
+    :TransposeWords (for word array transposition),
+    :TransposeTab (for tab-separated table transposition),
+    :TransposeCSV (for general delimited text transposition), and
+    :TransposeInteractive (for custom transposition).
 
 ### ctrlp
-  CtrlPClearCache
-    refresh indexes 
+
+    CtrlPClearCache
+      refresh indexes 
 
 ### netrw - vinegar - file explorer
 
-  tree style file browser
-    i  (push i multiple times after opening)
-    let g:netrw_liststyle = 3
-  tree project drawer
-    https://shapeshed.com/vim-netrw/
-  shortcuts
-    I   help
-    i   file information
-    -   open explorer in current directory
-    enter     open file
-    o         open horizontal split
-    v         open vertical split
-    .         prepopulate command line
-    !         prepop with bang
-    cg cl     add to cd lcd
-    :Ntree    change path
-    a         switch appearance of files
-    d         new dir
-    %         new file
-    file copying
-      mt      mark target dir
-      mf      mark files
-      mc      copy files
-  bookmarking a directory
-    mb        mark bookmark
-    {cnt}gb   go back to bookmarked dir
-    mB        delete bookmark
+    tree style file browser
+      i  (push i multiple times after opening)
+      let g:netrw_liststyle = 3
+    tree project drawer
+      https://shapeshed.com/vim-netrw/
+    shortcuts
+      I   help
+      i   file information
+      -   open explorer in current directory
+      enter     open file
+      o         open horizontal split
+      v         open vertical split
+      .         prepopulate command line
+      !         prepop with bang
+      cg cl     add to cd lcd
+      :Ntree    change path
+      a         switch appearance of files
+      d         new dir
+      %         new file
+      D   delete file
+      file copying
+        mt      mark target dir
+        mf      mark files
+        mc      copy files
+    bookmarking a directory
+      mb        mark bookmark
+      {cnt}gb   go back to bookmarked dir
+      mB        delete bookmark
 
 ### vim-markdown
-  ]] go to next header
-    [[ [] ][ ]c ]u
-  gx open link
-  :HeaderDecrease
-  :TableFormat
-  :toc
+
+    ]] go to next header
+      [[ [] ][ ]c ]u
+    gx open link
+    :HeaderDecrease
+    :TableFormat
+    :toc
 
 # Vimscript VimL
 
-  string
-    string interpolation
-      https://stackoverflow.com/questions/4596932/vim-cd-to-path-stored-in-variable#4597149
-      some commands require unquoted strings
-      ex:
-        cd path
-        # will change to "path" 
-        # path here is not a variable
-      opt1: execute
-        let cmd = 'cd ' . pathname
-        execute cmd
-      use backtick
-        command `shell command`
-        command `=vim_expression`
-      opt2: backtick
-        cd `=path`
-      opt3: safe and escaped
-        execute 'cd' fnameescape(path)
-  functions
-    return value
-      return "value"
-    use returned value
-      let refid = CopyRefId()
-  put/write value of some variable into current edit file
-    :put =TodayDate
-    <C-R>=
-    :h <C-R>
-  escaping quotes in backslashes
-    let id = substitute(line, 'id=\w*', '15', '')
-    let id = substitute(line, "id=\\w*", "15", '')
-  conversion of String into Number
-    let id = line + 0
-  sprintf
-    let new_id = printf("%05d", id)
-  List creation
-    let line2 = [new_id, 3]
-  file read/write
-    let global_refid = '/Users/mertnuhoglu/.vim/.global_refid'
-    let line = readfile(global_refid, 1)[0]
-    let id = line + 1
-    echo id
-    let new_id = printf("%05d", id)
-    let line2 = [new_id]
-    call writefile(line2, global_refid, '')
-  arguments
-    function DisplayName(name)
-      echom a:name
-    endfunction
-    call DisplayName("Your Name")
-  escaping quotes inside quotes
-    let @s = 'ma/]mb''awye0j''bkI*nj'
-  select word under cursor
-    let wordUnderCursor = expand("<cword>")
-  overwrite/override existing mappings
-    nunmap <F4>
-    nnoremap <F4> :Unite outline<CR>
-  storing macros
-    alt
-      use normal commands instead of macro
-        normal zM
-        /92-TEMPOR
-        "let c = 'zM/92-TEMPO'
-  map multiple commands to a key
-    http://stackoverflow.com/questions/23204110/mapping-one-key-to-multiple-commands-in-vim
-    you must escape the bar or use <bar> instead:
-    :nnoremap <C-S-F6> :w \| !pdflatex %:t<CR>
-    :nnoremap <C-S-F6> :w <bar> !pdflatex %:t<CR>
-    nnoremap zn :Sotl<cr> \| :norm! zMzr<cr>
-  run shell command
-    http://stackoverflow.com/questions/17459104/how-to-execute-an-external-command-in-vim-script
-    using system(..)
-      call system('chmod +x ' . shellescape(fname))
-      help system
-    using ! - interactive
-      ! echo 'Hello, World\!'
-      help :!
-  prompt user input
-    code
-      call inputsave()
-      let name = input('Enter name: ')
-      call inputrestore()
-      let date = strftime("%Y%m%d")
-      let filename = 'review_' . name . '_' . date . '.md'
-      call setline('.', filename)
-    doc
-      ask for user input
-      setline: put it into current line
-  get visually selected lines
-    let lines = s:get_visual_selection()
-    in infoman
-  substitute a string / regex
-    let path = substitute(path, "/Users/mertnuhoglu", "\/\\~", "")
-  bufdo: update all buffers
-    bufdo %s/ / /ge | update
-  regex: double \\ instead of \
-  range
-    command! -range=% RT <line1>,<line2>call RT()
-    fun! RT() range
-       exe a:firstline.",".a:lastline."v/./d"
-    endfun
-      :'<,'>RT
-      :RT
-        current line
-    varsayılan range:
-      command -range=% 
-    :h command-range
-  passing argument to commands
-    -nargs=1
-    <f-args>
-    command! -nargs=1 MyCommand call s:MyFunc(<f-args>)
-      take one argument (nargs=1)
-  resource
-    http://ricostacruz.com/cheatsheets/vimscript.html
-  getting a line into a variable
-    let line=getline('.')
-    exe 'let words='.line
-  getting file path
-    help filename-modifiers
-    expand("%:p:h")
-      full path of directory of current file
-    expand("%:p")
-      full path of current file
-    let file_name = expand('%:t:r')
-      get file name
-    cd %:p:h
+    date formatting
+      let cmd = 'e ~/projects/study/logbook/' . strftime("%Y-%m-%d") . '.md'
+      echo cmd
+      execute cmd
+    string
+      string interpolation
+        https://stackoverflow.com/questions/4596932/vim-cd-to-path-stored-in-variable#4597149
+        some commands require unquoted strings
+        ex:
+          cd path
+          # will change to "path" 
+          # path here is not a variable
+        opt1: execute
+          let cmd = 'cd ' . pathname
+          execute cmd
+        use backtick
+          command `shell command`
+          command `=vim_expression`
+        opt2: backtick
+          cd `=path`
+        opt3: safe and escaped
+          execute 'cd' fnameescape(path)
+    functions
+      return value
+        return "value"
+      use returned value
+        let refid = CopyRefId()
+    put/write value of some variable into current edit file
+      :put =TodayDate
+      <C-R>=
+      :h <C-R>
+    escaping quotes in backslashes
+      let id = substitute(line, 'id=\w*', '15', '')
+      let id = substitute(line, "id=\\w*", "15", '')
+    conversion of String into Number
+      let id = line + 0
+    sprintf
+      let new_id = printf("%05d", id)
+    List creation
+      let line2 = [new_id, 3]
+    file read/write
+      let global_refid = '/Users/mertnuhoglu/.vim/.global_refid'
+      let line = readfile(global_refid, 1)[0]
+      let id = line + 1
+      echo id
+      let new_id = printf("%05d", id)
+      let line2 = [new_id]
+      call writefile(line2, global_refid, '')
+    arguments
+      function DisplayName(name)
+        echom a:name
+      endfunction
+      call DisplayName("Your Name")
+    escaping quotes inside quotes
+      let @s = 'ma/]
+  mb''awye0j''bkI*nj'
+    select word under cursor
+      let wordUnderCursor = expand("<cword>")
+    overwrite/override existing mappings
+      nunmap <F4>
+      nnoremap <F4> :Unite outline<CR>
+    storing macros
+      alt
+        use normal commands instead of macro
+          normal zM
+          /92-TEMPOR
+          "let c = 'zM/92-TEMPO
+  '
+    map multiple commands to a key
+      http://stackoverflow.com/questions/23204110/mapping-one-key-to-multiple-commands-in-vim
+      you must escape the bar or use <bar> instead:
+      :nnoremap <C-S-F6> :w \| !pdflatex %:t<CR>
+      :nnoremap <C-S-F6> :w <bar> !pdflatex %:t<CR>
+      nnoremap zn :Sotl<cr> \| :norm! zMzr<cr>
+    run shell command
+      http://stackoverflow.com/questions/17459104/how-to-execute-an-external-command-in-vim-script
+      using system(..)
+        call system('chmod +x ' . shellescape(fname))
+        help system
+      using ! - interactive
+        ! echo 'Hello, World\!'
+        help :!
+    prompt user input
+      code
+        call inputsave()
+        let name = input('Enter name: ')
+        call inputrestore()
+        let date = strftime("%Y%m%d")
+        let filename = 'review_' . name . '_' . date . '.md'
+        call setline('.', filename)
+      doc
+        ask for user input
+        setline: put it into current line
+    get visually selected lines
+      let lines = s:get_visual_selection()
+      in infoman
+    substitute a string / regex
+      let path = substitute(path, "/Users/mertnuhoglu", "\/\\~", "")
+    bufdo: update all buffers
+      bufdo %s/ / /ge | update
+    regex: double \\ instead of \
+    range
+      command! -range=% RT <line1>,<line2>call RT()
+      fun! RT() range
+         exe a:firstline.",".a:lastline."v/./d"
+      endfun
+        :'<,'>RT
+        :RT
+          current line
+      varsayılan range:
+        command -range=% 
+      :h command-range
+    passing argument to commands
+      -nargs=1
+      <f-args>
+      command! -nargs=1 MyCommand call s:MyFunc(<f-args>)
+        take one argument (nargs=1)
+    resource
+      http://ricostacruz.com/cheatsheets/vimscript.html
+    getting a line into a variable
+      let line=getline('.')
+      exe 'let words='.line
+    getting file path
+      help filename-modifiers
+      expand("%:p:h")
+        full path of directory of current file
+      expand("%:p")
+        full path of current file
+      let file_name = expand('%:t:r')
+        get file name
+      cd %:p:h
 
 # xpath
 

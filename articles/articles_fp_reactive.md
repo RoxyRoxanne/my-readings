@@ -1141,7 +1141,7 @@
   Building An Application from Scratch using RxJava and Java 8
     http://blog.xebia.in/2015/09/01/day1-building-an-application-from-scratch-using-rxjava-and-java8/
     project
-      /Users/mertnuhoglu/projects/study/study/java/rxjava/
+      /Users/mertnuhoglu/projects/study/java/rxjava/
     working with rxjava
       ex01
         Observable<String> tweets = Observable.just("learning RxJava", "Writing blog about RxJava", "RxJava rocks!!");

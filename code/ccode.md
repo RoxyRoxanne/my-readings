@@ -1,5 +1,5 @@
 
-_ id=r_lastid ccd_0004
+_ id=r_lastid ccd_0009
 
 ## stuff
 
@@ -72,8 +72,727 @@ _ id=r_lastid ccd_0004
         https://paulstamatiou.com/2007/07/29/how-to-bulletproof-server-backups-with-amazon-s3
           why
             automate backup process
+      AWS S3 User Guide
+        Objects
+          Operations on Objects
+            Uploading Objects
+              Uploading Objects Using Pre-Signed URLs
+                http://docs.aws.amazon.com/AmazonS3/latest/dev/PresignedUrlUploadObject.html
+                All objects and buckets by default are private. 
+                The pre-signed URLs are useful 
+                  if you want your user/customer to be able to upload a specific object to your bucket, 
+                  but you don't require them to have AWS security credentials or permissions
       aws lambda
         AWS.Lambda.A.Guide.to.Serverless.Microservices.B016JOMAEE.epub
+      Amazon Web Services in Action
+        Part 2: Building virtual infrastructure with servers and networking
+          ch03: Using virtual servers: EC2
+            3.1 Exploring a virtual server
+              physical server: host server
+              virtual servers running on it: guests
+              hypervisor: software that isolates guests from each other
+              3.1.1 Launching a virtual server
+                ec2 > Launch Instance
+                  selecting an OS:
+                    preinstalled software for virtual server: Amazon Machine Image (AMI)
+                virtual appliances: imagge containing an OS and preconfigured software
+                  AMI doesn't include kernel of the OS
+                  kernel is loaded from Amazon Kernel Image (AKI)
+                  hypervisor on aws: Xen
+                  Hardware Virtual Machine (HVM): virtual servers that use hardware-assisted virtualization
+                  make sure you use HVM images
+                Choosing Size
+                  ex: t2.micro
+                    t: instance family
+                      small virtual servers
+                    2: generation
+                    micro: size
+                Instance Details
+                  options
+                    IAM role
+                    Shutdown behavior
+                    Enable termination protection
+                    Monitoring: Enable CloudWatch
+                    Storage
+                    Tags
+                Reviewing your Input
+              3.1.2 Connecting to a virtual server
+                ssh -i <path_to_key.pem> ubuntu@<public_ip>
+            3.2 Monitoring and debugging a virtual server
+              3.2.1 Showing logs
+                ec2 console > instances > .select server > Actions > Instance Settings > Get System Log
+              3.2.2 Monitoring the load
+                ec2 console > instances > .select server > Monitoring > Network In
+            3.3 Shutting down
+              actions:
+                start
+                stop: not billed. can be started
+                reboot: no data lost. restarts
+                terminate: deletes it. deletes dependencies like network-attached storage too
+            3.4 Changing the size
+              it is possible to change the size
+              start a new server
+                ec2 console > Launch Instance > .select server > .choose instance type > Launch
+                # get cpu info
+                cat /proc/cpuinfo
+                # get memory info
+                free -m
+              stop server
+                ec2 console > instances > .select instance > Instance State > Stop
+              change instance type
+                Instance Settings > Actions > .select instance type > Apply
+            3.5 Starting a virtual server in another data center
+            3.6 Allocating a public IP address
+              ec2 console > Elastic IPs > Allocate New Address
+            3.7 Adding an additional network interface
+              why:
+                to assign two different public IP addresses
+                then you can serve two different websites depending on the public IP address
+            3.8 Optimizing costs
+              On-demandn
+              Reserved
+              Spot
+              3.8.1 Reserve virtual servers
+              3.8.2 Bidding on unused virtual servers: spot instances
+          ch04: Programming your infrastructure
+            intro
+            4.1 Infrastructure as code
+              4.1.1 Automation and the DevOps movement
+              4.1.2 Infrastructure language: JIML (JSON Infrastructure Markup Language)
+                ex:
+                  {
+                    infrastructure: {
+                    loadbalancer: {
+                      server: {...}
+                      }
+                    , cdn: {...}
+                    , database: {...}
+                    }
+                  }
+                $ indicates a reference to an ID
+                ex:
+                  {
+                    "region": "us-east-1",
+                    "resources": [
+                      {
+                        "type": "loadbalancer",
+                        "id": "LB",
+                        "config": {
+                          "server": {
+                            "cpu": 2,
+                            "ram": 4,
+                            "os": "ubuntu",
+                            "waitFor": "$DB"
+                            },
+                          "servers": 2
+                        }
+                      }
+                      , {
+                        "type": "cdn",
+                        "id": "CDN",
+                        "config": {
+                          "defaultSource": "$LB",
+                          "sources": [{
+                            "path": "/static/*",
+                            "source": "$BUCKET"
+                            }]
+                          } 
+                        }
+                      , {
+                        "type": "database",
+                        "id": "DB",
+                        "config": {
+                          "password": "***",
+                          "engine": "MySQL"
+                          }
+                        }
+                      , {
+                        "type": "dns",
+                        "config": {
+                          "from": "www.mydomain.com",
+                          "to": "$CDN"
+                          }
+                        }
+                      , {
+                        "type": "bucket",
+                        "id": "BUCKET"
+                      }
+                    ] 
+                  }
+                how to turn this JSON to API calls?
+                  build dependency graph
+                    from bottom to top
+                      nodes with no children: DB and bucket
+                      they have no dependencies
+                    server nodes depend on DB node
+                  build linear flow of commands
+            4.2 Using CLI
+              4.2.1 Installing CLI
+                sudo pip install awscli
+              4.2.2 Configuring CLI
+                don't use aws root account
+                create a new user in IAM service
+                get aws access key id and secret access key
+                cli
+                  aws configure
+              4.2.3 Using CLI
+                ex: get a list of ec2 instances of type t2.micro
+                  $ aws ec2 describe-instances --filters "Name=instance-type,Values=t2.micro"
+                general template:
+                  $ aws <service> <action> [--key value ...]
+                aws help
+                aws <service> help
+                aws <service> <action> help
+                ex: server.sh
+                  aws ec2 describe-images --filters "Name=description, Values=Amazon Linux AMI 2015.03.? x86_64 HVM GP2" --query "Images[0].ImageId" --output text
+                note: --query option uses JMESPath
+                  ex
+                    {
+                      "Images": [
+                          {
+                            "ImageId": "ami-146e2a7c",
+                            "State": "available"
+                      }, {
+                            "State": "available"
+                          }
+                      ] 
+                    }
+                  ex:
+                    Images[0].ImageId
+                    Images[*].State
+            4.4 Using a blueprint
+              AWS CloudFormation: better than JIML
+                based on templates = blueprint
+              4.4.1 Anatomy of CloudFormation template
+                5 parts:
+                  1. Format version
+                  2. Description
+                  3. Parameters
+                  4. Resources
+                  5. Outputs
+                Output
+                  ex: references "Server"
+                    "Outputs": {
+                      "ServerEC2ID": {
+                        "Value": {"Ref": "Server"},
+                        "Description": "EC2 ID of the server"
+                      },
+                      "PublicName": {
+                        "Value": {"Fn::GetAtt": ["Server", "PublicDnsName"]},
+                        "Description": "Public name of the server"
+                      } 
+                    }
+              4.4.2 Creating your first template                                  
+                ex: case: provide a virtual server
+                  server needs more cpu
+                  CloudFormation: change InstanceType property
+                  code
+                    ref
+                      <url:file:///~/codes/aws/aws_in_action/chapter4/server.json>
+                    ...
+                    "InstanceType": {
+                      "Description": "Select one of the possible instance types",
+                      "Type": "String",
+                      "Default": "t2.micro",
+                      "AllowedValues": ["t2.micro", "t2.small", "t2.medium"]
+                    }
+                  stack = instance
+                  template = class
+            next
+              Finding a Linux AMI <url:#r=ccd_0008>
+          ch05: Automating deployment
+            5.1 Deploying applications in a flexible cloud environment
+            5.2 Running a script on server startup using CloudFormation
+            5.3 Deploying with Elastic Beanstalk
+              intro
+                to deploy common web apps
+                based on php, java, py, docker ...
+              5.3.1 Components of Elastic Beanstalk
+                application: logical container
+                version: first upload executables to S3
+                configuration template: default configuration
+                environment: 
+              5.3.2 Using Elastic Beanstalk for Etherpad
+                create an application
+                  aws elasticbeanstalk create-application --aplication-name etherpad
+                create a version
+                  aws elasticbeanstalk create-application-version --application-name etherpad ---version-label 1.5.2 --source-bundle S3Bucket=awsinaction,S3Key=chapter5/etherpad.zip
+                create an environment
+                  # create an environment for nodejs basen on AMI
+                  # use a solution stack name
+                  aws elasticbeanstalk ...
+            5.4 Deploying a multilayer application with OpsWorks
+              complex applications consisting of different services (layers)
+                then use OpsWorks not Elastic Beanstalk
+              OwsWorks controls AWS resources like
+                virtual servers, load balancers, databases
+              Chef: deployment controller
+                community recipes:
+                  https://supermarket.chef.io/
+              5.4.1 Components of OpsWorks
+                /Users/mertnuhoglu/Dropbox/public/img/ss-254.png
+                elements
+                  stack: container for all other components 
+                  layer: belongs to a stack
+                    represents an application/service
+                  instance: represents virtual server
+                    multiple instances per layer
+                  app: software to deploy
+              5.4.2 Using OpsWorks to deploy IRC chat app
+                steps
+                  1. create a stack
+                  2. create a nodejs layer for kiwiIRC
+                  3. create a custom layer for IRC server
+                  4. create an app to deploy kiwiIRC to nodejs layer
+                  5. add an instance for each layer
+            5.5 Comparing deployment tools
+              intro
+                we deployed in three ways in this chapter:
+                  1. AWS CloudFormation: to run a script on server startup
+                  2. AWS Elastic Beanstalk: to deploy a common web app
+                  3. AWS OpsWorks: to deploy a multilayer application
+                differences between these solutions
+              5.5.1 Classifying the deployment tools
+                more control: CloudFormation
+                OpsWorks
+                more conventions: Elastic Beanstalk
+              5.5.2 Comparing deployment services
+          ch06: Securing your system
+            intro
+              4 critical steps:
+                1. installing software updates
+                2. restricting access to your AWS account
+                3. controlling network traffic to and from ec2 instances
+                4. creating a private network in AWS
+            6.1 Who's responsible for security?
+            6.2 Keeping your software up to date
+              6.2.1 Checking for security updates
+                when logging in, linux warns you:
+                  4 package(s) needed for security, out of 28 available
+                  Run "sudo yum update" to apply all updates
+                which packages require a security update
+                  yum --security check-update 
+              6.2.2 Installing security updates on server startup
+                when using CloudFormation
+                  opt 
+                    install all updates on server start
+                      $ yum -y update
+                      # put in user-data script
+                    install security updates on server start
+                      $ yum -y --security update
+                      # put in user-data script
+                    define package versions explicitly
+                  ex: user-data script
+                    "Server": {
+                      "Type": "AWS::EC*::Instacnce",
+                        "Properties": {
+                          ...
+                            "UserData": {"Fn::Base64": {"Fn::Join": ["", [
+                              "#!/bin/bash -ex\n",
+                              "yum -y update\n"
+                            ]]}}
+                        }
+                    }
+                problem with installing all updates:
+                  system becomes unpredictable
+              6.2.3 Installing security updates on running servers
+                run on all servers automatically
+                  <url:file:///~/codes/aws/aws_in_action/chapter6/update.sh>
+                    PUBLICNAMES=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].PublicDnsName" --output text)
+                    for PUBLICNAME in $PUBLICNAMES; do
+                      ssh -t -o StrictHostKeyChecking=no ec2-user@$PUBLICNAME "sudo yum -y --security update"
+            6.3 Securing your AWS account
+              authenticating with your account
+                3 ways:
+                  1. root user
+                  2. normal user
+                  3. authenticating as an aws resource like an ec2 instance
+                for users
+                  need password or access keys
+              6.3.1 Securing root user
+                console > .click your name > security credentials > install mfa app > expand mfa > activate mfa
+              6.3.2 Identity and Access Management service (IAM)
+                every request to aws api goes through IAM
+                  IAM checks who (authentication) can do what (authorization)
+                authentication: defined by users and roles
+                authorization: defined by policies
+              6.3.3 Policies for authorization
+                defined in json
+                contains some statements
+                  allow/deny some action on some resource
+                list of actions
+                  http://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Operations.html
+                ex: a statement
+                  {
+                    "Version": "2012-10-17",
+                     "Statement": [{
+                      "Sid": "1",
+                      "Effect": "Allow",
+                       "Action": ["ec2:*"],
+                       "Resource": ["*"]
+                     }]
+                  }
+                Deny overrides Allow
+                ex: allows all actions except terminating instances
+                  {
+                    "Version": "2012-10-17",
+                     "Statement": [{
+                      "Sid": "1",
+                      "Effect": "Allow",
+                       "Action": ["ec2:*"],
+                       "Resource": ["*"]
+                     }, {
+                        "Sid": "2",
+                        "Effect": "Deny",
+                        "Action": ["ec2:TerminateInstances"],
+                        "Resource": ["*"]
+                    }]
+                  }
+      aws ec2 User Guide id=g_10165
+        aws ec2 User Guide <url:file:///~/Dropbox/mynotes/content/code/ccode.md#r=g_10165>
+        http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/RootDeviceStorage.html?shortFooter=true
+        What is EC2
+          Amazon EC2 Root Device Volume
+            root device volume: image used to boot the instance
+            AMIs backed by either
+              a template ec2 from instance store
+              a EBS snapshot (recommended) 
+                they use persistent storage
+            Root Device Storage Concepts
+              description of AMI includes either:
+                ebs
+                instance store
+              Instance Store-backed Instances
+                when instance terminated, all data is deleted
+                no Stop action
+              EBS-backed Instances
+                root volume is an EBS volume
+                can be restarted without affecting data in attached volumes
+                when stopped, you can do:
+                  modify properties of the instance
+                  change size of instance
+                  update kernel
+                  attach root volume to a different instance
+                if ebs-backed instance fails:
+                  stop and start agagin
+                  snapshot all volumes to create a new AMI
+                  attach volume to new instance:
+                    1. create snapshot of root volume
+                    register new AMI using snapshot
+        Setting Up
+          1. Sign Up AWS
+          2. Create IAM User
+          3. Create a Key Pair
+            check regions
+              http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html?shortFooter=true
+              us-east-2
+              US East (Ohio)
+            dashboard > ec2 > navigation pane > .select region: us-east-2 (Ohio)
+            navigation pane > network & security > Key Pairs
+              .Key Pair Name = mertnuhoglu-key-pair-useast2
+              download and save pem file
+              chmod 400 mertnuhoglu-key-pair-useast2.pem
+          4. Create a Virtual Private Cloud (VPC)
+            check if VPC is supported:
+              ec2 > Account Attributes > Supported: VPC
+          5. Create a Security Group
+            allow ssh access from specific ip addresses
+            ec2 > navigation pane > Security Groups > Create Security Group
+              name: mertnuhoglu_sg_useast2
+              type: http | source: anywhere
+              type: https | source: anywhere
+              type: ssh | source: anywhere
+        Getting Started
+          1. Launch an Instance
+            ec2 dashboard > Launch Instance AMI (Amazon Machine Image)
+              Choose an Instance Type
+        Best Practices
+          Storage
+            ensure volume with data persists after instance termination
+              Preserving Amazon EBS Volumes on Instance Termination <url:#r=ccd_0005>
+        Tutorials
+        Amazon Machine Images
+          Finding a Linux AMI id=ccd_0008
+            Finding a Linux AMI <url:#r=ccd_0008>
+            http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html
+            Using EC2 Console
+              ec2 console > navigation bar > .region
+              sidebar > AMIs > .Filter options = Public images
+              .select image > Launch Instance
+            Using CLI
+              ex: public AMIS owned by you or Amazon
+                $ aws ec2 describe-images --owners self amazon
+              ex: only AMIs backed by EBS
+                $ aws ec2 describe-images --owners self amazon --filters "Name=root-device-type,Values=ebs"
+        Instances
+          Instance Purchasing Options
+            Spot Instances
+              How Spot Fleet Works id=ccd_0007
+                How Spot Fleet Works <url:#r=ccd_0007>
+                http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet.html?shortFooter=true
+                intro
+                  Spot Fleet is
+                    a collection of spot instances
+                    tries to meet target capacity you request
+                Allocation Strategy
+                  strategies
+                    lowestPrice: default strategy
+                    diversified: distributed across pools
+              Spot Instance Requests
+                Spot Instance Request States
+                  open active failed closed cancelled
+                  types of requests:
+                    one-time
+                    persistent
+                  one-time request life: open -> active -> closed
+                  persistent request life: open -> active -> open -> active ...
+                Specifying a duration
+                  amazon doesn't terminade instances with specified durations
+                  price is fixed and remanis in effect until instance terminates
+                  cli
+                    aws ec2 request-spot-instances --spot-price "0.050" --instance-count 5 --block-duration-minutes 120 --type "one-time" --launch-specification file://specification.json
+                Specifying a Tenancy
+                  ref
+                    Dedicated Instances <url:#r=ccd_0006>
+                  for dedicated instances
+                Service-Linked Role
+                Creating request
+                  console
+                    ec2 > Spot Requests > Request Spot Instances
+                    .Request type: Request
+                  cli
+                    # one-time
+                    aws ec2 request-spot-instances --spot-price "0.05" --instance-count 5 --type "one-time" --launch-specification file://specification.json
+                    # persistent
+                    aws ec2 request-spot-instances --spot-price "0.05" --instance-count 5 --type "persistent" --launch-specification file://specification.json
+              Spot Fleet Requests
+                http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-requests.html?shortFooter=true#create-spot-fleet
+                ref
+                  How Spot Fleet Works <url:#r=ccd_0007>
+                intro
+                  amazon tries to maintain your fleet's target capacity
+            Dedicated Instances id=ccd_0006
+              Dedicated Instances <url:#r=ccd_0006>
+              http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-instance.html
+              physically isolated from other aws accounts
+          Instance Lifecycle
+            Terminate
+              https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html#preserving-volumes-on-termination
+              intro
+                deleting instance = terminating instance
+                  state: shutting-down or terminated
+                  no further charges incur
+                you can't restart terminated instances
+        Storage
+          Amazon EBS (Elastic Block Store)
+            http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html
+            intro
+              storage volumes for use with ec2 instances
+              ebs volumes persist independently from instance
+        Preserving Amazon EBS Volumes on Instance Termination id=ccd_0005
+          Preserving Amazon EBS Volumes on Instance Termination <url:#r=ccd_0005>
+      ec2 spot prices
+        awespottr: find cheapest ec2 spot prices
+          https://github.com/arithmetric/awespottr
+          npm install -g awespottr
+          awespottr -h
+          awespottr c4.xlarge
+        price history
+          https://www.reddit.com/r/aws/comments/4ue6il/how_to_bid_for_cheapest_spot_instances_all/
+          aws ec2 describe-spot-price-history --product-description "Linux/UNIX" --instance-types c4.xlarge --start-time `date -u --date="7 days ago" +'%Y-%m-%dT%H:%M:00'` | jq -r -c '.SpotPriceHistory[] | (.Timestamp),(.SpotPrice)'
+          aws ec2 describe-spot-price-history --product-description "Linux/UNIX" --instance-types c4.xlarge --start-time `date -u --date="7 days ago" +'%Y-%m-%dT%H:%M:00'` | jq -r -c '.SpotPriceHistory[]'
+          by region / availability zone
+            export AWS_DEFAULT_REGION=us-east-2
+            aws ec2 describe-spot-price-history --availability-zone "${AWS_DEFAULT_REGION}b" --product-description "Linux/UNIX" --instance-types c4.xlarge --start-time `date -u --date="7 days ago" +'%Y-%m-%dT%H:%M:00'` | jq -r -c '.SpotPriceHistory[] | (.Timestamp),(.SpotPrice)'
+            # note if you don't specify region, then it only list prices for default region
+      aws cli
+        ref
+          http://localhost:8888/notebooks/aws%20study.ipynb
+        configure
+          aws configure list
+        multiple profiles
+        environment variables
+          override configuration
+          used for temporarily
+          ex
+            AWS_DEFAULT_REGION
+            export AWS_DEFAULT_REGION=us-west-2
+        list ebs volumes
+          aws ec2 describe-volumes
+      IAM (Identity and Access Management) User Guide
+        ref
+          http://localhost:8888/notebooks/study_aws.ipynb
+        what is iam?
+          to control
+            who can use aws (authentication)
+            how they can use resources (authorization)
+        Getting Setup
+          create administrators group
+            http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html?shortFooter=true
+          create a user and group
+          signin page
+            https://iterative.signin.aws.amazon.com/console
+        Identities
+          Users
+            Multi-Factor Authentication
+              Using Multi-Factor Authentication (MFA) in AWS
+                http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html
+                intro
+                  two ways
+                    security token based
+                      you need to enable a device for MFA
+                    sms based (not valid anymore)
+                      not for root user
+                      only for IAM users
+              Enabling a Virtual Multi-factor Authentication (MFA) Device
+                http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_virtual.html?shortFooter=true
+                note: you save a copy of the QR code or the secret key in a secure place.
+                  if you lose the phone, you can reconfigure the app using same virtual MFA
+                Enable a Virtual MFA Device for an IAM User
+                Enable and manage virtual MFA devices (AWS CLI)
+                  http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_cliapi.html?shortFooter=true
+                  you must use AWS Console to manage for root user
+      articles
+        Backing up and restoring snapshots on Amazon EC2 machines id=ccd_0009
+          Backing up and restoring snapshots on Amazon EC2 machines <url:#r=ccd_0009>
+          https://www.techrepublic.com/blog/the-enterprise-cloud/backing-up-and-restoring-snapshots-on-amazon-ec2-machines/
+          create a snapshot
+            1. ec2 console > instances > .select instance
+            2. > root device
+            3. Elastic Blockstore > Snapshots > Create Snapshot
+        Tricks to make an AWS spot instance “persistent”?
+          https://stackoverflow.com/questions/19575348/tricks-to-make-an-aws-spot-instance-persistent
+          ans
+            ans2
+              1. create a new spot request
+                uncheck "Delete on Termination" for root device
+              2. ssh into instance
+                make a file
+              3. create a snapshot
+                Backing up and restoring snapshots on Amazon EC2 machines <url:#r=ccd_0009>
+              4. exit ssh and terminate instance
+              5. create AMI from snapshot
+                new spot request using new image
+                  Virtualization: hvm
+                uncheck "Delete on Termination" for root
+                expand: "Advanced Options" > set kernel ID
+          steps
+            ebs volume
+              vol-03058883d903bf9ed
+            next
+              snapshot nedir
+              kernel id vs. opsiyonları incele
+              persistence konularını arat
+        AWS Tips I Wish I'd Known Before I Started
+          https://wblinks.com/notes/aws-tips-i-wish-id-known-before-i-started/
+          intro
+            paradigm shift: from pheysical servers to cloud
+              physical: you care about each host
+          Application Development
+            Store no application state on your servers
+              ex: sessions stored in database not on local filesystem
+              ex: logs handled via syslog and sent to remote store
+              ex: uploads go directly to S3
+                tip: use pre-signed URLs to let users upload directly to S3
+                  http://docs.aws.amazon.com/AmazonS3/latest/dev/PresignedUrlUploadObject.html
+              ex: long running tasks done via an async queue (SQS)
+            Store extra information in your logs
+              extra: instance-id, region, availability-zone, environment
+              get data from: instance metadata service
+            If you need to interact with AWS, use the SDK for your langauge.
+            Have tools to view application logs.
+              minimal tool set: admin tool, syslog viewer, centralised logging
+          most important: disable ssh
+          Operations
+            Disable ssh access to all servers
+              If you have to SSH into your servers, then your automation has failed
+              this forces you to paradigm shift
+                highlihts any areas you need to automate
+            Servers are ephemeral, you don't care about them. You only care about the service as a whole.
+              if a server dies
+                no concern to you
+                because auto-scaling gives you a fresh new instance soon
+              ex: netflix: Chaos Monkey
+                kills random instances in production
+            Don't give servers static/elastic IPs.
+              for auto-scaling: use load balancer instead of unique IPs per instance
+            Automate everything
+              ex: recovery, deployment, failover etc.
+            Everyone gets an IAM account. Never login to the master
+              ex: extreme case
+                some users who give the MFA token to two people, and the password to two others, so to perform any action on the master account, two of the users need to agree
+            Get your alerts to become notifications
+              your health checks should automatically destroy bad instances and spawn new ones
+                if everything is automated
+          Billing 
+            Set up granular billing alerts
+          Security
+            Use EC2 roles, do not give applications an IAM account
+            Assign permissions to groups, not users
+            Set up automated security auditing
+            Use CloudTrail to keep an audit log
+          S3
+            Use "-" instead of "." in bucket names for SSL
+            Avoid filesystem mounts (FUSE, etc).
+            You don't have to use CloudFront in front of S3 (but it can help)
+              S3 can scale to any capacity
+              for very high bandwidth: use CDN like CloudFront in front of S3
+                CloudFront can dramatically speed up access for users around the globe, as it copies your content to edge locations
+            Use random strings at the start of your keys
+          EC2/VPC
+            Use tags!
+              good for organising things, easier to search and group things up
+              to trigger specific actions:
+                ex: env=debug
+                  can put your app into debug mode when it deploys
+            Use termination protection for non-auto-scaling instances. Thank me later
+              one-off things that aren't under auto-scaling, then you should probably enable termination protection, to stop anyone from accidentally deleting the instance
+            Use a VPC
+              easy to set up
+              uses
+                control traffic at network level using ACLs
+                modify instance size, security groups etc. without terminating instance
+                private subnet where instances are isolated from outside
+            Use reserved instances to save big $$$
+            Lock down your security groups
+              Don't use 0.0.0.0/0 
+            Don't keep unassociated Elastic IPs
+          ELB
+            Terminate SSL on the load balancer
+            Pre-warm your ELBs if you're expecting heavy traffic
+          ElastiCache
+            Use the configuration endpoints, instead of individual node endpoints
+          CloudWatch
+            Use the CLI tools
+            Use the free metrics
+            Use custom metrics
+            Use detailed monitoring
+          Auto-Scaling
+          IAM
+            Use IAM roles
+            Users can have multiple API keys
+            Multi-factor authentication
+          Route53
+            Use ALIAS records
+              free
+          Misc
+            Scale horizontally
+              using lots of smaller machines is more reliable
+          hn discussion
+            https://news.ycombinator.com/item?id=7172060
+        quora
+          What is the most difficult part of setting up an AWS cloud infrastructure? Do you find cloud formation to be very complicated to use?
+            www.quora.com/What-is-the-most-difficult-part-of-setting-up-an-AWS-cloud-infrastructure-Do-you-find-cloud-formation-to-be-very-complicated-to-use
+            ans
+              cloudformation is complex
+              recommend using:
+                editor that understands json
+                json validators
+                aws cloudformation validate-template
+              CloudFormer
+                create infrastructure through console/cli
+                run cloudformer
+                it creates cf template
 
 ## databases
 
@@ -104,10 +823,34 @@ _ id=r_lastid ccd_0004
               database.xml merge=ours
             git config --global merge.ours.driver true
             git merge topic
+    change submodule after fork
+      https://stackoverflow.com/questions/11637175/swap-git-submodule-with-own-fork
+      .gitmodules:
+      $ cat .gitmodules
+      [submodule "ext/google-maps"]
+          path = ext/google-maps
+          url = git://git.naquadah.org/google-maps.git
+      edit the url with a text editor, you need to run the following:
+      $ git submodule sync
     git repo inside git repo: submodules
       https://git-scm.com/book/en/v2/Git-Tools-Submodules
+      Submodules
+        you need another project within some project
+        two procejts well be separate
       adding
+        # adds existing repo as a submodule of working repo
         git submodule add https://github.com/chaconinc/DbConnector
+        # added into directory named same as repo: "DbConnector"
+          different path:
+            git submodule add https://github.com/chaconinc/DbConnector <new_folder>
+      ex:
+        # cd to directory where subrepo will be installed
+        cd themes
+        git submodule add https://github.com/spf13/herring-cove 
+        $ cat ../.gitmodules
+        [submodule "themes/herring-cove"]
+          path = themes/herring-cove
+          url = https://github.com/spf13/herring-cove
       cloning
         opt1
           git clone x
@@ -211,7 +954,22 @@ _ id=r_lastid ccd_0004
       set of real numbers
         \rm I\!R
 
+## jq: json query
     
+
+## security
+
+    MFA (multi-factor authentication)
+      mobile apps
+        Google Authenticator vs. Authy vs. FreeOTP. What do you guys think?
+          https://www.reddit.com/r/privacy/comments/2q01bb/google_authenticator_vs_authy_vs_freeotp_what_do/
+          pros and cons
+            authy: 
+              + has PIN protection 
+                needs to enter PIN to use the tool
+              + cloud backup
+                if you lose mobile phone, you can restore from cloud
+
 ## websocket
 
   use socket.io instead of websocket
@@ -1038,6 +1796,18 @@ _ id=r_lastid ccd_0004
       for json data:
         application/json
 
+## make
+
+    Minimal make
+      http://kbroman.org/minimal_make/
+      intro
+        most important tool for reproducible research is: GNU make
+        consider: files associated with a book
+          R scripts
+          Latex files for main text
+          BibTex for references
+      A simple example
+
 # tools
 
 ## audacity
@@ -1074,6 +1844,9 @@ _ id=r_lastid ccd_0004
 ## docker id=g_10120
 
     docker <url:file:///~/Dropbox/mynotes/content/code/ccode.md#r=g_10120>
+    list container names - print names only - docker ps
+      docker ps -a --format '{{.Names}}'
+      docker ps -a | tail -n +2 | awk '{print $NF}'
     list volumes
       docker inspect -f '{{ json .Mounts  }}' <containerid> | python -m json.tool
     remove a container and its volumes
@@ -2493,9 +3266,38 @@ _ id=r_lastid ccd_0004
       fn+up/dn: page scroll
       space: line scroll
 
-## hugo
+## hugo id=g_10167
 
-    documentation
+    hugo <url:file:///~/Dropbox/mynotes/content/code/ccode.md#r=g_10167>
+    adding a theme
+      cd themes
+      git submodule add https://github.com/spf13/herring-cove 
+      vim config.yaml
+        # ++
+        theme: herring-cove
+    official documentation
+      Quick Start
+        http://gohugo.io/getting-started/quick-start/
+        install
+          brew install hugo
+          hugo version
+        new site
+          hugo new site quickstart
+        theme
+          cd quickstart;\
+          git init;\
+          git submodule add https://github.com/budparr/gohugo-theme-ananke.git themes/ananke;\
+          echo 'theme = "ananke"' >> config.toml
+        add content
+          hugo new posts/my-first-post.md
+        start hugo with drafts enabled
+          $ hugo server -D
+          http://localhost:1313
+        render
+          hugo
+        set draft=false in front parameters
+        deploy
+          rsync to server
       templates
         go template primer
           http://gohugo.io/templates/go-templates/
@@ -3008,8 +3810,9 @@ _ id=r_lastid ccd_0004
           movies
         show collections
           temp
-        db.getCollectionNames()
-          ["temp"]
+        list collections
+          db.getCollectionNames()
+            ["temp"]
       databases are created lazily. 
         "use movies" => movies db is created when you insert something
       ex
@@ -3691,6 +4494,39 @@ _ id=r_lastid ccd_0004
         KeyCode::<key we want to affect>,
         KeyCode::<key to fire when held continuously>,
         KeyCode::<key to fire when pressed and released quickly>
+
+## scim - spreadsheet on terminal
+
+    basics
+      in normal mode
+        <text
+          puts "text" left aligned
+        \center
+        >right
+        =100
+          enters number with =
+        =@sum(b4:b6)
+        gf4
+          jump to F4 cell
+        ei ea
+          edit numeric cell
+        Ei Ea
+          edit text cell
+        f up/dn
+          change decimal places
+      fill numbers
+        :fill {range} {initial_number} {increment_number}
+          Example:   :fill A0:A100 1 0.25
+      decimal precision numbers
+        f+ , fk , f-UP:         Change cell format: Increment decimal precision.
+        f- , fj , f-DOWN:       Change cell format: Decrement decimal precision.
+        f< , fh , f-LEFT:       Change cell format: Decrement column width.
+        f> , fl , f-RIGHT:      Change cell format: Increment column width.
+    formulas
+      @sum
+      @prod
+    Quick tools #1 sc The spreadsheet calculator-LFWD5slyVfc.mp4
+
 
 ## screenflow
 
@@ -5089,6 +5925,83 @@ _ id=r_lastid ccd_0004
       https://link.fish/api/
     Wordpress Knowledge Base Plugin: Helpie
       http://helpie.pauple.com/demo/
+    ripgrep
+      ag ack alternatifi
+      https://github.com/BurntSushi/ripgrep
+      rg -tpy foo
+      rg -Tpy foo
+    em-keyboard: cli emoji keyboard
+      https://github.com/kennethreitz/em-keyboard
+      Provide the names of a few emoji, and those lucky chosen emojis will be displayed in your terminal, then copied to your clipboard
+      install
+        $ pip install em-keyboard
+      ex
+        $ em sparkles cake sparkles
+        Copied! ✨🍰✨
+      ex: search
+        $ em -s read
+        🚗  car
+        🎴  flower_playing_cards
+        👹  japanese_ogre
+        👺  japanese_goblin
+    sql_insert_writer: make long SQL INSERT statements
+      https://github.com/18F/sql_insert_writer
+    mermaid: diagram generation from text
+      https://github.com/knsv/mermaid
+      gantt, workflow, sequence, network
+      install
+        npm install -g mermaid.cli
+      ex
+        graph TD;
+            A-->B;
+            A-->C;
+            B-->D;
+            C-->D;
+      https://news.ycombinator.com/item?id=13326065
+        alternatives
+          draw.io
+      cli:
+        mermaid.cli
+        ex:
+          mmdc -i input.mmd -o output.png
+          mmdc -i input.mmd -o output.png
+          mmdc -i input.mmd -o output.pdf
+          mmdc -i input.mmd -o output.svg -w 1024 -H 768
+          mmdc -i input.mmd -t forest
+          mmdc -i input.mmd -o output.png -b '#FFF000'
+          mmdc -i input.mmd -o output.png -b transparent
+    word dictionary files, thesaurus databases
+      myspell: previously
+      hunspell: current
+      R hunspell library
+        uses any .dic file as dictionary
+      dictionary files resource
+        https://github.com/titoBouzout/Dictionaries
+        english
+          https://raw.githubusercontent.com/titoBouzout/Dictionaries/master/English%20(American).dic
+          https://raw.githubusercontent.com/titoBouzout/Dictionaries/master/English%20(American).aff
+      how to install
+        https://apple.stackexchange.com/questions/11827/easy-way-to-install-additional-spell-check-dictionaries-for-os-x/11842#11842
+        osx
+          Move the files with the .aff and .dic extensions (ro_RO.aff and ro_RO.dic for Romanian) to your ~/Library/Spelling folder.
+          Go to System Preferences > Keyboard > Text > Spelling and choose the language of your choice
+      vim plugin
+        https://github.com/Ron89/thesaurus_query.vim
+          lookup synonyms
+          replace them
+      common words
+        https://github.com/first20hours/google-10000-english
+    tldr: examples for bash commands
+      ex
+        tldr tar
+        tldr git mv
+    marker: cli tool
+      Marker is a command palette for the terminal. It lets you bookmark commands (or commands templates) and easily retreive them with the help of a real-time fuzzy matcher.
+      /Users/mertnuhoglu/Dropbox/keynote_resimler/yayin/marker_cli_tool.gif
+    Command line flash cards with bash-lX8jqo70r1I.mp4
+      tsv file contains two columns:
+        question|answer
+      shows one by one
 
 
 
