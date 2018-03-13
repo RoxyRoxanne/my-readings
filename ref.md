@@ -14,6 +14,10 @@
   transfer files from android to osx
     windows pc (toshiba) -> usb ile bağla -> düz dosya transferi
     ekran açık olmalı
+  otg
+    settings > yüklü uygulamalar > dokümanlar > etkinleştir
+    otg usb cihazını tak
+    amaze app > hamburger menu > otg
 
 # aws
 
@@ -33,6 +37,25 @@
 
 # bash
 
+  error: ~ in ""
+    works:
+      DATA_MODEL_DIR=~/projects/itr/itr_documentation/data_model
+      DATA_MODEL_DIR="/Users/mertnuhoglu/projects/itr/itr_documentation/data_model"
+      cd $DATA_MODEL_DIR
+    error:
+      DATA_MODEL_DIR="~/projects/itr/itr_documentation/data_model"
+      cd $DATA_MODEL_DIR
+  moving in cli
+    moving_fast_in_cli.png
+    moving: 
+      A/E: start/end 
+        ctrl: line
+      B/F: start/end 
+        alt: word
+        ctrl: letter
+    erasing: ctrl
+      U: start
+      K: end
   getent
     getent <database> <key>
     ex
@@ -46,9 +69,13 @@
         get which service is used by port
       getent hosts google.com | awk '{print $1}'
         get ip of a host
-  cd to script directory
+  cd to script directory - directory of the running script
     https://stackoverflow.com/questions/3349105/how-to-set-current-working-directory-to-the-directory-of-the-script
-    cd "$(dirname "$0")"
+    relative path
+      cd "$(dirname "$0")"
+      cd "${0%/*}"
+    absolute path
+    SCRIPT_DIR="$(dirname "$(realpath "$0")")"
   default value for arguments/variables
     tmpdir=/tmp
     defvalue=1
@@ -171,6 +198,8 @@
 
 ## read/write input/output
 
+  how to append some text to a file
+    >>
   read lines into an array
     http://stackoverflow.com/questions/11393817/bash-read-lines-in-file-into-an-array
       IFS=$'\n' read -d '' -r -a lines < /etc/passwd
@@ -327,6 +356,8 @@
 
 ## for loops
 
+  ref: examples
+    <url:file:///~/projects/study/bash/ex_bash_loop.Rmd>
   read csv columns and loop over rows
     <url:file:///~/Dropbox (Personal)/projects/classify_books/classify_books.sh>
     classifications=${script_root}/classification_rules.csv
@@ -348,10 +379,6 @@
   built-in bash
     for i in $(eval echo "{1..$END}"); do
 
-## append to file
-
-  how to append some text to a file
-    >>
 
 # chrome
 
@@ -925,7 +952,6 @@
     ref
       Jekyll <url:file:///~/Dropbox/mynotes/ref.otl#r=g_10028>
       Publishing Web Site and Blog <url:file:///~/Dropbox/mynotes/general/processes.md#r=g_10033>
-
     new project
       best
         clone jekyll_skeleton
@@ -1022,6 +1048,8 @@
 
 # Hugo
 
+    ref
+      Publishing Web Site and Blog <url:file:///~/Dropbox/mynotes/general/processes.md#r=g_10033>
     new blog post
       hugo new posts/my_post.md
       # set draft=false in yaml
@@ -1138,6 +1166,12 @@
     fix:
       export to single markdown file
       pandoc x.docx -o x.pdf
+  shortcuts
+    s   start prompter
+    f   view toc
+    vim key bindings
+  toc
+    /   search
 
 ## mdmerge
 
@@ -1396,6 +1430,39 @@
 
 ## Applications
 
+### Anki
+
+    markdown to anki
+      ankdown
+        ankdown -p anki_sql.apkg -d sql2 -i anki_sql.md
+        Anki: Import akpg
+      cloze soruları için
+        ex:
+          ---
+          ## Testing Cloze 3
+          {{c1::SEL}} DISTINCT ON (customer) 
+          %
+          % 
+          clozeq
+        Anki > Import > Browse > .Select cards > Change Note Type
+    cloze
+    mine
+      mine
+        code blocks
+          put <br> at the end
+          align to left
+          ex
+            CREATE ... FUNCTION ...<br>
+            RETURNS ... AS <br>
+            $func$<br>
+          vim substitute command
+            g/^ \+[^ ].*[^>]$/s/$/ <br>
+            ConvertAnkiMd
+      my customizations
+        ankdown.py
+          font-family: 'Inconsolata', 'arial';
+          r"#latex#\$(.*?\S)\$", fieldtext_with_envs_replaced), INLINE_SENTINEL)
+
 ### iterm
 
     highlight current row
@@ -1416,6 +1483,13 @@
     very good desktop editor
   stackedit.io
     online editor
+
+## mucommander
+
+  preferences
+    ~/Library/Preferences/muCommander/preferences.xml
+  custom text editor
+    https://majecek.wordpress.com/2012/01/09/mucommander-and-external-editor/
 
 ### excel
 
@@ -1548,6 +1622,12 @@
   show  #!x
   select  ^#x
   paste ^#!x
+
+### LibreOffice
+
+  Spreadsheets
+    shortcuts
+      fn#up/dn  next/prev sheet
 
 ### Screenshot
 
@@ -3038,9 +3118,9 @@ install from local file system
 ## du
 
   disk file size distribution
-      du -h . | sort -rh | head 
-      -d 1
-        depth 1
+    du -h . | sort -rh | head 
+    -d 1
+      depth 1
   List files by size
     du -ah $dir | sort -rh | tail
       -a for all files, not directories
@@ -3090,6 +3170,7 @@ install from local file system
     https://stackoverflow.com/questions/352098/how-can-i-pretty-print-json-in-unix-shell-script
     underscore
       echo '{"a":2}' | underscore print
+      echo '{"a":2}' | underscore print --color
     jq
       jq . file
       jsonlint file.json
@@ -3387,8 +3468,13 @@ install from local file system
     grep -v -F -x -f file1.md file2.md > diff.md
       lines in file2 but not in file1
 
-## tail
+## head/tail
 
+  head with offset
+    ... | tail -n +2 | head -n 3
+      get 3 lines starting from line 2
+    sed -n "2,4p"
+    awk "NR >= 2 && NR <= 4"
   logs monitoring
     tail -f file
   skip first lines / head from line
@@ -3412,6 +3498,7 @@ install from local file system
 ## imagemagick
 
   split pdf into pages
+    convert x.pdf x-%04d.pdf
   convert file.pdf image.png
     convert -quality 100 -density 300x300 -resize 1280x720 index.pdf slide%d.jpg
     mogrify -quality 100 -density 300x300 -resize 1280x720\! *.jpg 
@@ -3449,6 +3536,7 @@ install from local file system
 
   create
     ln -s /path/to/target /path/to/symlink
+    ln -s /path/to/dir/ /path/to/symlink
   update
     ln -snf /path/to/target /path/to/symlink
   list and remove symbolic links
@@ -3631,13 +3719,14 @@ install from local file system
 ## rg: ack ag alternative
 
     -L --follow symlinks
+    rg <keyword> **/*.md
+      search recursively in md files
 
 ## rsync
 
   örnek
     rsync -aP --delete "$source/update/" "$target/update/"
       dikkat: klasörleri kopyalarken hedef klasörü tam olarak yazın "update/" yazmazsanız, "update" klasörünü oluşturmaz ve $target içindeki dosyaları siler
-
   rsync general usage
     rsync -nazP from to/
       copy from dir
@@ -3650,7 +3739,13 @@ install from local file system
     -v verbose
     -a preserve file attributes
     --ignore-existing
-    -P progress
+    -n --dry-run
+    --list-only   list instead of tranfser
+    -z --compress
+    -P --partial --progress
+    -t --times: preserve modification times
+    --files-from=<list_of_files>
+    -R --relative   preserves full paths of files after sync
 
 ## scp
 
@@ -3924,6 +4019,8 @@ install from local file system
 
 # Vim
 
+  prettify indent 
+    gg=G
   horizontal scrolling
     help scroll-horizontal
     zL  half-screen left
@@ -3999,6 +4096,8 @@ install from local file system
   order of settings 
     after a filetype such as votl
       ~/.vim/after/ftplugin/votl.vim
+  increment from 7 to 10
+    set nrformats-=octal
 
 ## debugging vim
 
@@ -4131,6 +4230,8 @@ install from local file system
     \{n}
     \{,m}
     \{n,}
+    \{-}
+      non-greedy quantifier
   unicode chars in vim regex
     \w doesn't match unicode chars
     https://stackoverflow.com/questions/19385458/vim-regex-matches-unicode-characters-are-as-non-word
@@ -4321,6 +4422,16 @@ install from local file system
   http://andrewradev.com/2011/06/08/vim-and-ctags/
     :Function foo
     list functions that start with foo in quickfix
+
+### fzf: fuzzy file finder
+
+    :FZF
+    my customizations:
+      FZFMru
+      <Leader>Enter   open buffers
+      Buffers         open buffers
+      Mdfind          mdfind
+      Tags
 
 ### vimfiler
 
@@ -4569,7 +4680,9 @@ default keymappings
       I   help
       i   file information
       -   open explorer in current directory
-      enter     open file
+      enter     open file in vim
+      x   open file in osx native application
+        gx: not working in osx
       o         open horizontal split
       v         open vertical split
       .         prepopulate command line
@@ -4600,6 +4713,10 @@ default keymappings
 
 # Vimscript VimL
 
+    ctrl keybinding inside vimscript
+      execute "normal \<c-a>"
+    eval string (evaluate execute)
+      :execute "echom 'Hello, world!'"
     date formatting
       let cmd = 'e ~/projects/study/logbook/' . strftime("%Y-%m-%d") . '.md'
       echo cmd
@@ -4728,6 +4845,9 @@ default keymappings
         full path of directory of current file
       expand("%:p")
         full path of current file
+        p: full path
+      expand("%:r")
+        root of file name: file extension removed
       let file_name = expand('%:t:r')
         get file name
       cd %:p:h
@@ -4756,6 +4876,17 @@ default keymappings
   cloning repo on webfaction
     git clone ~/webapps/gitw/repos/evammoa.git
 
+# Yaml yml
+
+    yq: jq wrapper for yaml
+      https://yq.readthedocs.io/en/latest/
+      pip install yq
+      cat input.yml | yq .key.subkey
+      yq .key.subkey input.yml 
+      yq -y .key.subkey input.yml 
+        -y --yaml-output
+        output in yaml
+  
 # Youtrack
 
   shortcuts
@@ -4856,5 +4987,4 @@ process of video production
 tools/ideas to try
     http://www.buildingwidgets.com/blog/2015/9/5/week-35-gifrecorder
       gif recorder from text
-
 

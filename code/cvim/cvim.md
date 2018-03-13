@@ -1,6 +1,68 @@
 _ id=r_lastid cvim_002
 
     vim slides presentation tool
+    neovim
+      <vimhelp:nvim-intro>
+        differences between vim and nvim
+          <vimhelp:vim-differences>
+          configuration
+            ~/.config/nvim/init.vim
+              .vimrc
+            ~/.config/nvim
+              .vim
+            ~/.data/nvim/shada/main.shada
+              .viminfo
+          defaults
+            autoindent
+            :filetype plugin indent on
+          new features
+            major components
+              <vimhelp:API>
+              <vimhelp:lua>
+              <vimhelp:job-control>
+                multitasking without blocking 
+              <vimhelp:remote-plugin>
+                intro
+                  nvim supports RPC
+                  remote plugins can send and receive data/events
+              providers
+                <vimhelp:provider-python>
+                  py intergation done via <vimhelp:RPC>
+                <vimhelp:provider-ruby>
+              <vimhelp:shada> data file
+                intro
+                  stores session data
+                  SHAred DAta between nvim sessions
+              <vimhelp:terminal> embedded terminal emulator
+              <vimhelp:xdg> standard paths
+            user experience
+              <vimhelp:feature-compile>
+                nvim compiled with all features
+                nvim avoids features that are platform specific
+              <vimhelp:K> in help docs for <vimhelp:CTRL-]>
+            architecture
+              plugins run in separate processes
+              io built upon libuv
+            features
+              outline: gO
+              META recognized in terminal
+              options
+              variables
+              commands
+                <vimhelp:checkhealth>
+            <vimhelp:nvim-features-changed>
+      points
+        gO    navigable outline of buffer
+      <vimhelp:shada>
+        difference to session file
+          there is only one shada file
+      misc
+        <vimhelp:v:oldfiles>
+          list of file names loaded from shada file on startup
+        <vimhelp:initialization>
+        <vimhelp:session-file>
+          starting with a Session:
+            vim -S session.vim
     navigate help topics in vim's documentation
       https://vi.stackexchange.com/questions/2136/how-do-i-navigate-to-topics-in-vims-documentation
       ans1
@@ -474,5 +536,27 @@ _ id=r_lastid cvim_002
             go up the directory tree by one or multiple levels.
           :command at the end of input
             Use :25 to jump to line 25. Use :diffthis when opening multiple files to run :diffthis on the first 4 files.
+    gen_tags
+      https://github.com/jsfaint/gen_tags.vim
+      ctags+gtags
+        gtags: gnu global
+          tags for: definition, reference, calling, called, include, string etc.
+      ctags support
+        GenCtags
+          generate ctags database
+    vim-db database client
+      https://github.com/tpope/vim-db
+      :DB postgresql:///<dbname> <sql>
+      DB postgresql:///app select * from data.client
+        sql query 
+      DB postgresql:///<dbname> < <sql_file>
+        import external sql file
+      DB g:prod = postgresql://superuser:superuserpass@localhost/app
+        DB g:prod select * from data.client
+        # global variable: g:prod
+      DB postgresql:///$PGDATABASE select * from data.client
+        environment var: $PGDATABASE
+    vim-dotenv environment variables
+
 
 

@@ -274,6 +274,10 @@ url: http://mertnuhoglu.com/tech/book_frisby_adequate_guide_to_functional_progra
       associativity law
         var associative = compose(f, compose(g,h)) == compose(compose(f,g), h)
       this allows variadic (any number of args) compose:
+        compose(toUpperCase, compose(head, reverse));
+        // or
+        compose(compose(toUpperCase, head), reverse);
+        --->>>
         var lastUpper = compose( toUpperCase, head, reverse )
     Pointfree
       never use data args
@@ -296,14 +300,17 @@ url: http://mertnuhoglu.com/tech/book_frisby_adequate_guide_to_functional_progra
     Debugging
       use trace function
       ex: common mistake with map
-        //wrong - we end up giving angry an array and we partially applied map with god knows what.
-        var latin = compose(map, angry, reverse);
-        latin(['frog', 'eyes']);
-        // error
-        // right - each function expects 1 argument.
-        var latin = compose(map(angry), reverse);
-        latin(['frog', 'eyes']);
-        // ['EYES!', 'FROG!'])
+        composing map without first partially applying it:
+          const angry = compose(exclaim, toUpperCase);
+          var reverse = reduce( (acc,x) => [x].concat(acc), [])
+          //wrong - we end up giving angry an array and we partially applied map with god knows what.
+          var latin = compose(map, angry, reverse);
+          latin(['frog', 'eyes']);
+          // error
+          // right - each function expects 1 argument.
+          var latin = compose(map(angry), reverse);
+          latin(['frog', 'eyes']);
+          // ['EYES!', 'FROG!'])
       ex
         var trace = curry(function(tag, x) {
           console.log(tag, x);

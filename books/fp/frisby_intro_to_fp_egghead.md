@@ -58,6 +58,14 @@ url: http://mertnuhoglu.com/tech/frisby_intro_to_fp_egghead/
         .fold(c => c.toLowerCase())
     ex: applyDiscount('$5.00', '20%')
       const moneyToFloat = str =>
+        parseFloat(str.replace(/\$/g, ''))
+      const percentToFloat = str => {
+        const replaced = str.replace(/\%/g, '')
+        const number = parseFloat(replaced)
+        return number * 0.01
+      }
+    ex: applyDiscount('$5.00', '20%')
+      const moneyToFloat = str =>
         Box(str)
         .map(s => s.replace(/\$/g, ''))
         .fold(r => parseFloat(r))
@@ -173,7 +181,7 @@ url: http://mertnuhoglu.com/tech/frisby_intro_to_fp_egghead/
       // throws error: undefined
     ex: use Either for null check
       const findColor = name => {
-        const found = ({red: '#ff4444', blue: '#3b5998', yellow: '#fff68f'})[name]
+        const found = {red: '#ff4444', blue: '#3b5998', yellow: '#fff68f'}[name]
         return found ? Right(found) : Left(null)
       }
       const result = findColor('green')
@@ -195,7 +203,7 @@ url: http://mertnuhoglu.com/tech/frisby_intro_to_fp_egghead/
       const fromNullable = x =>
         x != null ? Right(x) : Left(null)
       const findColor = name => 
-        fromNullable({red: '#ff4444', blue: '#3b5998', yellow: '#fff68f'})[name]
+        fromNullable({red: '#ff4444', blue: '#3b5998', yellow: '#fff68f'}[name])
 
 ## 04-egghead-javascript-composable-error-handling-with-either.mp4
 
@@ -253,17 +261,37 @@ url: http://mertnuhoglu.com/tech/frisby_intro_to_fp_egghead/
             f = e => 3000
     what if json file cannot be parsed
     ex: json.parse with try catch
+      .map(c => JSON.parse(c))
+      -->>
+      .map( c => tryCatch( () => JSON.parse(c)) )
+      ---
       const getPort = () =>   
-        tryCatch(() => fs.readFileSync('config.json')) // Right('')
-        .map(c => tryCatch(() => JSON.parse(c))) // Right(Right(''))
+        tryCatch(() => fs.readFileSync('config.json')) 
+        .map(c => tryCatch(() => JSON.parse(c))) 
         .fold(e => 3000,
               c => c.port)
-    use chain to unnest nested Right
+      ---
+      evaluation:
+        const getPort = () =>   
+          tryCatch(() => fs.readFileSync('config.json')) 
+          #> Right(..)
+          .map(c => tryCatch(() => JSON.parse(c))) 
+          #> Right(Right(..))
+          .fold(e => 3000,
+                c => c.port)
+      ---
+      use chain to unnest nested Right
     ex: use chain
       const Right = x => ({
-        chain: f = f(x), .. 
+        chain: f => f(x), 
+        map: f => Right(f(x)),
+        fold: (f,g) => g(x)
+      })
       const Left = x => ({
-        chain: f = Left(x), ..
+        chain: f => Left(x), 
+        map: f => Left(x),
+        fold: (f,g) => f(x)
+      })
       const getPort = () =>   
         tryCatch(() => fs.readFileSync('config.json')) // Right('')
         .chain(c => tryCatch(() => JSON.parse(c))) // Right('')
@@ -338,7 +366,7 @@ url: http://mertnuhoglu.com/tech/frisby_intro_to_fp_egghead/
         fromNullable(example.previewPath)
         .chain(readFile)
         .fold(() => example, 
-              ex => Object.assign({preview: p}, ex))
+              preview => Object.assign({preview}, ex))
     ex: parseDbUrl
       const parseDbUrl = cfg => {
         try {

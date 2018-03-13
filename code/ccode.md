@@ -996,6 +996,65 @@ _ id=r_lastid ccd_0009
         console > enable
         console > persist
 
+# bash
+
+## fd: find replacement
+
+    https://github.com/sharkdp/fd
+    ref
+      <url:file:///~/projects/study/vim/vim_ex_fzf_fuzzy_file_finder.Rmd> 
+    brew install fd
+    fd '[0-9]\.jpg$' ~
+    fd <pattern>
+
+## fzf: fuzzy file finder
+
+    https://github.com/junegunn/fzf
+    brew install fzf
+    $(brew --prefix)/opt/fzf/install
+    brew reinstall fzf
+    ex:
+      find * -type f | fzf
+      -m    multi-select
+        tab: to mark
+    search syntax
+      abcd    fuzzy match
+      ^abc    prefix-exact
+      .mp3$   suffix-exact
+      'wild   exact-match
+      !fire   inverse-exact-match
+      !.mp3$
+    ex: multiple args
+      ^core rb$ | py$
+      # start with core
+      # ends with rb or py
+    man fzf
+    shortcuts for cli
+      ^t    paste selected lines onto cli
+      ^r    paste from history
+      !c    cd into selected dir
+
+## global gtags
+
+    https://www.gnu.org/software/global/download.html
+    tags for definition, reference, calling etc
+    brew install global
+
+## rsync
+
+    rsync manual
+      https://linux.die.net/man/1/rsync
+      intro
+        delta-transfer algorithm
+          sends only differences
+        finds files that need to be transferred
+      Usage
+        rsync -t *.c foo:src/
+          all files matching pattern *.c
+          to machine foo
+        rsync -avz <src> <dest>
+          recursively transfer
+
 # purescript
 
     psci multiline mode
@@ -1010,6 +1069,7 @@ _ id=r_lastid ccd_0009
 # ruby
 
 ## rubymine
+
   jruby support
     jruby is supported only in intellij ultimate + ruby plugin
   running rspec tests
@@ -1025,9 +1085,11 @@ _ id=r_lastid ccd_0009
       same, but the path should be relative to root
 
 ## Ruby in twenty minutes
+
     https://www.ruby-lang.org/en/documentation/quickstart/
 
 ## yield and blocks
+
     http://stackoverflow.com/questions/3066703/blocks-and-yields-in-ruby
   expl1
     methods may receive code block
@@ -1062,7 +1124,6 @@ _ id=r_lastid ccd_0009
 ## closures in ruby
 
     https://innig.net/software/ruby/closures-in-ruby
-
     blocks like closures
       closed wrt variables defined in the context they were created
       but we can not pass them
@@ -1810,6 +1871,76 @@ _ id=r_lastid ccd_0009
 
 # tools
 
+## anki
+
+    Basics: Objects
+      Cards
+        card = question + answer pair
+      Decks
+        deck = group of cards
+        tree structure
+          parent::child
+      Notes & Fields
+        ex: note
+          French: Bojour
+          English: Hello
+          Page: 12
+        we will generate two cards from this note:
+          card1 
+            Q: Bonjour
+            A: Hello
+            Page 12
+          card2
+            Q: Hello
+            A: Bonjour
+            Page 12
+      Card Types
+        blueprint: card type
+        a type of note can have many card types
+        when you create a note, anki will create a card for each card type
+        each card type has two templates: Q and A
+        ex1:
+          Q: {{French}}
+          A: {{English}}<br>
+          Page #{{Page}}
+        ex2:
+          Q: {{English}}
+          A: {{French}}<br>
+          Page #{{Page}}
+      Note Types
+        tip: make a new note type for each topic
+        ex: "French" note type
+        ex: "Country" note type
+        standard note types:
+          Basic
+          Basic (and reversed card)
+            creates two cards for each text you enter
+            front -> back and back -> front
+          Cloze
+            ex
+              Canberra was founded in {{c1::1913}}.
+              ->
+              Canberra was founded in [...].
+            ex:
+              {{c2::Canberra}} was founded in {{c1::1913}}.
+              ->
+              Canberra was founded in [...].
+              [...] was founded in 1913.
+            ex:
+              {{c1::Canberra}} was founded in {{c1::1913}}.
+              ->
+              [...] was founded in [...].
+            ex: hints
+              C{{c1::anberra}} was founded in 1913.
+            ex: hint 2
+              {{c1::Canberra::city}} was founded in 1913.
+              ->
+              [city] was founded in 1913.
+      Collection
+    Adding Material
+      Downloading Shared Decks
+      Adding Cards and Notes
+          
 ## audacity
 
     shortcuts
@@ -1844,6 +1975,12 @@ _ id=r_lastid ccd_0009
 ## docker id=g_10120
 
     docker <url:file:///~/Dropbox/mynotes/content/code/ccode.md#r=g_10120>
+    list dangling (untagged images) volumes
+      docker images -f "dangling=true" -q
+      remove them
+        docker rmi $(docker images -f "dangling=true" -q --no-trunc)
+    purging (removing) all unused images, containers etc.
+      docker system prune
     list container names - print names only - docker ps
       docker ps -a --format '{{.Names}}'
       docker ps -a | tail -n +2 | awk '{print $NF}'
@@ -3961,6 +4098,53 @@ _ id=r_lastid ccd_0009
             }
          }
       )
+    delete/remove user
+      use dentas
+      db.dropUser("myUserAdmin")
+    convert String field to Date field in mongodb id=g_10148
+      make date from validFrom
+        var validFrom = "1.4.2017"
+        var ad = new Date(validFrom)
+        opt1:
+          function stringToDate(_date,_format,_delimiter)
+          {
+                      var formatLowerCase=_format.toLowerCase();
+                      var formatItems=formatLowerCase.split(_delimiter);
+                      var dateItems=_date.split(_delimiter);
+                      var monthIndex=formatItems.indexOf("mm");
+                      var dayIndex=formatItems.indexOf("dd");
+                      var yearIndex=formatItems.indexOf("yyyy");
+                      var month=parseInt(dateItems[monthIndex]);
+                      month-=1;
+                      var formatedDate = new Date(dateItems[yearIndex],month,dateItems[dayIndex]);
+                      return formatedDate;
+          }
+          stringToDate("17/9/2014","dd/MM/yyyy","/");
+          stringToDate("9/17/2014","mm/dd/yyyy","/")
+          stringToDate("9-17-2014","mm-dd-yyyy","-")
+      opt1: https://stackoverflow.com/questions/34837489/how-can-convert-string-to-date-with-mongo-aggregation
+        var cursor = db.collection.find({"validFrom": {"$exists": true, "$type": 2 }}),
+            bulkOps = [];
+        cursor.forEach(function (doc) { 
+            var newDate = new Date(doc.validFrom);
+            bulkOps.push(         
+                { 
+                    "updateOne": { 
+                        "filter": { "_id": doc._id } ,              
+                        "update": { "$set": { "validFrom": newDate } } 
+                    }         
+                }           
+            );   
+            if (bulkOps.length === 1000) {
+                db.collection.bulkWrite(bulkUpdateOps);
+                bulkOps = [];
+            }
+        });         
+        if (bulkOps.length > 0) { db.collection.bulkWrite(bulkOps); }
+      save date into mongodb
+        opt1: js
+          https://stackoverflow.com/questions/24483727/how-to-insert-a-document-with-date-in-mongo
+          db.example.insert({"date":ISODate("2016-03-03T08:00:00.000")});
 
 ## nginx id=ccd_0004
   
@@ -4661,6 +4845,13 @@ _ id=r_lastid ccd_0009
             short-lived access token 
             with long-lived refresh token to get access token
             convoluted solution
+
+## financial budget planning - ibm cognos tm1
+
+    olap cubes
+      cube = map 
+      dimension = key
+      multi-dimensional = multiple keys to one value
 
 ## functional programming
 
@@ -5888,6 +6079,7 @@ _ id=r_lastid ccd_0009
         nicknames for bookmarks
       vimium
         ?     help
+        hl    scroll horizontally
       shortcuts
         #+p   save in pocket
     Dat: dat project
@@ -6002,6 +6194,23 @@ _ id=r_lastid ccd_0009
       tsv file contains two columns:
         question|answer
       shows one by one
+    libuv
+      https://github.com/libuv/libuv
+        async io made simple
+        multiplatform support for async io
+        features
+          event loop
+          async tcp/udp sockets
+          async dns resolution
+          async file/systems ops
+    Semantic versioning
+      https://semver.org
+        MAJOR.MINOR.PATCH
+        MAJOR version: incompatible API changes
+        MINOR: new functionality backwards-compatible
+        PATCH: backwards-compatible bug fixes
+    Graphviz in Browser
+      http://www.webgraphviz.com
 
 
 

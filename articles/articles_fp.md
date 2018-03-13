@@ -2375,6 +2375,91 @@
     http://www.haskellforall.com/2015/10/basic-haskell-examples.html
     http://www.haskellforall.com/2015/10/polymorphism-for-dummies.html
 
+## Brian Lonsdorf
 
+### Brian Lonsdorf - Oh Composable World!-SfWR3dKnFIo.mp4
 
+``` js
+const ProfileLink = user =>
+  <a href={`/users/${u.id}`}>{u.name}</a>
+
+const ProfileLink = user =>
+  a({href: `/users/${user.id}`}, user.name)
+
+const Comp = g =>
+({
+  fold: g,
+  contramap: f =>
+    Comp(x => g(f(x)))
+})
+
+const Heading = str => h1(`Now Viewing ${str}`);
+const Title = Comp(Heading).contramap(s => s.pageName);
+
+Title.fold({ 
+  pageName: 'Home',
+  currentUser: { id: 2, name: 'Chris' }
+});
+// <h1>
+``` 
+
+`contramap` is the opposite of `map`
+
+`contramap` prepends its input function `f` to the existing function `g` of
+`Comp`.
+
+How to do this with usual `map`?
+
+``` js
+const s = { pageName: 'Home', currentUser: { id: 2, name: 'Chris' } }
+const f = s => s.pageName
+const g = Heading
+
+Box(s)
+  .map(g)
+  .fold(f)
+
+Comp(f)
+  .contramap(g)
+  .fold(s)
+``` 
+
+`concat` function concatenates two components:
+
+``` js
+const Comp = g =>
+({
+  fold: g,
+  contramap: f => Comp(x => g(f(x))),
+  concat: other => 
+    Comp(x => div( g(x) + other.fold(x) ))
+})
+``` 
+
+``` js
+const Link = Comp(ProfileLink).contramap(s => s.currentUser)
+const App = Heading.concat(Link)
+App.fold(s)
+// <div>
+//   <h1>Now viewing Home</h1>
+//   <a href="/users/22">Chris</a>
+// </div>
+``` 
+
+`Reducer`
+
+``` js
+const Reducer = g =>
+({
+  fold: g,
+  contramap: f => Reducer((acc, x) => g(acc, f(x))),
+  map: f => 
+    Reducer((acc, x) => f(g(acc, x)))
+})
+const r = Reducer((acc, x) => acc.concat(x))
+  .contramap(x => `The number is ${x}`)
+  .map(x => x + '! ')
+[1,2,3].reduce(r.fold, '')
+// The number is 1! The number is 2! The number is 3!
+``` 
 

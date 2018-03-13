@@ -1,5 +1,238 @@
   <url:file:///~/Dropbox (Personal)/mynotes/content/articles/articles_js.md>
 
+# Beau teaches JavaScript  id=g_10189
+
+  Beau teaches JavaScript  <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10189>
+  01-Heap Data Structure (max and min)- Beau teaches JavaScript-dM_JHpfFITs.mp4
+  02-Pop ups tutorial - Beau teaches JavaScript-y6P8uvqRYgw.mp4
+    alert("message"): void
+    confirm("yes or no"): boolean
+    parts of window object:
+      same as:
+        window.alert
+        window.confirm
+    var person = prompt("enter name:", "default value")
+    if (person == null || person == "")
+      console.log(..)
+  03-Window Object - move, open, close, & size - Beau teaches JavaScript-ZJng8ls8uH0.mp4
+    all browsers support it
+    all js objects are part of window
+      document
+      --> implies
+      window.document
+    js
+      window.addEventListener('resize', update)
+      var x = window.document.getelementById("demo")
+      function update() {
+        x.innerHTML = "inner window width: " + window.innerWidth;
+      }
+      var newWindow = window.open("http://freecodecamp.com", "newWindow", "menubar=true,top=200,left=200")
+    html
+      <input type="button" value="Close" onclick="newWindow.close()" />
+      <a href=".." target="newWindow">My </a>
+  04-Trie Data Structure - Beau teaches JavaScript-7XmS8McW_1U.mp4
+  05-requestAnimationFrame() - Beau teaches JavaScript-tS6oP1NveoI.mp4
+  06-Animation in the DOM - Beau teaches JavaScript-YXZX_6RfHjk.mp4
+  07-Mediator Design Pattern - Beau teaches JavaScript-KOVc5o5kURE.mp4
+  08-DOM Nodes - Beau teaches JavaScript-BWVoPxob5DU.mp4
+    node tree
+    top node: Document
+    root node: <html>
+    js
+      var para = document.createElement("p");
+      var node = document.createTextNode("hello");
+      para.appendChild(node);
+      var parent = document.getElementById("div1");
+      parent.appendChild(para);
+      para.innerHTML = "new text"
+      var child = document.getElementById("p1")
+      parent.insertBefore(para, child)
+  09-addEventListener() - Beau teaches JavaScript-F3odgpghXzY.mp4
+    element.addEventListener(event, function)
+    js
+      var myp = document.getElementById("myp");
+      myp.addEventListener("click", function() { myDiv.style.background = "blue" });
+    same with onclick: but more constrained
+      myp.onclick = function() { myDiv.style.background = "blue" };
+  10-Linked List - Beau teaches JavaScript-9YddVVsdG5A.mp4
+  11-DOM Events - Beau teaches JavaScript-0fy9TCcX8Uc.mp4
+    html
+      <h1 onclick="this.innerHTML='Cereal!'">My fav</h1>
+      <h1 onclick="changeColor(this)">Change</h1>
+    js
+    function changeColor(obj) {
+      obj.style.color = "blue";
+    }
+  12-CSS styles in JavaScript (setting and getting) - Beau teaches JavaScript-z_mSgK-6pOQ.mp4
+    js
+      mydiv.style.background = 'red';
+      mydiv.style.cssText = 'background: red;';
+      mydiv.setAttribute("style", "background: red;");
+    show every style element:
+      console.log(mydiv.style);
+      // inline styles 
+      console.log(window.getComputedStyle(mydiv));
+      // inline + css styles
+  13-Selecting & Changing Website Elements (DOM manipulation) - Beau teaches JavaScript-eaLKqoB9Fu0.mp4
+    js
+      var unicyle = document.getElementsByClassName('unicycle');
+      var unicyle = div1.getElementsByClassName('unicycle');
+      var paragraphs = document.getElementsByTagName('p');
+      var query = document.querySelector('.unicycle');
+      var query = document.querySelectorAll('.unicycle');
+      // returns array of elements
+      var query = document.querySelectorAll('.unicycle, #div2');
+    js
+      var text = "<h1>Hello</h1>"
+      div1.innerHTML = text;
+      // replaces all div1 content
+    note: innerHTML opens up XSS attack
+      instead use textContent
+      div1.textContent = text;
+      // puts raw content
+  14-Hash Tables - Beau teaches JavaScript-F95z5Wxd9ks.mp4
+  15-Check if a property is in an object - Beau teaches JavaScript-dpTFcPUe2oo.mp4
+    var my = {name: 'js'};
+    if (my.name) { ... }
+    console.log(my.hasOwnProperty('name'))
+    // if name is contained directly (not from prototype)
+    console.log('name' in my)
+  16-Strict Mode — 'use strict' - Beau teaches JavaScript-uqUYNqZx0qY.mp4
+  17-Immediately Invoked Function Expression - Beau teaches JavaScript-3cbiZV4H22c.mp4
+    IIFE
+      runs as soon as it is defined
+    js
+      (function () {
+        console.log("my");
+      })();
+      (fav = function () {
+        console.log("my");
+      })();
+      fav();
+    usecase:
+      creating closures so that variable names don't conflict with imported libraries
+    ex:
+    (function() {
+      var a = 3;
+    })
+    console.log(a); // error
+  18-Map data structure & ES6 map object - Beau teaches JavaScript-_1BPrCHcjhs.mp4
+  19-Get current URL with JavaScript (and jQuery) - Beau teaches JavaScript-w5whn4iJCLc.mp4
+    js
+      window.location.protocol
+      window.location.host
+      window.location.pathname
+      window.location.href
+    jquery
+      $(location).attr('<property>')
+  20-Destructuring in ES6 - Beau teaches JavaScript--vR3a11Wzt0.mp4
+    var obj = {x: 3, y: 5};
+    old way:
+      var x = obj.x;
+      var y = obj.y;
+    new:
+      const {x,y} = obj;
+      console.log(x);
+    or rename
+      const {x: a, y: b} = obj;
+      console.log(a);
+    assign from nested objects
+      const a = {
+        start: {x: 5, y: 6}
+      }
+      const {start: {x: startX}} = a;
+    assign from arrays
+      const [a,,,b] = [1,2,3,4,5];
+      console.log(a);
+    rest operator
+      const [a, ...b] = [1,2,3,4,5];
+      console.log(b)
+  21-Arrow Functions  - Beau teaches JavaScript-22fyYvxz-do.mp4
+    when returning objects, always put into paranthesis:
+      var func = () => ({foo: 1});
+  22-Binary Search Tree - Traversal & Height - Beau teaches JavaScript-Aagf3RyK3Lw.mp4
+  23-Clean Code - Formatting and Comments - Beau teaches JavaScript-HzWf-EeE3uI.mp4
+  24-THIS keyword - Beau teaches JavaScript-eOI9GzMfd24.mp4
+  25-Strings - [bracket notation] - Beau teaches JavaScript-sPmRfjJdg5Y.mp4
+    js
+      var name = "ali"
+      console.log(name[1])
+      console.log(name[name.length - 1])
+      name[0] = "q"; // error: string is immutable
+  26-Copying Arrays (deep and shallow) - Beau teaches JavaScript-EeZBKv34mm4.mp4
+    var o = [true, false]
+    slice
+      var copy1 = o.slice(0);
+    spread
+      var copy2 = [...o];
+    deep
+      var deep = [['free']]
+      var shallow = deep.slice(0)
+      shallow[0].push['great']
+      var copy = JSON.parse(JSON.stringify(deep));
+      copy[0].push['awesome']
+      console.log(shallow, deep)
+  27-for in _ for of - Beau teaches JavaScript-a3KHBqH7njs.mp4
+    in: loop through property names
+      for (var in obj)
+    of: loop through array values
+      for (var of obj)
+    let obj = {name: "ali"}
+    for (key in obj) {
+      obj[key]
+    }
+    for (val obj obj) {
+    }
+  28-Binary Search Tree - Beau teaches JavaScript-5cU1ILGy6dM.mp4
+  29-Clean Code - Testing, Concurrency, & Error Handling - Beau teaches JavaScript-QnLBGxtteV8.mp4
+  30-While _ Do While - Beau teaches JavaScript-v9zgD8wjtbw.mp4
+  31-String Basics - Beau teaches JavaScript-Vd_Z1bYGrCM.mp4
+  32-Random numbers & parseInt - Beau teaches JavaScript--xAJKmjKCUE.mp4
+  33-spread operator and rest operator - Beau teaches JavaScript-iLx4ma8ZqvQ.mp4
+  34-Objects, part 2 - Beau teaches JavaScript-r6SnMjsLrBk.mp4
+  35-Logical operators && TRICKS with short-circuit evaluation - Beau teaches JavaScript-r7v6EIiHfVA.mp4
+  36-Queues & Priority Queues - Beau teaches JavaScript-bK7I79hcm08.mp4
+  37-Clean Code - SOLID - Beau teaches JavaScript-XzdhzyAukMM.mp4
+  38-Arrays - Beau teaches JavaScript-QEZXbRiaY1I.mp4
+  39-Classes - Beau teaches JavaScript-bq_jZY6Skto.mp4
+  40-Ternary Operator - Beau teaches JavaScript-s4sB1hm73tw.mp4
+  41-React Basics - Beau teaches JavaScript-QqLkkBKVDyM.mp4
+  42-For Loops - Beau teaches JavaScript-24Wpg6njlYI.mp4
+  43-Clean Code - Classes - Beau teaches JavaScript-KcfiBrL2Pq4.mp4
+  44-Array Iteration - 8 Methods - Beau teaches JavaScript-Urwzk6ILvPQ.mp4
+  45-Closures - Beau teaches JavaScript-1JsJx1x35c0.mp4
+  46-Functions - Beau teaches JavaScript-R8SjM4DKK80.mp4
+  47-Numbers - Beau teaches JavaScript-nBEBraDJkFg.mp4
+  48-== vs === - Beau teaches JavaScript-kVOmc7NK1M0.mp4
+  49-Sets (data structure) - Beau teaches JavaScript-wl8u02IdVxo.mp4
+  50-Clean Code - Objects - Beau teaches JavaScript-NPtnp0w_mmA.mp4
+  51-Symbols - Beau teaches JavaScript-gANDd4l-G5U.mp4
+  52-Desktop Notifications - Beau teaches JavaScript-OMXtJ0USM8s.mp4
+  53-Variables - Beau teaches JavaScript-le-URjBhevE.mp4
+  54-JSON - Beau teaches JavaScript-B-k76DMOj2k.mp4
+  55-Data Types - Beau teaches JavaScript-808eYu9B9Yw.mp4
+  56-Singleton Design Pattern - Beau teaches JavaScript-bgU7FeiWKzc.mp4
+  57-Clean Code - Functions (Part 2) - Beau teaches JavaScript-43YenciicXk.mp4
+  58-Stacks (Data Structure) - Beau teaches JavaScript-Gj5qBheGOEo.mp4
+  59-Template Literals (ES6) - Beau teaches JavaScript-kj8HU-_P2NU.mp4
+  60-Promises - Beau teaches JavaScript-IGYxfTTpoFg.mp4
+  61-Switch Statements - Beau teaches JavaScript-fM5qnyasUYI.mp4
+  62-Objects - Beau teaches JavaScript-Gp5nnerXETg.mp4
+  63-Observer Design Pattern - Beau teaches JavaScript-3PUVr8jFMGg.mp4
+  64-Clean Code - Functions (Part 1) - Beau teaches JavaScript-RR_dQ4sBSBM.mp4
+  65-Proxies (ES6) - Beau teaches JavaScript-vExLi5bTt3k.mp4
+  66-Hoisting - Beau teaches JavaScript-C1PZh_ea-7I.mp4
+  67-20 String Methods in 7 Minutes - Beau teaches JavaScript-VRz0nbax0uI.mp4
+  68-Null vs Undefined - Beau teaches JavaScript-VwaqJy_clnc.mp4
+  69-AJAX - Beau teaches JavaScript-tHRNuBf_8xg.mp4
+  70-Module Design Pattern - Beau teaches JavaScript-3pXVHRT-amw.mp4
+  71-Clean Code - Variables - Beau teaches JavaScript-b9c5GmmS7ks.mp4
+  72-Comparison Operators & If Else - Beau teaches JavaScript-7WkfzokHGqo.mp4
+  73-Var vs Const vs Let (ES6) - Beau teaches JavaScript-1mgLWu69ijU.mp4
+  74-Common Array Methods - Beau teaches JavaScript-MeZVVxLn26E.mp4
+  75-cookies vs localStorage vs sessionStorage - Beau teaches JavaScript-AwicscsvGLg.mp4
+   
+
 # JS Patterns and Idioms: Douglas Crockford, Design Patterns id=g_10138
 
   JS Patterns and Idioms: Douglas Crockford, Design Patterns <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10138>
@@ -543,6 +776,288 @@
       const res = !!value
       // true
       # converts value into bool
+
+# CSS
+
+## BEM Methodology
+
+  Introduction
+    http://getbem.com/introduction/
+    intro
+    Methodologies
+    Why BEM over the others
+      less confusing than SMACSS
+      good structure like OOCSS
+    Blocks, Elements and Modifiers
+      Block: meaningful on its own
+        ex: header, container, menu, checkbox, input
+      Element: no standalone meaning
+        ex: menu item, list item, checkbox caption
+      Modifier: flag on a block or element to change appearance or beahvior
+        disabled, highlighted, checked, fixed
+    Under the hood
+    Benefits
+      Modularity
+        to dependence on other elements
+      Reusability
+      Structure
+  Why BEM in a nutshell
+    https://blog.decaf.de/2015/06/24/why-bem-in-a-nutshell/
+    intro 
+      inheritance and specificity
+      what is so bad about it?
+        css inheritance is infinite
+          no function scope or closure
+          styles will flow down and will never reach a bottom
+          there is always context and you are about to touch it
+        specificity
+          you need to become more specific to win over existing one
+          !important
+    Modularity
+      inheritance and specificity don't play nice with modularity
+    Web components
+      they provide some css scope
+    BEM
+      why?
+        to get best modularity
+          avoids inheritance by using unique css classes per element
+            ex: .my-component__list-item
+          reduces style conflicts by keeping css specificity to minimum
+      how?
+        unique css classes for all elements
+    objectsions
+      common way:
+        by element type selectors (like p or li)
+        by generic classes (like .title or .active)
+        you apply styles not only to the element itself
+        but to a whole cascading context
+        even if context doesn't exist yet
+      why not use element type selectors with child combinators?
+        nested selectors raise css specificity
+          you need to become more specific to win over
+          modular contexts require low specificity
+        css will be tightly coupled with the html
+      nesting is brilliant feature
+        with BEM any element can be selected by its unique class
+        no need to selector nesting
+  Naming
+    http://getbem.com/naming/
+    intro
+      right styleguide can significantly increase 
+        development speed
+        debugging
+      most css is unmaintainable
+    Block
+      naming
+        .block
+      html
+        <div class="block">...</div>
+      css
+        .block {}
+        no tag name or ids
+        no dependency on other blocks/elements
+    Element
+      parts of a block and have no standalone meaning
+      naming
+        .block__elem
+      html
+        <span class="block__elem"><..>
+      css
+        .block__elem {}
+    Modifier
+      flags on blocks or elements
+      naming
+        .block--mod
+        .block__elem--mod
+        .block--color-black
+      html
+        an extra class name for a block/element node
+        <div class="block block--mod">
+        <div class="block block--size-big">
+      css
+        .block--hidden {}
+        .block--mod .block__elem {}
+    ex
+      <form class="form form--theme-xmas form--simple">
+        <input class="form__input" type="text" />
+        <input
+          class="form__submit form__submit--disabled"
+          type="submit" />
+      </form>
+
+      
+## HTML+CSS Öğreniyoruz by Adem İlter  id=g_10188
+
+  HTML+CSS Öğreniyoruz by Adem İlter  <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10188>
+  1-HTML+CSS Öğreniyoruz #1-1AhFCvWS-XE.mp4
+
+## CSS Grid cssgrid
+
+### Learn CSS Grid by scrimba Harald Borgen id=g_10187
+
+  Learn CSS Grid by scrimba Harald Borgen <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10187>
+  ref
+    <url:file:///~/projects/study/html/cssgrid_01/cssgrid.Rmd>
+    https://scrimba.com/p/pWqLHa/cg9PpTb
+  01 Course Introduction
+    /Users/mertnuhoglu/Dropbox/public/img/ss-292.png
+    ex: examples.css
+      .wrapper {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: 40px 100px 40px;
+      }
+      .header {
+        grid-column: span 12;
+      }
+      .menu {
+        grid-column: span 4;
+      }
+      .content {
+        grid-column: span 8;
+      }
+      .footer {
+        grid-column: span 12;
+      }
+    ex: examples.html
+      <div class="wrapper">
+          <div class="header">HEADER</div>
+          <div class="menu">MENU</div>
+          <div class="content">CONTENT</div>
+          <div class="footer">FOOTER</div>
+      </div>
+    for mobile phones:
+      /Users/mertnuhoglu/Dropbox/public/img/ss-293.png
+      examples.css
+        @media screen and (max-width: 480px) {
+            .header {
+                grid-column: span 6;
+            }
+            .menu {
+                grid-row: 1;
+                grid-column: span 6;
+            }
+            .content {
+                grid-column: span 12;
+            }
+        }
+  02 Your first grid
+    ex: start
+      /Users/mertnuhoglu/Dropbox/public/img/ss-294.png
+      <html>
+          <head>
+              <link rel="stylesheet" href="basic.css">
+              <style>
+                  .container {
+                      display: grid;
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <div>1</div>
+                  <div>2</div>
+                  <div>3</div>
+                  <div>4</div>
+                  <div>5</div>
+                  <div>6</div>
+              </div>
+          </body>
+      </html>
+    ex:             
+      .container {
+          display: grid;
+          grid-template-columns: 100px auto 100px;
+          grid-template-rows: 50px 50px;
+      }
+      # three columns, two rows
+      grid-gap: 3px;
+  03 Fraction units and repeat
+  16 Article Layout
+    ex
+      article {
+          display: grid;
+          grid-template-columns: 40px 1fr 40px;
+          grid-column-gap: 10px;
+      }
+      article > * {
+          grid-column: 2;
+          min-width: 0;
+      }
+      article > figure {
+          grid-column: 1 / -1;
+          margin: 20px 0;
+      }
+      article > .aside {
+          grid-column: 3;
+          color: #666;
+          font-size: 0.8em;
+      }
+      article > blockquote {
+          grid-column: 1 / -1;
+          margin: 10px 0;
+          color: #666;
+          border-left: 10px solid #eee;
+          padding-left: 10px;
+      }
+  grid-template-columns and rows
+    .container {
+        display: grid;
+        grid-template-columns: 100px auto 100px;
+        grid-template-rows: 50px 50px;
+    grid-template-columns: repeat(auto-fit, 100px);
+  sizes:
+    100px
+    auto
+    1fr
+  display: grid;
+  grid-gap: 3px;
+  positioning with grid-column grid-row 
+    .header {
+      grid-column-start: 1;
+      grid-column-end: 3;
+    shorthand form:
+      grid-column: 1 / 3; 
+        # start-end lines
+      grid-column: 1 / span 2; 
+        # size
+      grid-column: 1 / -1; 
+        # from end
+    grid-row: 1 / 3;
+  naming lines
+    grid-template-columns: [main-start] 1fr [content-start] 5fr [content-end main-end];
+    grid-template-rows: [main-start] 40px [content-start] auto [content-end] 40px [main-end];
+    grid-column: main-start / main-end;
+    grid-column: main;
+    grid-area: content;
+  grid-template-areas
+    grid-template-areas:
+      "m . . h h h h h h h h h"
+      "m c c c c c c c c c c c"
+      "m f f f f f f f f f f f"
+    .header {
+      grid-area: h;
+  auto-fit minmax auto-fill
+    grid-template-columns: repeat(auto-fit, 100px);
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-auto-rows flow
+    grid-auto-rows: 100px;
+    grid-auto-flow: dense;
+  justify-content align
+    justify-content: end;
+    start center end
+    space-evenly space-between space-around
+    align-content: end;
+
+## Flexbox css
+
+  display: flex;
+  align-self margin-left
+    to move a specific element:
+    align-self: flex-start;
+      puts it to top
+    margin-left: auto;
+      justifies it to right
 
 # build and automation tools: bower, yarn, gulp, grunt, yo, package.json, npx, npm
 
@@ -1257,6 +1772,931 @@
         --> {{hello}}
     
 
+## bootstrap twitter bootstrap id=g_10186
+
+  bootstrap twitter bootstrap <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10186>
+  official documentation 3.3
+    structures of documentations
+      Getting Started
+        https://getbootstrap.com/docs/3.3/getting-started/
+        Download
+          Bootstrap CDN
+          Install with npm
+        What's included
+          Precompile Bootstrap
+          Compiling CSS and JS
+        Basic template
+          start with basic html template
+        Examples
+          Using the framework
+            Starter template
+            Bootstrap theme
+              more visual
+            Grids
+              examples of grid layouts
+            Jumbotron
+              with navbar and basic grid columns
+            Narrow jumbotron
+          Navbars in action
+            Navbar
+              basic template
+            Static top navbar
+            Fixed navbar
+          Custom components
+            Cover
+              one-page template
+            Carousel
+            Blog
+              two column blog layout
+            Dashboard
+              admin dashboard
+              fixed sidebar and navbar
+            Sign-in page
+            Justified nav
+            Sticky footer
+              fotter at bottom
+            Sticky footer with navbar
+      CSS
+        https://getbootstrap.com/docs/3.3/css/
+        Overview
+          HTML5 doctype
+            <!DOCTYPE html>
+            <html lang="en">
+          Mobile first
+          Typography and links
+            basic global display params
+            background-color: #fff;
+            ...
+          Containers
+            bs requires a containing element to wrap contents and grid system
+            opt
+              <div class="container">
+                # fixed width 
+              <div class="container-fluid">
+                # spans entire width
+        Grid system
+          what is
+            12 columns
+            predefined classes
+            mixins for more semantic layouts
+          Introduction
+            .row within .container
+            content within columns
+            predefined classes: .col-xs-4
+            gutters: gaps between column content via `padding`
+          Grid options
+            small devices: .col-xs-
+            small devices tablets: .col-sm-
+            medium devices: .col-md-
+            large: .col-lg-
+        Typography
+          Headings
+          Body copy
+          Inline text elements
+            Marked text
+              for highlighting
+              <mark>
+          Alignment classes
+            .text-left
+          Transformation classes
+            text capitalization
+            .text-lowercase
+        Tables
+          Basic example
+            add .table to <table>
+          Striped rows
+            .table-striped 
+          Bordered table
+            .table-bordered
+          Hover rows
+            .table-hover
+          Responsive tables
+            .table-responsive
+              scroll horizontally on phones
+        Forms
+          Basic Examples
+            width: 100%; by default
+            wrap in .form-group
+            ex:
+              <form>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Email address</label>
+                  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                </div>
+          Inline Form 
+            .form-inline
+            /Users/mertnuhoglu/Dropbox/public/img/ss-277.png
+          Horizontal form
+            like rows
+            ex
+              <form class="form-horizontal">
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                  <div class="col-sm-10">
+                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                  </div>
+          Supported controls
+            Inputs
+              text, password, datetime, datetime-local, number, email, ...
+            Selects
+              .form-control
+              <select multiple class="form-control">
+                <option>1<...>
+          Static control
+            static text next to a form label
+            /Users/mertnuhoglu/Dropbox/public/img/ss-278.png
+            ex
+              <form class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                  <p class="form-control-static">email@example.com</p>
+                </div>
+          Disabled state
+            disabled attribute
+            <input ... disabled>
+        Buttons
+          Button tags
+            <a> <button> <input> elements
+            button types: link button input submit
+            <a class="btn btn-default" href="#" role="button">Link</a>
+            <button class="btn btn-default" type="submit">Button</button>
+            <input class="btn btn-default" type="button" value="Input">
+            <input class="btn btn-default" type="submit" value="Submit">
+          Options
+            styled buttons
+            classes: btn-default btn-primary btn-success ...
+          Sizes
+            .btn-lg .btn-sm .btn-xs
+          Active state
+          Disabled state
+        Images
+          Responsive images
+            .img-responsive
+          Image shapes
+            .img-rounded .img-circle .img-thumbnail
+        Helper classes
+          Contextual colors
+            /Users/mertnuhoglu/Dropbox/public/img/ss-279.png
+          Contextual backgrounds
+            /Users/mertnuhoglu/Dropbox/public/img/ss-280.png
+          Close icon
+            /Users/mertnuhoglu/Dropbox/public/img/ss-281.png
+        Responsive utilities
+          Print classes
+          Test cases
+        Using Less
+      Components
+        https://getbootstrap.com/docs/3.3/components/
+        Glyphicons
+        Dropdowns
+          for displaying lists of links
+          .dropdown
+        Button groups
+          Basic example
+            <div class="btn-group" ...>
+            /Users/mertnuhoglu/Dropbox/public/img/ss-282.png
+          Button toolbar
+            multiple .btn-group elements grouped
+            .btn-toolbar
+          Sizing
+            .btn-group-lg
+          Nesting
+            for dropdown menus mixed with normal buttons
+          Vertical variation
+            .btn-group-vertical
+        Button dropdowns
+          use buttons to trigger dropdown
+        Input groups
+          /Users/mertnuhoglu/Dropbox/public/img/ss-283.png
+        Navs
+          Tabs
+            <ul class="nav nav-tabs">
+            /Users/mertnuhoglu/Dropbox/public/img/ss-284.png
+          Pills
+            .nav-pills instead of .nav-tabs
+        Navbar
+          Default navbar
+            as navigation headers
+            /Users/mertnuhoglu/Dropbox/public/img/ss-285.png
+            ex:
+              <nav class="navbar">
+                <div ..
+                  <div class="navbar-header">
+                    <button .. class="navbar-toggle"...
+        Breadcrumbs
+        Pagination
+          Deafult pagination
+        Labels
+          <span class="label"
+        Badges
+          /Users/mertnuhoglu/Dropbox/public/img/ss-286.png
+          <span class="badge">42
+        Jumbotron
+          key content on page
+          <div class="jumbotron"
+        Page header
+          .page-header
+        Thumbnails
+          to display grids of images, text
+            <a class="thumbnail"
+        Alerts
+        Progress bars
+          image + alongside text
+          /Users/mertnuhoglu/Dropbox/public/img/ss-287.png
+        List group
+          .list-group
+          /Users/mertnuhoglu/Dropbox/public/img/ss-288.png
+        Panels
+          to put element in a box
+          Basic example
+            .panel
+            /Users/mertnuhoglu/Dropbox/public/img/ss-289.png
+          With tables
+            /Users/mertnuhoglu/Dropbox/public/img/ss-290.png
+        Wells
+          .well
+          Default well
+            gives inset effect
+            /Users/mertnuhoglu/Dropbox/public/img/ss-291.png
+      Javascript
+        https://getbootstrap.com/docs/3.3/javascript/
+        Overview
+          Individual or compiled
+            bootstrap plugins: individual *.js files
+            or all: bootstrap.js
+          Data attributes
+            use bs plugins without js
+            or use js
+          Programmatic API
+            use bs plugins through js api
+            ex: $('.btn.danger').button('toggle').addClass('fat')
+            methods 
+              chainable
+                returns collection acted upon
+              accept optional options object
+          No conflict
+            name collisions with other UI frameworks
+          Events
+            ex: 
+              show: triggered at the start of event
+              shown: triggered on completion of an action
+            all events are namespaced
+            ex: stop execution of action before it starts
+              $('#myModal').on('show.bs.modal', function (e) {
+                if (!data) return e.preventDefault() // stops modal from being shown
+              })
+          Version numbers
+            $.fn.tooltip.Constructor.VERSION // => "3.3.7"
+          When JavaScript is disabled
+            how to gracefully fail when js is disabled
+        Transitions
+          transition.js
+        Modal
+          what is
+            dialog prompts
+          Examples
+            static examples
+            sections: header, body, set of actions in footer
+            .modal
+            .modal-header
+            ex
+              <div class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title">Modal title</h4>
+                    </div>
+          Sizes
+            .modal-lg
+          Remove animation
+            .fade: appears with animation
+          Using the grid system
+            nest .row within .modal-body
+            ex
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-4">.col-md-4</div>
+          Varying modal content based on trigger button
+            çok sayıda buton var, aynı modal dialog'u tetikler
+            hangi butondan tıklandığı bilgisi data-* attributuna konulur
+            ex:
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>
+            ex: js koduyla data-* bilgisi çekilir:
+              $('#exampleModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                var recipient = button.data('whatever') // Extract info from data-* attributes
+            Usage
+              via data attributes
+                use on controller elements like button
+                data-toggle="modal"
+                data-target="#foo" 
+                  to target a specific modal
+                ex:
+                  <button type="button" data-toggle="modal" data-target="#myModal">Launch modal</button>
+              via js
+                $('#myModal').modal(options)
+          Options
+          Methods
+            .modal(options)
+            .modal('toggle')
+            .modal('show')
+              manually show modal
+          Events
+        Dropdown
+          what is
+            add dropdown menus to anything
+              within a navbar
+              within pills
+          Examples
+            via data attributes
+              data-toggle="dropdown"
+              data-target="#"
+                use data-target instead of href="#"
+              ex
+                <div class="dropdown">
+                  <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            via js
+              $('.dropdown-toggle').dropdown()
+          Usage
+          Methods
+            $().dropdown('toggle')
+          Events
+        Scrollspy
+          what is
+            scroll ederken bulunulan konuma göre nav target'ını highlight eder
+          Examples
+          Usage
+            requires 
+              nav
+              position: relative;
+            via data attributes
+              data-spy="scroll"
+                to element that you spy on
+              data-target="#navbar-example"
+              ex:
+                <body data-spy="scroll" data-target="#navbar-example">
+                  ...
+                  <div id="navbar-example">
+                    <ul class="nav nav-tabs" role="tablist">
+            via js
+              $('body').scrollspy({ target: '#navbar-example' })
+          Methods
+          Events
+        Tab
+          what is
+            tab.js
+            panes of local content
+          Examples
+            via markup
+              data-toggle="tab"
+            ex
+              <div>
+                <ul class="nav nav-tabs" role="tablist">
+                  <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+                  <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div role="tabpanel" class="tab-pane active" id="home">...</div>
+                  <div role="tabpanel" class="tab-pane" id="profile">...</div>
+          Usage
+          Methods
+          Events
+        Tooltip
+          what is
+            tooltip.js
+            hover over a link to see tooltips
+          Examples
+          Usage
+            markup
+              data-toggle="tooltip"
+              title="content of tip"
+          Methods
+            .tooltip('toggle')
+          Events
+        Popover
+          what is
+            popver.js
+            add small overlays of content
+            konuşma balonu gibi
+          Examples
+          Usage
+            markup
+              data-toggle="popver"
+              title="title of it"
+              data-content="content of it"
+          Methods
+          Events
+        Alert
+          what is
+            alert.js
+            alert messages
+          Examples
+          Usage
+            markup
+              data-dismiss="alert"
+              ex:
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+          Methods
+            $().alert()
+          Events
+        Button
+          what is
+            button.js
+          Examples
+            single toggle button
+            checkbox/radio
+              ex:
+                <div class="btn-group" data-toggle="buttons">
+                  <label class="btn btn-primary active">
+                    <input type="checkbox" autocomplete="off" checked> Checkbox 1 (pre-checked)
+          Usage
+          Methods
+          Events
+        Collapse
+          what is
+            collapse.js
+            collapse/expand a pane
+          Examples
+            accordion
+              data-parent="#accordion"
+          Usage
+            markup
+              data-toggle="collapse"
+              data-target=""
+                what to collapse
+          Methods
+          Events
+        Carousel
+          what is
+            carousel.js
+            slideshow
+          Examples
+          Usage
+            markup
+              data-ride="carousel"
+              data-slide
+            ex
+              <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+                <!-- Indicators -->
+                <ol class="carousel-indicators">
+                  <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                  <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                ...
+                <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+          Methods
+          Events
+        Affix
+          what is
+          Examples
+          Usage
+          Methods
+          Events
+  version 4
+    Bootstrap 4: What’s New
+      https://medium.com/wdstack/bootstrap-4-whats-new-visual-guide-c84dd81d8387
+      Panels are now Cards
+        .panel .well -> .card
+      fonts are bigger
+      bs4 grid
+        XL
+        LG
+        MD
+        SM
+        XS
+    What changed in Bootstrap 4.0 ?
+      https://hackernoon.com/what-changed-in-bootstrap-4-0-ca3cbbf4f62f
+      less to sass
+      flexbox
+      font: rem sizing
+        <html> tag is reference size
+        h1 { font-size: 3 rem; } /* 3 times <html> font size */
+    What's New in Bootstrap 4
+      https://scotch.io/bar-talk/whats-new-in-bootstrap-4
+
+# ES 6
+
+    ES6 tips and tricks to make your code cleaner, shorter, and easier to read!
+      https://medium.freecodecamp.org/make-your-code-cleaner-shorter-and-easier-to-read-es6-tips-and-tricks-afd4ce25977c
+      let declaration
+      const
+      problem with block scoping functions
+        problem: inside if statement
+      spread operator ...
+        feature: it creates a new array or object
+          let a = [1,2,3];
+          let b = [ ...a ];
+          let c = a;
+      default parameters
+      destructuring
+        let {a,c} = {a:1, b:2, c:3};
+        assign to a new variable name
+          let {x: vehicle} = {x: 'car'};
+          let {x: {name: driver}} = {x: {name: 'john'}};
+        assigning a value to multiple variables
+          let {x: first, x: second} = {x:4};
+      object literals and concise parameters
+        omit key if it is the same as variable name
+          let a = 4, b = 7;
+          let concise = {a,b};
+          console.log(concise) // {a: 4, b: 7}
+      dynamic property names
+        let city = 'london_';
+        let a = { [city+'population']: 350 };
+        a[ city + 'county' ]
+      arrow functions
+        .map
+        .forEach
+        .sort
+      for ... of loops
+        for ... in loops over key/index
+        for ... of loops over val
+          skips: `let val = a[idx]`
+      number literals
+        29
+        035 // octal
+        0o35 // octal
+        0x1d // hexa
+        0b1111 // binary
+
+# es modules
+
+    ECMAScript modules in browsers id=g_10192
+      ECMAScript modules in browsers <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10192>
+      https://jakearchibald.com/2017/es-modules-in-browsers/
+    ES6 Modules in Browsers
+      https://salomvary.com/es6-modules-in-browsers.html
+      essentials
+        index.html
+          <script type="module" src="app.js"></script>
+        app.js
+          import lib from './lib.js'
+          lib.doStuff()
+        must: static web server (due to CORS error from file:// urls)
+        if authentication enabled, <script crossorigin="use-credentials">
+      Using External Dependencies
+        how to use external libraries that have older syntax?
+        most of them cannot be used with new syntax
+        you still need Webpack
+        libraries can be used directly from CDN or local node_modules
+          but you need to write whole path including node_modules
+        ex:
+          // Some authors already publish in browser friendly ES6 format.
+          import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.esm.browser.js'
+          // Lodash in ES6 format is published under a different name. When
+          // using npm, the whole node_modules folder has to be exposed by the
+          // static web server.
+          import camelCase from './node_modules/lodash-es/camelCase.js'
+          // Other libraries are authored in ES6 module format but use bare
+          // module paths which does not work in browsers. CDNs like Unpkg can
+          // help by expanding the modules.
+          import scale from 'https://unpkg.com/d3-scale@1.0.7/index.js?module'
+          // Sadly there is no module expansion when installed with npm, this
+          // will NOT work.
+          import scale from './node_modules/d3-scale/index.js'
+    Moving Past RequireJS
+      https://benmccormick.org/2015/05/28/moving-past-requirejs/
+      What is RequireJS
+        module loaders
+        3 alternatives
+          AMD Async Module Definition
+          CommonJS
+          ES Modules
+      Problems with AMD
+        requirejs uses AMD modules
+        AMD had benefits over CommonJS previously
+          no more 
+          less clear syntax
+        Syntax comparison
+          ex: AMD
+            define(['file1', 'file2'], function(Class1, Class2)) {
+              let obj = new Class1(),
+                obj2 = new Class2();
+              return obj.foo(obj2);
+            }
+          ex: CommonJS
+            let Class1 = require('file1'),
+              Class2 = require('file2')
+              obj = new Class1(),
+              obj2 = new Class2();
+            module.exports = obj.foo(obj2);
+          ex: es6
+            import Class1 from 'file1'
+            import Class2 from 'file2'
+            let obj = new Class1(),
+              obj2 = new Class2();
+            export default obj.foo(obj2);
+          syntax benefits:
+            less boilerplate: no need to wrap code in an outer function
+              similar to server side languages
+            AMD dependencies: 
+              1. array of strings
+              2. parameters to callback function
+        Network Effects
+          CommonJS is built into nodejs
+            unit testing libraries use it
+            very easy to work on node platform
+          some node modules work only with CommonJS
+          most libraries support AMD through a "Universal" module format
+      Alternatives to RequireJS
+        3 options on module loading scene:
+          Browserify
+          Webpack
+          RequireJS
+        Browserify: module loader on top of node
+          uses CommonJS
+        Webpack: attempt to unify landscape
+          supports AMD, CommonJS, ES6
+          handles js, css, other assets, preprocessors
+        RequireJS: suffers in comparison to both of them
+    CommonJS vs AMD vs RequireJS vs ES6 Modules
+      https://medium.com/computed-comparisons/commonjs-vs-amd-vs-requirejs-vs-es6-modules-2e814b114a0b
+      before modules: Revealing Module Pattern
+        var revealingModule = (function () {
+          var privateVar = "Ben Thomas";
+          function setNameFn( strName ) {
+              privateVar = strName;
+          }
+          return {
+                  setName: setNameFn,
+              };
+          })();
+        revealingModule.setName( "Paul Adams" );
+      costs of it:
+        no async loading of modules
+        cannot import modules programmatically
+      CommonJS
+        new keywords: require, exports
+        ex:
+          var obj = require('module_name')
+          exports = function() {
+            return ...;
+          }
+      NodeJS
+        ex
+          var obj = require('module_name')
+          modules.exports = function() {
+            return ...;
+          }
+        path relative to node_modules directory
+        circular dependencies supported
+        con: one file per module
+        con: browsers cannot use them without transpiling
+          Browserify, Webpack
+      AMD and RequireJS
+        CommonJS wasn't suited for browsers
+        modules loaded in non-blocking manner
+        ex:
+          <script data-main="scripts/main" src="scripts/require.js">
+        data-main: defines initialization
+      ES6 modules
+        ex:
+          main.js
+            import {square, diag} from 'lib';
+          lib.js
+            export function square(x) { return x * x; }
+        import statement is not dynamic
+          makes static analyzers build tree of dependencies
+    Using ES6 Modules with Webpack
+      http://www.zsoltnagy.eu/using-es6-modules-with-webpack/
+      index.html
+        <ul class="js-top-transactions">
+        </ul>
+        <script src="myaccount.dist.js"></script>
+      webpack
+        npm install -g webpack
+        npm install babel-loader
+        webpack.config.js
+    Webpack Getting Started Tutorial
+      https://webpack.js.org/guides/getting-started/
+      basic setup
+        cli
+          mkdir demo
+          npm init -y
+          npm install --save-dev webpack
+        src/index.js
+          function component() {
+            var element = document.createElement('div');
+            element.innerHTML = _.join(['Hello','webpack'], ' ');
+            return element;
+          }
+          document.body.appendChild(component());
+        index.html
+          <!doctype html>
+          <html>
+            <head>
+              <title>Getting Started</title>
+              <script src="https://unpkg.com/lodash@4.16.6"></script>
+            </head>
+            <body>
+              <script src="./src/index.js"></script>
+            </body>
+          </html>
+        implicit dependency:
+          <script src="https://unpkg.com/lodash@4.16.6"></script>
+      creating a bundle
+        cli
+          mkdir dist
+          npm install --save lodash
+        src/index.js
+          import _ from 'lodash';
+          function component() {
+            var element = document.createElement('div');
+            element.innerHTML = _.join(['Hello','webpack'], ' ');
+            return element;
+          }
+          document.body.appendChild(component());
+        index.html
+          <!doctype html>
+          <html>
+            <head>
+              <title>Getting Started</title>
+            </head>
+            <body>
+              <script src="bundle.js"></script>
+            </body>
+          </html>
+        cli
+          npx webpack src/index.js --output dist/bundle.js
+      how it works
+        Webpack transpiles `import` and `export` statements
+          other code is not touched
+      Using a Configuration
+        if more complex setup is needed, use configuration file
+        webpack.config.js
+          const path = require('path');
+          module.exports = {
+            entry: './src/index.js',
+            output: {
+              filename: 'bundle.js',
+              path: path.resolve(__dirname, 'dist')
+            }
+          }
+        cli
+          npx webpack --config webpack.config.js
+      NPM Scripts
+        shortcut:
+        package.json
+          "scripts": {
+            "build": "webpack"
+          }
+        cli
+          npm run build
+        instead of npx webpack
+    Webpack: Asset Management
+      https://webpack.js.org/guides/asset-management/
+      setup
+      Loading CSS
+        webpack.config.js
+          module: {
+            rules: [
+              {
+                test: /\.css$/,
+                use: [
+                  'style-loader',
+                  'css-loader'
+                ]
+              }
+            ]
+          }
+        src/style.css
+          .hello {
+            color: red;
+          }
+        src.index.js
+          import _ from 'lodash';
+          import './style.css';
+          function component() {
+            var element = document.createElement('div');
+            element.innerHTML = _.join(['Hello','webpack'], ' ');
+            element.classList.add('hello');
+            return element;
+          }
+          document.body.appendChild(component());
+        cli
+          npm run build
+      Loading Images
+        cli
+          npm install --save-dev file-loader
+        webpack.config.js
+          module: {
+            rules: [
+              {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                  'file-loader'
+                ]
+              }
+            ]
+          }
+        src/index.js
+          import Icon from './icon.png';
+          var myIcon = new Image();
+          myIcon.src = Icon;
+          element.appendChild(myIcon);
+        src/style.css
+          .hello {
+            background: url('./icon.png');
+          }
+      Loading Data
+        cli
+          npm install --save-dev csv-loader xml-loader
+        webpack.config.js
+          module: {
+            rules: [
+              {
+                test: /\.(csv|tsv)$/,
+                use: [
+                  'csv-loader'
+                ]
+              },
+              {
+                test: /\.(xml)$/,
+                use: [
+                  'xml-loader'
+                ]
+              }
+            ]
+          }
+        src/index.js
+          import Data from './data.xml';
+      Global Assets
+        file structuring
+          /components
+            /my-component
+              index.jsx
+              index.css
+              icon.svg
+
+
+## hyperscript 
+
+### Hyperscript Helpers
+
+https://github.com/ohanhi/hyperscript-helpers
+
+    h('div')
+    --->>>
+    div()
+
+    h('section#main', mainContents)
+    --->>>
+    section('#main', mainContents)
+
+hyperscript-helpers:
+
+1. easy to use with ramda, because they are functions
+2. you get error if you mistype
+3. consistent syntax all times
+
+ex: list of menu items of `{ title: String, id: Number }`
+
+    function attrs(id) {
+      return { draggable: "true", "data-id": id };
+    }
+    ul("#best-menu', items.map( item =>
+      li('#item-'+item.id, attrs((item.id), item.title))
+    )")
+    // JSX
+    <ul id="bestest-menu">
+      {items.map( item =>
+        <li id={"item-"+item.id} {...attrs(item.id)}>{item.title}</li>
+      )}
+    </ul>
+
+#### How to use
+  
+    npm install hyperscript-helpers
+
+    const h = require('hyperscript');
+    const { div, span, h1 } = require('hyperscript-helpers')(h);
+
+    h1({ 'data-id': 'headline-6.1.2' }, 'Structural Weaknesses').outerHTML
+    // '<h1 data-id="headline-6.1.2">Structural Weaknesses</h1>'
+    div('#with-proper-id.wrapper', [ h1('Heading'), span('Spanner') ]).outerHTML
+    // '<div class="wrapper" id="with-proper-id"><h1>Heading</h1><span>Spanner</span></div>'
+
+`Span`, `Var` have uppercase first letter.
+
+### API
+
+    tagName(selector)
+    tagName(attrs)
+    tagName(children)
+    tagName(attrs, children)
+    tagName(selector, children)
+    tagName(selector, attrs, children)
+
+`selector`: starts with "." or "#"
+`attrs`: object of attributes
+
+Multiple classes:
+
+    button({className: "btn btn-default"}); // by space!
+    button(".btn.btn-default");             // by dot!
+
 # nodejs id=g_10126
 
   nodejs <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10126>
@@ -1935,6 +3375,165 @@
           });
       });
       req.write(); // sending the request
+
+# Ramdajs  id=g_10190
+
+  Ramdajs  <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10190>
+
+## Writing Elegant Code With React, Redux and Ramda
+
+https://medium.com/javascript-inside/the-elegance-of-react-ebc21a2dcd19
+
+### Compose Components
+
+    const comp = (f,g) => x => f(g(x))
+
+Components implement this as:
+
+    const TodoList = (List, mapItems) => s => List(mapItems(s))
+    const List = c => <ul>{c}</ul>
+    const Item = todo => <li key={todo.id}>{todo.name}</li>
+    const TodoList = compose(List, map(Item))
+    const result = TodoList([{id:1, name: 'foo'}])
+
+Note:
+
+    const App = state => List(map(Item, state))
+
+Full example:
+
+    import React from 'react'
+    import {render} from 'react-dom'
+    import {compose, map, prop} from 'ramda'
+    const List = items => <ul>{items}</ul>
+    const Item = todo => <li key={todo.id}>{todo.text}</li>
+    const getTodos = prop('todos')
+    const TodoList = compose(List, map(Item), getTodos)
+    const props = {todos: [{id:1, text: 'foo'}, {id:2, text: 'bar'}]}
+    render(<TodoList {...props} />, document.getElementById('root'))
+
+Ex:
+
+    const Header = title => <h1>A Todo List: {title}</h1>
+    const List = items => <ul>{items}</ul>
+    const Item = todo => <li key={todo.id}>{todo.text}</li>
+
+    const mapStateToProps = curry((f, g) => compose(g, f))
+    const combine = curry((c, o) => x => (<div>{c(x)} {o(x)}</div>))
+    const TodoHeader = mapStateToProps(s => s.title, Header)
+    const TodoList = mapStateToProps(getTodos, compose(List, map(Item)))
+    const App = combine(TodoHeader, TodoList)
+    render(<App {...state} />, document.getElementById('root'))
+
+## Functional Programming In JavaScript — With Practical Examples (Part 1)
+
+https://medium.freecodecamp.org/functional-programming-in-js-with-practical-examples-part-1-87c2b0dbc276
+
+### sub: FP Challenges:
+
+1. how to handle if-else: Either monad
+
+2. how to handle null exceptions: Maybe monad
+
+3. How to ensure reusable functions: pure functions, referential transparency
+
+4. How to ensure unchanged data: pure functions, immutability
+
+5. Functions with multiple args. How to chain with a single value: currying, higher order functions
+
+### sub: Fantasy Land Specs
+
+Fantasyland specs provide Functors, Monads etc.
+
+Dependencies of specs:
+
+    Functor
+      Alt
+        Plus
+          Alternative
+      Apply
+        Applicative
+          Alternative
+          Monad
+        Chain
+          Monad
+          ChainRec
+      Bifunctor
+      Extend
+        Comonad
+      Profunctor
+      Traversable
+    Foldable
+      Traversable
+    Semigroup
+      Monoid
+    Setoid
+
+A JS class is a Functor if it implements a `map` method. And `map` must work as per spec.
+
+Fantasyland compliant libraries: monetjs, ramda-fantasy, ...
+
+What Libraries Should I Use?
+
+ramdajs don't provide key mathematical concepts like Monads, Functors.
+
+### sub: Ex 1: Dealing With Null Checks
+
+    //Imperative:
+    //Too many if-else and null checks; relying on global indexURLs; decided that "en" urls are default for any country
+    const getUrlForUser = (user) => {
+      if (user == null) { //not logged in
+        return indexURLs['en']; //return default page
+      }
+      if (user.prefs.languages.primary && user.prefs.languages.primary != 'undefined') {
+        if (indexURLs[user.prefs.languages.primary]) {//if translation exists,
+          return indexURLs[user.prefs.languages.primary];
+        } else {
+          return indexURLs['en'];
+        }
+      }
+    }
+    showIndexPage(getUrlForUser(joeUser));
+    --->>>
+    const R = require('ramda');
+    const prop = R.prop;
+    const path = R.path;
+    const curry = R.curry;
+    const Maybe = require('ramda-fantasy').Maybe;
+    const getURLForUser = (user) => {
+        return Maybe(user)
+            .map(path(['prefs', 'languages', 'primary'])) 
+            .chain(maybeGetUrl); 
+    }
+
+    const maybeGetUrl = R.curry(function(allUrls, language) {
+        return Maybe(allUrls[language]); 
+    })(indexURLs);
+
+
+    function boot(user, defaultURL) {
+       showIndexPage(getURLForUser(user).getOrElse(defaultURL));
+    }
+
+    boot(joeUser, 'http://site.com/en'); //'http://site.com/sp'
+
+Step by step
+
+    user.prefs.languages.primary && user.prefs.languages.primary != 'undefined'
+    --->>>
+    .map(path(['prefs', 'languages', 'primary'])) 
+
+    --->>>
+    const maybeGetUrl = R.curry(function(allUrls, language) {
+        return Maybe(allUrls[language]); 
+    })(indexURLs);
+
+#### sub: Functors
+
+Any class that has a value and implements `map` is a Functor.
+
+Ex: An array is a Functor. Because it can store values and has `map` that maps a function to the stored valueds.
+
 # unclassified
 
   Use EJS to Template Your Node Application

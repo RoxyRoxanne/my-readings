@@ -2,26 +2,26 @@ Book Summaries
 
 # Stompernet
 
-	seo strategies
-		subsite
-			essence
-				build a subsite
-				give links from social media to your subsite
-				make links from subsite to target (money) site
-		content sharing sites
-			build content in sharing sites such as
-				youtube
-				squidoo hubpages
-				flixya
-				gather
-			multiple placement in google
-			very high search ranking
-		keyword research
-			plan
-				1. brainstorm 10 keywords
-				2. what is industry general keyword
-				3. collect stats for them in wordtracker
-				4. what are the top ones
+  seo strategies
+    subsite
+      essence
+        build a subsite
+        give links from social media to your subsite
+        make links from subsite to target (money) site
+    content sharing sites
+      build content in sharing sites such as
+        youtube
+        squidoo hubpages
+        flixya
+        gather
+      multiple placement in google
+      very high search ranking
+    keyword research
+      plan
+        1. brainstorm 10 keywords
+        2. what is industry general keyword
+        3. collect stats for them in wordtracker
+        4. what are the top ones
 
 # ScreenFlow - combocasting
 

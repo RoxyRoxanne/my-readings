@@ -149,6 +149,7 @@
           lua
             http://bugra.github.io/work/notes/2015-05-09/learning-lua-as-a-python-developer/
         games
+          Lumosity
           Örnek oyunlar ve kodları
             http://programarcadegames.com/index.php?lang=en
           educational games
@@ -458,6 +459,8 @@
             https://www.fiverr.com/shocksoundg/help-you-produce-a-effective-marketing-video
             find editor, personnel, graphics effect
         <url:book_summaries.md#tn=# ScreenFlow - combocasting>
+        screen capture to gif
+          https://www.cockos.com/licecap/
       http://www.copyblogger.com/empathy-maps/
       book writing
         http://chrisguillebeau.com/how-to-write-a-book
@@ -862,6 +865,7 @@
           https://www.thechildrensbookreview.com/
         app
           https://www.commonsensemedia.org/app-reviews
+          http://appcrawlr.com/ios/save-looma
           http://curiouslittleapps.com/
           https://www.youtube.com/channel/UCFhIzk6wcLUu0nnqMtg5OZg
           http://www.geekswithjuniors.com/best-apps-for-kids-ages-4-5 
@@ -870,6 +874,18 @@
       read aloud books for adults
         https://www.youtube.com/user/GreatestAudioBooks
       oyunlar
+        physics puzzles
+          Tinkerbox: mechanical puzzle
+            only in USA
+          Save Looma
+          Siege Hero
+          Trainyard Express
+        puzzles
+          Mouse moustrap
+            http://appcrawlr.com/ios/save-looma
+          Little Big City
+        stories
+          Rory's Story Cubes
         https://itunes.apple.com/us/app/swaptales-leon!/id1091552811?mt=8
           okumalı macera oyunu
         https://blox3d.com/home
@@ -1317,8 +1333,14 @@
       2 Minute Papers 
     scihub: open access/open science articles database
       https://scihub.org
+      libgen.io
+      elbakyan
+      pirated articles
+      #icanhazpdf: to download paywalled papers for them
+      https://openlibrary.org
     planet: earth photos from satellites
       https://www.planet.com/products/monitoring/
     New Zealand's Rise as a Tech Giant (Hello World - Episode 1)-jKvZPpdGjiM.mp4
+
 
 

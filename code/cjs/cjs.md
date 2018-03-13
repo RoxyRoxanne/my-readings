@@ -17,6 +17,7 @@
       memory game in elm
 
 ## cyclejs
+
 running cyclejs examples
   git clone https://github.com/cyclejs/cycle-examples
   cd cycle-examples
@@ -128,3 +129,12 @@ running cyclejs examples
 
     bir satırın nerelerden çağrıldığını nasıl buluruz?  
       console.trace()
+    CORS
+      same-origin policy
+        js cannot access resources from other websites. 
+        it can access resources from that same site
+      problem with file://
+        origin becomes "null"
+        thus you cannot import other js modules
+      solution
+        make the resources 

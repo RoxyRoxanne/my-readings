@@ -931,6 +931,76 @@ workflows
       Kime ne iş çıkarmalısın?
         hepsini yt ile etiketle
 
+# bash
+
+    Ten Things I Wish I’d Known About bash 
+      https://zwischenzugs.com/2018/01/06/ten-things-i-wish-id-known-about-bash/
+      `` vs $()
+        same: compare them:
+          echo `ls`
+          echo $(ls)
+        difference: easier to read when nested:
+          echo $(echo $(echo $(echo inside)))
+      globbing vs regexps
+        ls *
+        ls .*
+      exit codes
+        0   success
+        1   general error
+        echo $?
+          exit code of previous command
+      if statements, [ and [[
+        [   original form
+          nothing makes no sense
+        [[  simpler form
+          handles nothing
+      set
+        set -e
+          print non-zero exit codes
+        set -x
+          output commands as they run
+      <()
+        similar to $()
+        output is treated as file
+        ex:
+          grep astring file1 > /tmp/a
+          grep bstring file2 > /tmp/b
+          diff /tmp/a /tmp/b
+        same:
+          diff <(grep astring file1) <(grep bstring file2)
+      quoting
+        variables in quotes:
+          A='123'
+          echo "$A"
+          echo '$A'
+            literal $A
+      shortcuts
+        man bash
+          memorize one by one
+        !!    repeat last command
+        !$    repeat last arg of last command
+          ex:
+            grep astring /long/path/to/file.txt
+            vi !$
+        !:1-$   repeat all args of last command
+          ex:
+            grep astring /long/path/to/file.txt
+            egrep !:1-$
+          !   look at prev command
+          :   separator
+          1   take first word
+          -   until
+          $   last word
+        :h
+          remove everything up to folder
+          ex:
+            grep astring /long/path/to/file.txt
+            cd !$:h
+        startup order
+        getopts
+
+
+
 # BetterTouchTool
 http://www.makeuseof.com/tag/power-trackpad-user-bettertouchtool-mac/
 http://blog.boastr.net/?page_id=1619#firsteps
@@ -3053,6 +3123,54 @@ _refcard _me
               subrequests don't run network, sockets
                 so they are very fast
             Independent Variable Containers in Subrequests
+
+# pandoc
+
+    pandoc's markdown
+      http://pandoc.org/MANUAL.html#pandocs-markdown
+      Header identifiers
+        for labels and link anchors
+        ex: header text
+          {#identifier .class .class key=value key=value}
+        ex: usage
+          # My header {#foo}
+        numbering
+          unnumbering:
+            {.unnembered}
+            {-}
+        linking
+          ex
+            # Foo
+            see [foo]
+      Block quotations
+        ex:
+          > this
+          > is block quote
+        ex: can be nested
+          > parent
+          >
+          > > child
+      Line blocks
+        for verse and addresses
+        ex:
+          | keep lines
+          | separate
+      Lists
+        bullet lists
+          compact
+            * one
+            * two
+          loose: space between items
+            * one
+            --- blank line
+            # two
+        block content in list items
+          ex:
+            * first para
+            --- blank
+              continued
+            --8 spaces-- {code}
+      Definition lists
 
 # ruby
 

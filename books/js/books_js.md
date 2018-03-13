@@ -2,6 +2,105 @@
 
 # Books Js
 
+  Eloquent Javascript id=g_10191
+    Eloquent Javascript <url:file:///~/Dropbox/mynotes/content/books/js/books_js.md#r=g_10191>
+    ch10 Modules
+      quotes
+        Write code that is easy to delete, not easy to extend.
+        Tef, Programming is Terrible
+      intro
+        programs grow organically
+        structuring is additional work
+          that will pay off next time someone works on the program
+        big ball of mud = structureless programs
+      Modules
+        an attempt to avoid problem of not having structure
+        a module specifies
+          which other pieces it relies on (dependencies)
+          which functions it provides for use (interface)
+      Packages
+        package: code that canbe distributed
+          can contain multiple modules
+          repository: npm
+      Improvised Modules
+        people solved module problem using js features:
+        ex: weekDay module:
+          code
+            const weekDay = function() {
+              const names = [...]
+                return {
+                  name(number) { return names[number] },
+                  number(name) { return names.indexOf(name) }
+                }
+            }()
+          interface: weekDay.name, weekDay.number
+          hides local binding `names`
+        provides isolation
+          but doesn't declare dependencies
+          puts its interface into global scope
+      Evaluating Data As Code
+        opt1: eval(..)
+        opt2: Function constructor
+          ex:
+            code
+              let plusOne = Function("n", "return n + 1;")
+              console.log(plusOne(4))
+              //> 5
+            takes two args: 
+              a string: a comma separated list of arg names
+              a string: function body
+          good for a module system
+      CommonJS
+        require() function
+          loads the module
+          returns its interface
+        modules: 
+          put their interfaces in the object bound to `exports`
+          access their dependencies using require()
+        ex: format-date.js
+          const ordinal = require("ordinal")
+          const {days, months} = require("date-names")
+          exports.formatDate = function(date, format) {
+            return format.replace(..)
+          }
+        ex: using format-date.js
+          const {formatDate} = require("./format-date")
+        definition of minimum require() :
+          require.cache = Object.create(null)
+          function require(name) {
+            if (!(name in require.cache)) {
+              let code = readFile(name)
+              let module = {exports: {}}
+              require.cache[name] = module
+              let wrapper = Function("require, exports, module", code)
+              wrapper(require, module.exports, module)
+            }
+            return require.cache[name].exports
+          }
+        name: case
+          when it starts with "./" or "../" it is relative file path
+          else, node will look for an installed package by that name
+      EcmaScript Modules = ES modules
+        CommonJS quirks
+          notation awkward
+            `exports` not available in local scope
+          hard to find dependencies of a module
+        instead of calling a function: `import` and `export` keyword
+          import ordinal from "ordinal"
+          import {days, months} from "date-names"
+          export function formatDate(date, format) {...}
+      Module Design
+        don't assume that a painful mess is just the way it is.
+          you can improve the structure of almost everything by putting more thought into it
+        tips:
+          make interface simple and predictable
+            opt1: follow existing conventions
+              ex: ini package imitates JSON with `parse` and `stringify` functions
+          ease that something can be composed with other code
+            ex: some INI packages reads from a file
+              they cannot be composed easily
+          if something can be done with a function, use a function
+            don't overuse stateful objects
   egghead_nodejs
     01-egghead-node-js-using-the-node-js-repl-shell.mp4
       node
@@ -939,3 +1038,4 @@
           on() is called after each event
             http inherits from EventEmitter
         Creating an Async Callback Function
+

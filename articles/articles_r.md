@@ -1502,7 +1502,71 @@ _me refcard
           pretty_test <- ct$call("beautify.js_beautify", test, list(indent_size = 2))
           cat(pretty_test)
   
+## Bookdown Manual
 
+    https://bookdown.org/yihui/blogdown/get-started.html
+    ch01: Get Started
+      1.1 Installation
+        install.packages("blogdown")
+        library(blogdown)
+        blogdown::update_hugo()
+      1.2 A quick example
+        cmd
+          blogdown::new_site()
+        LiveReload
+      1.3 RStudio IDE
+      1.4 Global Options
+        Option name Default Meaning
+          servr.daemon  FALSE Whether to use a daemonized server
+          blogdown.author   The default author of new posts
+          blogdown.ext  .md Default extension of new posts
+          blogdown.subdir post  A subdirectory under content/
+          blogdown.yaml.empty TRUE  Preserve empty fields in YAML?
+        use ?Rprofile
+    ch02: Hugo
+      2.2 Configuration
+        https://bookdown.org/yihui/blogdown/configuration.html
+        2.2.1 TOML Syntax
+          ex:
+            key = value
+            title = "My Site"
+            relativeURLs = true
+          ex: bracket = table
+            [social]
+              github = "..."
+          ex: double brackets = array of tables
+            [[menu.main]]
+              name = "Blog"
+              url = "/blog/"
+            [[menu.main]]
+              name = "About"
+              url = "/about/"
+        2.2.2 Options
+      2.3 Content
+        content/ directory
+          structure of directory is arbitrary
+        2.3.1 YAML metadata
+          important fields:
+            draft: true
+            publishdate: <date>
+              possible to set future date
+            weight: 10
+              order of pages when sorting them
+            slug: <string>
+              for permanent URLs
+        2.3.2 Body
+        2.3.3 Shortcode
+          hugo shortcodes
+          ex: tweet embedding
+            {{< tweet <id> >}}
+            ->
+            blogdown::shortcode('tweet', '<id>')
+      2.4 Themes
+      2.5 Templates
+        theme consists of: templates + web assets
+        2.5.1 A minimal example
+      2.7 Static files
+        all files under static/ are copied to public/
 
 
 

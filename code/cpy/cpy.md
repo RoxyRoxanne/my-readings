@@ -2,14 +2,21 @@
 
 _ id=r_lastid cpy_0001
 
-# stuff
+## stuff
 
     os - operating system
       get working directory
         import os
         cwd = os.getcwd()
+    http server
+      python3 -m http.server
 
-# database sql
+## conda
+
+    update
+      conda update conda
+
+## database sql
 
     tools
       jupyter: ipython-sql
@@ -89,7 +96,7 @@ _ id=r_lastid cpy_0001
         %pgcli postgres://someone@localhost:5432/world
         %pgcli postgresql://superuser:superuserpass@localhost/app
 
-# panda
+## panda
 
 
 
