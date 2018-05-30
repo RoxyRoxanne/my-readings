@@ -352,8 +352,11 @@
           because of ellipsis operator
           first(callback, ...a)
       promises
+        invented to secured distributed protocol
+        it hides us to understand the reality
         better: RQ
-          requestor function
+        douglascrockford/RQ
+          takes requestor function
           composable
       try
         implied function
@@ -2326,6 +2329,7 @@
     ECMAScript modules in browsers id=g_10192
       ECMAScript modules in browsers <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10192>
       https://jakearchibald.com/2017/es-modules-in-browsers/
+      ex: <url:/Users/mertnuhoglu/projects/study/js/ecmascript_modules.Rmd#tn=## v01: Basic Example 01>
     ES6 Modules in Browsers
       https://salomvary.com/es6-modules-in-browsers.html
       essentials
@@ -2459,6 +2463,9 @@
             export function square(x) { return x * x; }
         import statement is not dynamic
           makes static analyzers build tree of dependencies
+
+## webpack
+
     Using ES6 Modules with Webpack
       http://www.zsoltnagy.eu/using-es6-modules-with-webpack/
       index.html
@@ -2630,6 +2637,376 @@
               index.css
               icon.svg
 
+### Webpack: When To Use And Why id=g_10193
+
+Webpack: When To Use And Why <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10193>
+
+https://blog.andrewray.me/webpack-when-to-use-and-why/
+
+#### What is Webpack?
+
+Webpack is 
+
+- a build tool: bundles all files in a dependency graph
+- lets you use require() to point to local files
+- replaces the file references with URLs in final bundle
+
+#### History of Dependency Graph
+
+1. Early days: implicit dependencies
+
+        <script src="jquery.min.js"></script>
+
+    Con: too slow because of several HTTP requests
+    Con: no modular isolation and namespace
+
+2. Build script to concatenate and minify scripts
+
+    ``` 
+    // build-script.js
+    var scripts = [  
+        'jquery.min.js',
+        'jquery.some.plugin.js',
+        'main.js'
+    ].concat().uglify().writeTo('bundle.js');
+
+    // Everything our app needs!
+    <script src="bundle.js"></script>  
+    ``` 
+
+    Con: relied on the order of concatenated files
+    Con: still has global variables
+
+3. CommonJS or ES6 modules
+
+    ``` 
+    // version.js
+    module.exports = {version: 1.0};
+
+    // app.js
+    var config = require('./version.js');
+    ``` 
+
+    Con: Browser doesn't support `require()`. We use a build tool like
+    browserify.
+
+#### What Does Webpack Do?
+
+Use `require()` on non-js files:
+
+    <img src={ require('../../assets/logo.png') } />  
+
+Webpack configuration:
+
+    loaders: [
+      {test: /.png$/, loader: "file-loader"}
+    ]
+
+Webpack replaces `require()` with a URL string. It puts `logo.png` into some
+local folder such as `dist/`. 
+
+Note that: The final (bundled) js code doesn't have `require('logo.png')` instead it has URL of `logo.png`. 
+
+#### What About Browserify, Grunt, Gulp ...?
+
+Grunt and Gulp don't have dependency graph. Webpack puts static assets and source code in a dependency graph.
+
+Browserify transforms `require()` calls into calls that work in the browser.
+It has dependency graph but only for source code. 
+
+So Webpack replaces those three tools. 
+
+#### The Good
+
+Static assets in a dependency graph has benefits:
+
+- Dead asset elimination. Great especially for CSS rules.
+
+- Easier code splitting. Each js file has a specific CSS file that reduces
+file sizes a lot.
+
+- You control how assets are processed. Ex: You can base64 encode small files
+directly into js.
+ 
+- Stable production deploys. No image missing.
+
+- Hot page reloading. True CSS management. CDN cache busting.
+
+#### The Bad
+
+- Single maintainer
+
+- Mini language in a string: `require("!style!css/bootstrap.less")`
+
+#### Dev Server
+
+"dev server" is a small express app.
+
+#### Stop Programming with Globals
+
+Traditional front end programming relies on global variables. CSS rules exist
+in a global namespace. 
+
+Stop being a human compiler. Use a dependency graph.
+
+### What's new in webpack 2 id=g_10194
+
+What's new in webpack 2 <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10194>
+
+https://gist.github.com/sokra/27b24881210b56bbaff7
+
+- Supports ES6 Modules: no need to transform to commonjs
+
+        import { currentPage, readPage } from "./book";
+
+        currentPage === 0;
+        readPage();
+        currentPage === 1;
+        // book.js
+        export var currentPage = 0;
+
+        export function readPage() {
+          currentPage++;
+        }
+
+        export default "This is a book";
+
+- Mixing ES6 With AMD and CommonJS
+
+        // CommonJS consuming ES6 Module
+        var book = require("./book");
+        
+        book.currentPage;
+        book.readPage();
+        book.default === "This is a book";
+        // ES6 Module consuming CommonJS
+        import fs from "fs"; // module.exports map to default
+        import { readFileSync } from "fs"; // named exports are read from returned object+
+        
+        typeof fs.readFileSync === "function";
+        typeof readFileSync === "function";
+
+### Getting Started with webpack
+
+https://blog.envylabs.com/getting-started-with-webpack-2-ed2b86c68783
+
+Webpack has evolved into a manager for all front end code
+
+Earlier: Gulp, Grunt: One Task runner for HTML, another for CSS etc.
+
+Webpack: gets all HTML, CSS into JS and outputs them all separately but
+integrated.
+
+Introducing kyt — Our Web App Configuration Toolkit
+  https://open.blogs.nytimes.com/2016/09/13/introducing-kyt-our-web-app-configuration-toolkit/
+  Lots of build tools. 
+    Con: extensive configuration.
+  Common requirements: 
+    transpiler, server build, client build, test, style and
+    script linting, combining several scripts together
+    Matrix of dependencies
+  Configuration hell => boilerplates => boilerplate fatigue
+    unused code
+    brittle and time consuming
+  kyt: escape from configuration hell
+  how it works
+    cli
+      dev: runs dev server with live reloading
+      build + start: runs code 
+      test + lint
+      proto: prototyping
+  starter-kyt: choose what matters
+    Pro: benefits of boilerplates
+    Pro: minimizing number of new tools
+  kyt is different
+Hyperapp + Parcel = 😎
+  https://blog.daftcode.pl/hyperapp-parcel-71823bd93f1c
+  hyperapp: tiny frontend framework
+  parcel: asset bundler
+  cons of react + webpack
+    webpack: hard to configure
+    react: too big
+  hyperapp
+    1 kb
+    tiny react
+    uses virtual dom
+    state management: inspired by elm
+  parcel
+    huge speed increase
+    all work out of the box
+    ex: linking a .sass file, 
+      it installed automatically node-sass dependency 
+      and transformed file to css
+  how to use it?
+    ref
+      ~/projects/study/js/ex/study_hyperparcel/package.json
+    install
+      mkdir hyperparcel
+      cd $_
+      npm init -y
+      npm i hyperapp parcel-bundler babel-plugin-transform-react-jsx babel-preset-env
+    index.html
+      <html>
+        <body>
+          <script src="./index.js"></script>
+        </body>
+      </html>
+    index.js
+      console.log('hello parcel')
+    package.json
+      "start": "parcel index.html",
+      "build": "parcel build index.html --public-url ./"
+    run
+      npm start
+       
+Everything You Need To Know About Parcel
+  https://medium.freecodecamp.org/all-you-need-to-know-about-parcel-dbe151b70082
+  why parcel?
+    simplicity: zero configuration
+      development server built in with hot module replacement
+      fast bundle times
+    out of the box support: 
+      js css html, file assets
+      code splitting
+      css preprocessors
+      caching
+    friendly error logs
+  installation
+    npm install parcel-bundler --save-dev
+    mkdir parcel01 && cd $_ && npm init -y
+    touch index.html && touch index.js
+    index.html
+      <script src="index.js">
+    index.js
+      document.write("hello")
+    package.json
+      "start": "parcel index.html"
+    npm run start
+    http://localhost:1234
+  scss
+    npm i node-sass && touch styles.scss
+    index.js
+      import './styles.scss'
+    package.json
+      "build": "parcel build index.js"
+    npm run build
+  run specific build path
+    parcel build index.js -d build/output
+
+### ParcelJs Official Documentation id=g_10195
+
+ParcelJs Official Documentation <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10195>
+
+https://parceljs.org/getting_started.html
+
+#### Getting Started
+
+    npm install -g parcel-bundler
+    npm init -y
+
+Entry point: an html/js file
+
+    parcel index.html
+
+    open http://localhost:1234
+
+    parcel -p <port_number>
+
+#### Assets
+
+##### Javascript
+
+    const dep = require('./path/to/dep')
+    import dep from './path/to/dep'
+
+css:
+
+    import './test.css'
+    import classNames from './test.css'
+    import imageUrl from './test.png'
+
+to inline a file use fs.readFileSync
+
+    import fs from 'fs'
+    const string = fs.readFileSync(__dirname + '/test.txt', 'utf8')
+    const buffer = fs.readFileSync(__dirname + '/test.png')
+
+##### Css Assets
+
+css files can contain dependencies referenced by `@import` (inlined) or `url()` (rewritten to their output filenames)
+
+    @import './other.css'
+    .test {
+      background: url('./images/img.png')
+    }
+
+scss works the same way:
+
+    npm install node-sass
+
+    import './custom.scss'
+
+##### HTML Files
+
+URLs are extracted and compiled
+
+    <img src="./images/header.png">
+    <a href="./other.html">..
+    <script src="./index.js">
+    
+#### Transforms
+
+Built in transformers: Babel, PostCSS, PostHTML
+
+Parcel runs these transform when it finds their configuration files (.babelrc, .postcssrc)
+
+#### Code Splitting
+
+Split code into separate bundles loaded on demand.
+
+Controlled by use of dynamic `import()` that returns a Promise.
+
+    // pages/about.js
+    export function render() {..}
+
+    import('./pages/about').then(function (page) {
+      page.render()
+    })
+
+#### Hot Module Replacement HMR
+
+Two methods:
+
+    module.hot.accept
+    module.hot.dispose
+
+#### Production
+
+    parcel build entry.js
+
+Options
+
+    parcel build entry.js --out-dir build/output
+      -d
+      output directory
+    parcel build entry.js --public-url ./
+      public url to serve on
+
+#### Recipes
+
+#### API
+
+#### Plugins
+
+Plugins are very simple
+
+Modules that export a single function
+
+Input: Bundler object
+
+    module.exports = function (bundler) {
+      bundler.addAssetType('ext', require.resolve('./MyAsset'))
+    }
 
 ## hyperscript 
 
@@ -3380,6 +3757,124 @@ Multiple classes:
 
   Ramdajs  <url:file:///~/Dropbox/mynotes/content/articles/articles_js.md#r=g_10190>
 
+## Ramda Documentation
+
+http://ramdajs.com/docs/
+
+`__`
+
+placeholder value to specify gaps within curried functions
+
+    g(1,2,3)
+    g(_,2,3)(1)
+
+    var greet = R.replace('{name}', R.__, 'Hello, {name}!');
+    greet('Alice'); //=> 'Hello, Alice!'
+
+`add`
+
+    R.add(2,3)
+    R.add(7)(10)
+
+`addIndex`
+
+`adjust`
+
+`all`
+
+    var equals3 = R.equals(3);
+    R.all(equals3)([3,2,3]); //=> false
+
+`allPass`
+
+    var isQueen = R.propEq('rank', 'Q');
+    var isSpade = R.propEq('suit', 'S');
+    var isQueenOfSpades = R.allPass([isQueen, isSpade]);
+    isQueenOfSpades({rank: 'Q', suit: 'M'}); //=> false
+
+`always`
+
+    var t = R.always('Tee')
+    t(); //=> 'Tee'
+
+`and`
+
+    R.and(true, true); //=> true
+
+`any`
+
+    var lessThan0 = R.flip(R.lt)(0);
+    var lessThan2 = R.flip(R.lt)(2);
+    R.any(lessThan0)([1,2]); //=> false
+
+`ap`
+
+applies a list of functions to a list of values
+
+    R.ap([R.multiply(2), R.add(3)], [1,2,3]); 
+    //=> [2, 4, 6, 4, 5, 6]
+
+`append`
+
+    R.append('tests', ['write', 'more']);
+    //=> ['write', 'more', 'tests']
+
+`apply`
+
+    R.apply(Math.max, [1,42]); //=> 42
+
+`applyTo`
+
+    var t42 = R.applyTo(42);
+    t42(R.add(1)); //=> 43
+
+`ascend`
+
+    var byAge = R.ascend(R.prop('age'));
+    var peopleByAge = R.sort(byAge, people);
+    
+`pluck`
+
+    R.pluck('a')([{a: 1}, {a: 2}]); //=> [1,2]
+    R.pluck(0)([[1, 2], [3, 4]]); //=> [1,3]
+
+## Introducing Ramda
+
+https://buzzdecafe.github.io/code/2014/05/16/introducing-ramda
+
+Differences from lodash and underscore:
+
+- Ramda takes function first, data last
+
+Why? Because of currying and composing easily. Supports point-free style
+before finally passing in the data
+
+    var validUsersNamedBuzz = R.filter(R.where({name: 'Buzz', errors: R.isEmpty}));
+
+- Ramda functions are automatically curried
+
+``` js
+var moo = R.prop('moo');
+var value = moo({moo: 'cow'}); 
+``` 
+
+Makes composing easy. You can continue composing until dropping the data.
+
+``` js
+var amtAdd1Mod7 = R.compose(R.moduloBy(7), R.add(1), R.prop('amount'));
+
+amtAdd1Mod7({amount: 17}); // => 4
+amtAdd1Mod7({amount: 987}); // => 1
+
+var amountObjects = [
+  {amount: 903}, {amount: 2875654}, {amount: 6}
+]
+R.map(amtAdd1Mod7, amountObjects); // => [1, 6, 0]
+
+var amountsToValue = map(amtAdd1Mod7);
+amountsToValue(amountObjects); // => [1, 6, 0]
+``` 
+
 ## Writing Elegant Code With React, Redux and Ramda
 
 https://medium.com/javascript-inside/the-elegance-of-react-ebc21a2dcd19
@@ -3559,10 +4054,18 @@ Ex: An array is a Functor. Because it can store values and has `map` that maps a
     sourcemaps
   Wes Bos - Start Using ES6 Today-493p5FSFHz8.mp4
     string templating
-      const markup = `${renderKeywords(beer.keywords)}`
+      const markup = `
+        <div>
+          <h2>${beer.name}</h2>
+          ${renderKeywords(beer.keywords)}
+        </div>
+      `
       funcion renderKeywords(kw) {
-        return `<ul>
-          ${kw.map(key => `li>${key}`
+        return (
+          `<ul>
+            ${kw.map(key => `li>${key}</li>`).join('')}
+          </ul>`);
+      }
     enhanced object literals
       const dog = {
         first: first,
@@ -3667,4 +4170,405 @@ Ex: An array is a Functor. Because it can store values and has `map` that maps a
           tons of unwanted features
         2. most bootstrap components are useless
   David Blurton - Full-stack JavaScript development with Docker - JSConf Iceland 2016-zcSbOl8DYXM.mp4
+
+## ReactiveConf 2016 - Thomas Roch - Past and future of client-side routing-hblXdstrAg0.mp4
+
+Routing is not a solved problem. 
+
+Today is all about components.
+
+"Is MVC Dead?" 
+
+Components can be compared to functions: data -> f(data) -> data
+
+Components are data-driven.
+
+Ex: React component
+
+    function LoggedUser({user}) {
+      return user
+        ? <div> Hello {user.name} </div>
+      ...
+
+We compose components as trees of components.
+
+But when it comes to routing, we do:
+
+    function App({route}) {
+      if (route === "dashboard") 
+        return <Dashboard/>
+      if (route === "profile') 
+        return <Profile/>
+    }
+
+Why do we treat routing differently?
+
+Because we have been influenced by server side rendering:
+
+Ex:
+
+    django
+      router.register('users', UserViewSet)
+    express
+      app.get('/users', function(req, res) {
+        res.send('Users List')
+      }
+
+request -> response
+
+This translates into:
+
+route -> action
+
+This type of routing is stateless routing.
+
+Routing on server side is basically pattern matching.
+
+We transposed the same model to stateful browsers.
+
+Ex:
+
+    React-router
+      <Route path="users" component={Users}>
+
+Routers became responsible for rendering components. 
+
+Thus they are also responsible for transitioning between them. 
+
+What about code splitting?
+
+Routers are made more complex by being tied to a component library or framework.
+
+Also, in a sense routing has been mystified.
+
+They are enabler of SPA. But when we choose our view library, we will look to router. Mostly, router is embedded into it. 
+
+What about view/state separation?
+
+router5: github.com/router5/router5
+
+npm install router5
+
+``` js
+import createRouter from 'router5'
+const routes = [
+  { name: 'home', path: '/' },
+  { name: 'schedule', path: '/schedule/:day' }
+]
+const router = createRouter(routes)
+router.start('/', (err, state) => alert(state.name))
+``` 
+
+Move `alert` into an observer/listener:
+
+``` js
+import createRouter from 'router5'
+import listenersPlugin from 'router5/plugins/listeners'
+const routes = [
+  { name: 'home', path: '/' },
+  { name: 'schedule', path: '/schedule/:day' }
+]
+const router = createRouter(routes)
+  .usePlugin(listenersPlugin())
+router.addListener((state) => {
+  const text = `Navigated to ${state.name} (${state.path})
+  alert(text)
+}
+router.start('/')
+``` 
+
+Now use `navigate()` to go to a specific state.
+
+`browserPlugin` updates browser's url when we navigate to some new state.
+
+``` js
+import createRouter from 'router5'
+import listenersPlugin from 'router5/plugins/listeners'
+import browserPlugin from 'router5/plugins/browser'
+const routes = [
+  { name: 'home', path: '/' },
+  { name: 'schedule', path: '/schedule/:day' }
+]
+const router = createRouter(routes)
+  .usePlugin(browserPlugin())
+  .usePlugin(listenersPlugin())
+router.addListener((state) => {
+  const text = `Navigated to ${state.name} (${state.path})
+  alert(text)
+}
+router.start('/')
+router.navigate('schedule', {day: 'wednesday'})
+``` 
+
+Now use router with components instead of alert box:
+
+``` bash
+npm install react-router5
+``` 
+
+`App.js`
+
+``` js
+import React from 'react'
+export default function App(props) {
+  return <h1>Hello</h1>
+}
+``` 
+
+`index.js`
+
+``` js
+import createRouter from 'router5'
+import listenersPlugin from 'router5/plugins/listeners'
+import browserPlugin from 'router5/plugins/browser'
+import App from './App'
+import React from 'react'
+import ReactDOM from 'react-dom'
+const routes = [
+  { name: 'home', path: '/' },
+  { name: 'schedule', path: '/schedule/:day' }
+]
+const router = createRouter(routes)
+  .usePlugin(browserPlugin())
+  .usePlugin(listenersPlugin())
+router.start('/')
+ReactDOM.render(<App/>, document.getElementById('root'))
+``` 
+
+Next, our component needs to access router instance. We add `RouterProvider`
+
+``` js
+import createRouter from 'router5'
+import listenersPlugin from 'router5/plugins/listeners'
+import browserPlugin from 'router5/plugins/browser'
+import App from './App'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import {RouterProvider} from 'react-router5'
+const routes = [
+  { name: 'home', path: '/' },
+  { name: 'schedule', path: '/schedule/:day' }
+]
+const router = createRouter(routes)
+  .usePlugin(browserPlugin())
+  .usePlugin(listenersPlugin())
+router.start('/')
+ReactDOM.render(
+  <RouterProvider router={router}>
+    <App/>
+  </RouterProvider>, 
+  document.getElementById('root')
+)
+``` 
+
+`App.js`
+
+``` js
+import React from 'react'
+import {Link} from 'react-router5'
+function AppMenu() {
+  return (
+    <nav>
+      <Link routeName='home'>Home</Link>
+      <Link routeName='schedule' routeParams={{day:'wednesday'}}>Wednesday</Link>
+    </nav>
+  )
+}
+export default function App(props) {
+  return (
+    <div>
+      <AppMenu/>
+      <h1>Hello</h1>
+    </div>
+  )
+}
+``` 
+
+When we click 'Home' or 'Wednesday' the url changes. 
+
+But we want to change the component (or view) in addition to url change.
+
+`App.js`
+
+``` js
+import React from 'react'
+import {Link, withRoute} from 'react-router5'
+function AppMenu() {
+  return (
+    <nav>
+      <Link routeName='home'>Home</Link>
+      <Link routeName='schedule' routeParams={{day:'wednesday'}}>Wednesday</Link>
+    </nav>
+  )
+}
+function AppMain(props) {
+  const {route} = props
+  if (!route) {
+    return <h1>Not found</h1>
+  } 
+  if (route.name === 'home') {
+    return <h1>Hello </h1>
+  } 
+  if (route.name === 'schedule') {
+    return <h1>Schedule for {route.params.day} </h1>
+  } 
+}
+const AppMainWithRoute = withRoute(AppMain)
+export default function App(props) {
+  return (
+    <div>
+      <AppMenu/>
+      <AppMainWithRoute />
+    </div>
+  )
+}
+``` 
+
+Data flow:
+
+    router -> browserListener -> browser url
+    router -> listener -> AppMain 
+    App 
+      AppMain
+      AppMenu
+        Link -> router
+        Link -> router
+      
+
+Integration with redux:
+
+Instead of component listener to update AppMain directly, let redux store do it:
+
+    router -> reduxListener -> store -> AppMain
+
+It works with Observables too
+
+``` js
+import createRouter from 'router5'
+import createObservables from 'rxjs-router5'
+import routes from './routers'
+const router = createRouter(routes) 
+const {
+  route$,
+  routeNode, 
+  transitionError$,
+  transitionRoute$
+} = createObservables(router)
+``` 
+
+Why Routing state/view separation?
+
+- Easier to integrate
+- Leverage existing component layers
+- Code splitting
+- Simpler universal architecture
+- Native
+
+## cycle-router5
+
+https://www.npmjs.com/package/cycle-router5
+
+``` js
+import {makeRouterDriver} from 'cycle-router5';
+ 
+function intent(sources) {
+  return {
+    clickStart$: sources.dom.get('.start-button', 'click'),
+    routeChange$: sources.router.addListener()
+  };
+}
+ 
+function model(actions) {
+  return actions.clickStart$
+    .startWith(null)
+    .map(ev => {
+      return {
+        started: !!ev
+      };
+    });
+}
+ 
+function view(model$) {
+  return model$.map(model => {
+    return h('p', [
+      model.started ? 'Router starting now.' : 'Router not started yet.',
+      h('br'),
+      h('button', { className: 'start-button' }, 'Start Router')
+      h('br')
+    ]);
+  });
+}
+ 
+function routing(intent) {
+  return intent.clickStart$
+    .map(ev => 'start'); // could also be ['start'] or ['start', arg1, ...] 
+}
+ 
+function main(sources) {
+  var intent = intent(sources);
+  return {
+    DOM: view(model(intent)),
+    router: routing(intent)
+  };
+}
+ 
+var routes = [
+  { name: 'home', path: '/' }
+];
+ 
+var routerOptions = {
+  disableClickHandler: false // obviously you could omit this if false 
+  // other router5 constructor options go here 
+};
+ 
+var [sources, sinks] = Cycle.run(main, {
+  DOM: makeDOMDriver('#app'),
+  router: makeRouterDriver(routes, routerOptions)
+});
+``` 
+
+### Integrating React and Datatables — not as hard as advertised
+
+https://medium.com/@zbzzn/integrating-react-and-datatables-not-as-hard-as-advertised-f3364f395dfa
+
+Both Datatables and React manage DOM.
+
+``` js
+class Table extends Component { 
+    componentDidMount() {
+        $(this.refs.main).DataTable({
+           dom: '<"data-table-wrapper"t>',
+           data: this.props.names,
+           columns,
+           ordering: false
+        });
+    }  
+    componentWillUnmount(){
+       $('.data-table-wrapper')
+       .find('table')
+       .DataTable()
+       .destroy(true);
+    }
+    shouldComponentUpdate() {
+        return false;
+    }
+    render() {
+        return (
+            <div>
+                <table ref="main" />
+            </div>);
+    }
+}
+``` 
+
+Points:
+
+- React doesn't know that there is more DOM inside `<table>`
+
+- `shouldComponentUpdate` always returns `false`. This ensures that no re-rendering happens.
+
+- Table initialization happens only once when component is mounted. Because Datatables handles its internal DOM manipulation. 
+
+
+
 

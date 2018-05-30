@@ -1,5 +1,10 @@
 
   topics
+    how to do
+      youtube
+        how to subscribe to youtube channel by podcast tools
+          just copy paste channel's url
+          https://www.youtube.com/channel/UCgc1qqJPfVzqInpukv5R4OQ
     for my use
       purchasing stuff
         comgateway.com
@@ -1146,6 +1151,8 @@
       https://bl.ocks.org
     kickstarter
     tools
+      Overleaf: web based latex editor
+        collaborative commenting/editing
       fast way to write mathematics formula
         https://www.mathcha.io
         hızlı latex editörü

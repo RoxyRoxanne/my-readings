@@ -1,0 +1,686 @@
+---
+title: "You Don't Know JS: Types and Grammar By Kyle Simpson"
+date: 2018-05-03T09:53:27+03:00 
+draft: true
+description: ""
+tags:
+categories: javascript, cyclejs
+type: post
+url:
+author: "Mert Nuhoglu"
+output:
+  html_document:
+    css: styles.css
+blog: mertnuhoglu.com
+resource_files:
+- 
+path: ~/Dropbox/mynotes/content/books/js/book_you_dont_know_js_types_grammar_kyle_simpson.Rmd
+state: wip
+---
+
+<style>
+  .main-container {
+    max-width: 1600px !important;
+  }
+</style>
+
+``` {r set-options}
+options(width = 150)
+options(max.print = 30)
+``` 
+
+https://github.com/getify/You-Dont-Know-JS/blob/master/types%20&%20grammar/README.md#you-dont-know-js-types--grammar
+
+## Preface
+
+### Mission
+
+Goal: Truely understanding how js wizardry works. It is not sufficient to make it work. You need to understand why.
+
+The Good Parts only explains the easy parts. Without that knowledge, no framework can be understood.
+
+## Chapter 01: Types
+
+### Built-in Types
+
+7 built-in types: `null undefined boolean number string object symbol`
+
+`typeof` inspects these built-in types
+
+``` js
+typeof undefined === "undefined"
+typeof {life: 42} === "object"
+typeof Symbol() === "symbol"
+``` 
+
+`null` is special and buggy:
+
+``` js
+typeof null === "object"
+``` 
+
+Testing `null` value:
+
+``` js
+var a = null
+(!a && typeof a === "object"); // true
+``` 
+
+Functions:
+
+``` js
+typeof function a() { /* ... */ } === "function"
+``` 
+
+`function` is not a top-level built-in type. It is a subtype of `object`. It is referred as "callable object". An object with an internal `[[Call]]` property that can be invoked.
+
+``` js
+function a(b,c) {
+  // ...
+}
+a.length; // 2
+``` 
+
+Arrays are just objects too:
+
+``` js
+typeof [1,2,3] === "object"
+``` 
+
+### Values as Types
+
+Variables don't have types. Values have types.
+
+Variables can hold any value.
+
+JS doesn't have "type enforcement" that is a variable doesn't always hold values of the same initial type.
+
+``` js
+var a = 42
+typeof a; // "number"
+a = true
+typeof a; // "boolean"
+``` 
+
+`typeof` doesn't ask: "what's the type of the variable". Instead, it asks: "what's the type of the value in the variable"
+
+### undefined Versus "undeclared"
+
+Variables with no value have the "undefined" value.
+
+``` js
+var a
+typeof a; // "undefined"
+``` 
+
+"undefined" doesn't mean "undeclared". These concepts are different.
+
+``` js
+var a;
+a; // undefined
+b; // ReferenceError: b is not defined
+``` 
+
+Note, "undefined" is different than "is not defined"
+
+But `typeof` doesn't distinguish these two cases:
+
+``` js
+var a
+typeof a; // "undefined"
+typeof b; // "undefined"
+``` 
+
+### typeof Undeclared
+
+Check whether a variable has been declared and defined:
+
+This is not safe, because `DEBUG` may have not been declared:
+
+``` js
+if (DEBUG) {
+  console.log("...")
+}
+``` 
+
+Type safe existence check:
+
+``` js
+if (typeof DEBUG !== "undefined") {
+  console.log("...")
+}
+``` 
+
+Example use case:
+
+``` js
+function doSomethingCool() {
+	var helper =
+		(typeof FeatureXYZ !== "undefined") ?
+		FeatureXYZ :
+		function() { /*.. default feature ..*/ };
+
+	var val = helper();
+	// ..
+}
+``` 
+
+It is possible to define FeatureXYZ in two ways:
+
+First: To make it available in the scope:
+
+``` js
+// an IIFE (see "Immediately Invoked Function Expressions"
+// discussion in the *Scope & Closures* title of this series)
+(function(){
+	function FeatureXYZ() { /*.. my XYZ feature ..*/ }
+
+	// include `doSomethingCool(..)`
+	function doSomethingCool() {
+		var helper =
+			(typeof FeatureXYZ !== "undefined") ?
+			FeatureXYZ :
+			function() { /*.. default feature ..*/ };
+
+		var val = helper();
+		// ..
+	}
+
+	doSomethingCool();
+})();
+``` 
+
+Second: Dependency injection:
+
+``` js
+function doSomethingCool(FeatureXYZ) {
+	var helper = FeatureXYZ ||
+		function() { /*.. default feature ..*/ };
+
+	var val = helper();
+	// ..
+}
+
+``` 
+
+## Chapter 02: Values
+
+### Arrays
+
+``` js
+var a = [ 1, "2", [3] ];
+
+a.length;		// 3
+a[0] === 1;		// true
+a[2][0] === 3;	// true
+``` 
+
+You can add values as you like to an array:
+
+``` js
+var a = [ ];
+
+a.length;	// 0
+
+a[0] = 1;
+a[1] = "2";
+a[2] = [ 3 ];
+
+a.length;	// 3
+``` 
+
+It is possible to skip some indexes:
+
+``` js
+var a = [ ];
+
+a[0] = 1;
+// no `a[1]` slot set here
+a[2] = [ 3 ];
+
+a[1];		// undefined
+
+a.length;	// 3
+``` 
+
+Arrays are numerically indexed. But they are also objects with `string` keys/properties
+
+``` js
+var a = [ ];
+
+a[0] = 1;
+a["foobar"] = 2;
+
+a.length;		// 1
+a["foobar"];	// 2
+a.foobar;		// 2
+``` 
+
+However, if you use a numeric value as `string` then it is assumed it is a `number`
+
+``` js
+var a = [ ];
+
+a["13"] = 42;
+
+a.length; // 14
+``` 
+
+Generally, don't use `string` keys to arrays.
+
+#### Array-Likes
+
+Array-like values: a numerically indexed collection of values.
+
+Ex: Some DOM query functions return lists of DOM elements that are array-like.
+
+Ex: `arguments` object of a function:
+
+``` js
+function foo() {
+	var arr = Array.prototype.slice.call( arguments );
+	arr.push( "bam" );
+	console.log( arr );
+}
+
+foo( "bar", "baz" ); // ["bar","baz","bam"]
+``` 
+
+ES6 provides built-in function: `Array.from(..)` to do this task:
+
+``` js
+...
+var arr = Array.from(arguments)
+...
+``` 
+
+### Strings
+
+Similarity between strings and arrays of characters are superficial only:
+
+``` js
+var a = "foo";
+var b = ["f","o","o"];
+``` 
+
+Common properties: `length`, `indexOf(..)`, `concat(..)`
+
+``` js
+a.length;							// 3
+b.length;							// 3
+
+a.indexOf( "o" );					// 1
+b.indexOf( "o" );					// 1
+
+var c = a.concat( "bar" );			// "foobar"
+var d = b.concat( ["b","a","r"] );	// ["f","o","o","b","a","r"]
+
+a === c;							// false
+b === d;							// false
+
+a;									// "foo"
+b;									// ["f","o","o"]
+``` 
+
+Differences:
+
+``` js
+a[1] = "O";
+b[1] = "O";
+
+a; // "foo"
+b; // ["f","O","o"]
+``` 
+
+Note that, strings are immutable, while arrays are mutable.
+
+Many methods that change array contents do modify in-place.
+
+``` js
+c = a.toUpperCase();
+a === c;	// false
+a;			// "foo"
+c;			// "FOO"
+
+b.push( "!" );
+b;			// ["f","O","o","!"]
+``` 
+
+We can use non-mutation `array` methods for `string` objects as:
+
+``` js
+a.join;			// undefined
+a.map;			// undefined
+
+var c = Array.prototype.join.call( a, "-" );
+var d = Array.prototype.map.call( a, function(v){
+	return v.toUpperCase() + ".";
+} ).join( "" );
+
+c;				// "f-o-o"
+d;				// "F.O.O."
+``` 
+
+But we cannot use array's `reverse()` because it is in-place modification:
+
+``` js
+Array.prototype.reverse.call( a );
+// still returns a String object wrapper (see Chapter 3)
+// for "foo" :(
+``` 
+
+An ugly hack is to convert string to array and then convert it back:
+
+``` js
+var c = a
+	// split `a` into an array of characters
+	.split( "" )
+	// reverse the array of characters
+	.reverse()
+	// join the array of characters back to a string
+	.join( "" );
+
+c; // "oof"
+``` 
+
+But this still doesn't work for strings with unicode characters.
+
+### Numbers
+
+JS has one numeric type: `number`. It includes integer values, decimal numbers. 
+
+`number` values can be boxed with `Number` object wrapper. `number` values can use methods in `Number.prototype`
+
+``` js
+var a = 42.59;
+
+a.toFixed( 0 ); // "43"
+a.toFixed( 1 ); // "42.6"
+``` 
+
+``` js
+var a = 42.59;
+
+a.toPrecision( 1 ); // "4e+1"
+a.toPrecision( 2 ); // "43"
+``` 
+
+You can use these methods on `number` literals but be careful with `.` operator
+
+``` js
+// invalid syntax:
+42.toFixed( 3 );	// SyntaxError
+
+// these are all valid:
+(42).toFixed( 3 );	// "42.000"
+0.42.toFixed( 3 );	// "0.420"
+42..toFixed( 3 );	// "42.000"
+42 .toFixed(3); // "42.000"
+``` 
+
+Numbers can be specified in exponent form too:
+
+``` js
+var onethousand = 1E3;						// means 1 * 10^3
+var onemilliononehundredthousand = 1.1E6;	// means 1.1 * 10^6
+``` 
+
+#### Small decimal Values
+
+Most famous side effect of using binary floating-point numbers:
+
+``` js
+0.1 + 0.2 === 0.3; // false
+``` 
+
+For ES6, `Number.EPSILON` is predefined with the tolerance value. To polyfill the definition for pre-ES6:
+
+``` js
+if (!Number.EPSILON) {
+	Number.EPSILON = Math.pow(2,-52);
+}
+``` 
+
+To compare with it:
+
+``` js
+function numbersCloseEnoughToEqual(n1,n2) {
+	return Math.abs( n1 - n2 ) < Number.EPSILON;
+}
+
+var a = 0.1 + 0.2;
+var b = 0.3;
+
+numbersCloseEnoughToEqual( a, b );					// true
+numbersCloseEnoughToEqual( 0.0000001, 0.0000002 );	// false
+``` 
+
+#### Safe Integer Ranges
+
+#### Testing for Integers
+
+``` js
+Number.isInteger( 42 );		// true
+Number.isInteger( 42.000 );	// true
+Number.isInteger( 42.3 );	// false
+``` 
+
+### Special Values
+
+#### The Non-value Values
+
+`undefined` type has only one value `undefined`
+
+`null` type has only one value: `null`
+
+Some developers distinguish them as:
+
+- `null` is empty value
+- `undefined` is missing value
+
+`null` is a keyword and not an identifier.
+
+`undefined` is an identifier (which is wrong actually)
+
+#### Undefined
+
+In non-strict mode you can do this:
+
+``` js
+function foo() {
+	undefined = 2; // really bad idea!
+}
+
+foo();
+``` 
+
+Even, in strict mode you can create a variable of name `undefined`
+
+``` js
+function foo() {
+	"use strict";
+	var undefined = 2;
+	console.log( undefined ); // 2
+}
+
+foo();
+``` 
+
+#### `void` operator
+
+`undefined` is a built-in identifier that holds the built-in `undefined` value.
+
+Another way to get this value is the `void` operator
+
+The expression `void __` results in `undefined` always. 
+
+``` js
+var a = 42
+console.log( void a, a ), // undefined 42
+``` 
+
+Example use case: We don't want to return a numeric value from `setTimeout`
+
+``` js
+function doSomething() {
+	// note: `APP.ready` is provided by our application
+	if (!APP.ready) {
+		// try again later
+		return void setTimeout( doSomething, 100 );
+	}
+
+	var result;
+
+	// do some other stuff
+	return result;
+}
+
+// were we able to do it right away?
+if (doSomething()) {
+	// handle next tasks right away
+}
+``` 
+
+Alternative way of doing this:
+
+``` js
+...
+if (!APP.ready) {
+	// try again later
+	setTimeout( doSomething, 100 );
+	return;
+}
+``` 
+
+#### Special Numbers
+
+Any mathematical operation where at least one operand is not a number results in `NaN` value which means "not a number". Better would be if it was "invalid number"
+
+##### Not a Number NaN
+
+``` js
+var a = 2 / "foo";		// NaN
+
+typeof a === "number";	// true
+``` 
+
+But `typeof NaN` is a "number"
+
+How to test for it:
+
+``` js
+var a = 2 / "foo";
+
+isNaN( a ); // true
+``` 
+
+But `isNaN(..)` has a fatal flaw.
+
+``` js
+var a = 2 / "foo";
+var b = "foo";
+
+a; // NaN
+b; // "foo"
+
+window.isNaN( a ); // true
+window.isNaN( b ); // true -- ouch!
+``` 
+
+ES6 provides a replacement utility: `Number.isNaN(..)`
+
+``` js
+// polyfill for pre-ES6
+if (!Number.isNaN) {
+	Number.isNaN = function(n) {
+		return (
+			typeof n === "number" &&
+			window.isNaN( n )
+		);
+	};
+}
+
+var a = 2 / "foo";
+var b = "foo";
+
+Number.isNaN( a ); // true
+Number.isNaN( b ); // false -- phew!
+``` 
+
+Another peculiar feature of `NaN` is that it is not equal to itself. It is the only value that is not equal to itself.
+
+##### Infinities
+
+``` js
+var a = 1 / 0;	// Infinity
+var b = -1 / 0;	// -Infinity
+``` 
+
+``` js
+var a = Number.MAX_VALUE;	// 1.7976931348623157e+308
+a + a;						// Infinity
+a + Math.pow( 2, 970 );		// Infinity
+a + Math.pow( 2, 969 );		// 1.7976931348623157e+308
+``` 
+
+##### Zeros
+
+Js has both a normal zero `0` and negative zero `-0`
+
+``` js
+var a = 0 / -3; // -0
+var b = 0 * -3; // -0
+``` 
+
+``` js
+var a = 0 / -3;
+
+// (some browser) consoles at least get it right
+a;							// -0
+
+// but the spec insists on lying to you!
+a.toString();				// "0"
+a + "";						// "0"
+String( a );				// "0"
+
+// strangely, even JSON gets in on the deception
+JSON.stringify( a );		// "0"
+``` 
+
+Interestingly using "string" instead of "number" works correctly:
+
+``` js
++"-0";				// -0
+Number( "-0" );		// -0
+JSON.parse( "-0" );	// -0
+``` 
+
+Comparing negative and normal zeros are configured to deceive:
+
+``` js
+var a = 0;
+var b = 0 / -3;
+
+a == b;		// true
+-0 == 0;	// true
+
+a === b;	// true
+-0 === 0;	// true
+
+0 > -0;		// false
+a > b;		// false
+``` 
+
+To test correctly use `isNegZero()`
+
+``` js
+function isNegZero(n) {
+	n = Number( n );
+	return (n === 0) && (1 / n === -Infinity);
+}
+
+isNegZero( -0 );		// true
+isNegZero( 0 / -3 );	// true
+isNegZero( 0 );			// false
+``` 
+

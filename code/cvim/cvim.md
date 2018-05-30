@@ -63,6 +63,45 @@ _ id=r_lastid cvim_002
         <vimhelp:session-file>
           starting with a Session:
             vim -S session.vim
+    insert.txt
+      autocomplete  
+        :h i_CTRL-N
+        <url:vimhelp:i_CTRL-N>
+        shortcuts 
+          ^N  next match
+          ^P  prev match
+    map.txt
+      map-<expr> map-expression
+        <url:vimhelp:map-expression>
+    eval.txt
+      pumvisible()
+        <url:vimhelp:pumvisible()>
+          is popup menu visible?
+          pumvisible()
+          pumvisible()
+          pumvisible()
+          projects/study/problem/datatables_in_cyclejs/ex/ex0
+    plugins 
+      deoplete - autocomplete
+    viml vimscripting
+      insert string (result of a command) into text
+        https://unix.stackexchange.com/questions/8101/how-to-insert-the-result-of-a-command-into-the-text-in-vim
+        opt1: use expression register "=
+          with P in normal 
+          with <C-R> in insert mode
+          ex: normal
+            "=strftime('%c')<C-M>p
+          <C-M>: enter
+          ex: insert
+            <C-R>=strftime('%c')<C-M>
+          ex: mapping to keys
+            nmap <F2> "=strftime('%c')<C-M>p
+        opt2: use :put command
+          ex: any expression or variable
+            put =a:refid
+          ex: inline
+            put =a:refid
+            normal! kJ
     navigate help topics in vim's documentation
       https://vi.stackexchange.com/questions/2136/how-do-i-navigate-to-topics-in-vims-documentation
       ans1
@@ -466,6 +505,45 @@ _ id=r_lastid cvim_002
         utl ile help url'lerine nasıl link veriliyordu?
           <url:vimhelp:vimfiler-default-key-mappings>
     ctags
+      universal-ctags
+        https://github.com/universal-ctags/ctags
+          manual
+            Universal-ctags doesn't load ~/.ctags and ./.ctags at starting up time. 
+            it loads ~/.ctags.d/*.ctags and ./.ctags.d/*.ctags. 
+        http://docs.ctags.io/en/latest/
+          official documentation
+        debugging
+          ctags --verbose -R .
+            # shows what config options are loaded
+        error: --exclude patterns are ignored
+          cause: ~/.ctags.d/.ctags file is ignored
+          put options into ~/.ctags.d/js.ctags 
+        how does gutentags find the project root to create "tags" file?
+          <url:vimhelp:gutentags_add_default_project_roots>
+          checks for project markers:
+            .git .hg _FOSSIL_
+        pattern for js
+          https://github.com/romainl/ctags-patterns-for-javascript
+            fix: replace F with f
+              --regex-javascript=/^[ \t]*const[ \t]\{1,\}\([a-z][A-Za-z0-9_$]\{1,\}\)[ \t]*=[ \t]*([^\*]/\1/F,Function,Functions/b
+      https://medium.com/@kuiro5/best-way-to-set-up-ctags-with-neovim-37be99c1bd11
+        install universal-ctags
+          brew install --HEAD universal-ctags/universal-ctags/universal-ctags
+        install vim-gutentags
+          async updates tag file on save
+      error: E257: cstag: tag not found
+        https://stackoverflow.com/questions/4137359/vim-ctags-setup
+        opt1
+          :set tags?
+          tags=~/.vim/vimoutliner/vo_tags.tag,./tags
+        opt2
+          cstag is wrong command
+            verb map <c-]> 
+            verb map Ü
+            verb set cst? 
+            #> cscopetag
+            remove cscope from .vimrc
+        disable cscope in vim
       https://andrew.stwrt.ca/posts/vim-ctags/
         41 languages supported
         using ctags
@@ -498,7 +576,7 @@ _ id=r_lastid cvim_002
         help
           :help exuberant-ctags
       https://github.com/ludovicchabant/vim-gutentags
-        <url:~/.vimrc#tn=gutentags>
+        <url:~/.vim/bundle/my-vim-custom/plugin/my-vim-custom.vim#tn=gutentags>
       http://andrewradev.com/2011/06/08/vim-and-ctags/
         :Function foo
           list functions that start with foo in quickfix
@@ -557,6 +635,42 @@ _ id=r_lastid cvim_002
       DB postgresql:///$PGDATABASE select * from data.client
         environment var: $PGDATABASE
     vim-dotenv environment variables
+    vim-plug plug.vim: plugin manager
+      https://github.com/junegunn/vim-plug
+      use
+        reload .vimrc
+        :PlugInstall
+      Plug 'junegunn/vim-easy-align'
+      after opening nvim:
+        :PlugClean
+          remove unused plugins
+        :PlugUpgrade
+          upgrade vim-plug
+        :PlugInstall
+          install plugins
+        :PlugUpdate
+          install/update plugins
+    vim-polyglot
+      collection of language packs
+      https://github.com/sheerun/vim-polyglot
+    javascript in vim id=g_10197
+      javascript in vim <url:file:///~/Dropbox/mynotes/content/code/cvim/cvim.md#r=g_10197>
+      https://davidosomething.com/blog/vim-for-javascript/
+        https://github.com/sheerun/vim-polyglot
+        https://github.com/pangloss/vim-javascript
+        https://github.com/junegunn/vim-plug
+        https://github.com/othree/javascript-libraries-syntax.vim
+        https://github.com/ternjs/tern_for_vim
+          Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
+        https://github.com/othree/jspc.vim
+        https://github.com/ramitos/jsctags
+        https://github.com/benekastah/neomake
+        https://github.com/davidosomething/dotfiles/tree/master/vim
+      http://www.panozzaj.com/blog/2015/08/28/must-have-vim-javascript-setup/
+        https://github.com/moll/vim-node
+        https://github.com/groenewege/vim-less
+        https://github.com/tpope/vim-projectionist
+        https://github.com/SirVer/ultisnips
 
 
 

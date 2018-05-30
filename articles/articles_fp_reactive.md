@@ -49,6 +49,7 @@
             we can hide bar's increment() as private
           if we want to discover how bar's counter works
     duals: reactive vs. passive
+      foo -> bar
       |                         | passive     | reactive    |
       | how does bar work?      | find usages | look inside |
       | which modules affected? | look inside | find usages |
@@ -186,7 +187,17 @@
 
 ## articles
 
-  Everything is a Stream - Rob Wormald-UHI0AzD_WfY.mp4
+  Ben Lesh _ RxJS 5 In Modern Web Applications-D7ImfM7_mcs.mp4
+  Cool RxJS Tricks - Seth House-hkVq7u94Vzw.mp4
+  Get Reactive with RxJS -  Venkat Subramaniam-Sj9E_10K4Pw.mp4
+  Learn How To Use RxJS 5.5 Beta 2 - Special Edition with Ben Lesh-aHYlsjaj1RY.mp4
+  ReactiveConf 2016 - André Staltz - Visualizing the data flow with Cycle.js-3a98OPJWFPY.mp4
+  Refactoring to RxJS 5.5 Beta 2 in Production, RxJS Docs & Microstates-s7gK__dC-_g.mp4
+  RxJS - The Good Parts - Christopher Gosselin & Daniel Figueiredo Caetano-TszoFCFydiM.mp4
+  RxJS 5   Thinking Reactively _ Ben Lesh-3LKMwkuK0ZE.mp4
+  RxJS In-Depth – Ben Lesh-KOOT7BArVHQ.mp4
+  RxJS Observables Crash Course-ei7FsoXKPl0.mp4
+  RxJS Quick Start with Practical Examples-2LCo926NFLI.mp4Everything is a Stream - Rob Wormald-UHI0AzD_WfY.mp4
     redux: reduces all the states and new action, to new state
   RxJS 5   Thinking Reactively _ Ben Lesh-3LKMwkuK0ZE.mp4
     ex: when mouse is down, start listening mouse moves until mouse is up

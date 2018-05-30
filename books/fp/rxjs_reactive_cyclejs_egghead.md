@@ -13,14 +13,28 @@ url: http://mertnuhoglu.com/tech/rxjs_reactive_cyclejs_egghead/
     01
       what is it?
         programming with event streams
-          sequence of events happening over time (async)
+          event stream: sequence of events happening over time (async)
           when an event happens, we react to it
         another sequence: array 
-          sequence in space
-      ex
-        var source = Rx.Observable.interval(400).take(9)
-          .map(i => ['1', '2' ..][i])
+          relation to event stream?
+          array exists now in memory
+          es doesn't exist now
+            sequence in space
+      ex: array
+        var source = ['1', '1', 'foo', '2', '3', '5', 'bar', '8', '13'];
         var result = source
+          .map(x => parseInt(x))
+          .filter(x => !isNaN(x))
+          .reduce((x, y) => x + y);
+        console.log(result)
+      ex: rx
+        var source = Rx.Observable.interval(400).take(3)
+          .map(i => ['1', '2', 'foo', '5'][i])
+        var result = source
+        result.subscribe(x => console.log(x))
+      ex: rx
+        var result = source.
+          map(x=> parseInt(x))
         result.subscribe(x => console.log(x))
       ex: sum all numbers
         var result = source
@@ -425,7 +439,6 @@ url: http://mertnuhoglu.com/tech/rxjs_reactive_cyclejs_egghead/
           .. make DOMSource
           return DOMSource;
         }
-        function main(DOMSource) {
           return {
             DOM: Rx.Observable.timer(0, 1000) // 0--1--2--3
               .map(i => `seconds elapsed ${i}`)
@@ -885,7 +898,7 @@ url: http://mertnuhoglu.com/tech/rxjs_reactive_cyclejs_egghead/
             return state$.map(state =>
               div('.labeled-slider', [
                 label('.label', `${state.label}: ${state.value${state.unit}`'Weight: ' + value +kg'),
-                input('.slider', {type: 'range', min: state.min, max: state.max, value})
+                input('.slider', {type: 'range', min: state.min, max: state.max, value: state.value})
               ])
             )
           }
@@ -1019,8 +1032,8 @@ url: http://mertnuhoglu.com/tech/rxjs_reactive_cyclejs_egghead/
         -->
         function LabeledSlider(sources) {
           const change$ = intent(sources.DOM)
-          const value$ = model(change$, sources.props)
-          const vtree$ = view(value$)
+          const state$ = model(change$, sources.props)
+          const vtree$ = view(state$)
           return {
             DOM: vtree$
             value: state$.map(state => state.value),
@@ -1572,7 +1585,7 @@ url: http://mertnuhoglu.com/tech/rxjs_reactive_cyclejs_egghead/
       ex
         ----H--e---l---l---o|  (foo)
         --0--1---0---1---0|    (bar)
-          foo.withLatestFrom(bar, (x,y) => y === 1 ? x.toUpperCase() : c.toLowerCase())
+          foo.withLatestFrom(bar, (x,y) => y === 1 ? x.toUpperCase() : x.toLowerCase())
         ----h--E---l---L---o|  
       uppercase if latest value from bar is 1
       this is a map
@@ -1617,7 +1630,7 @@ url: http://mertnuhoglu.com/tech/rxjs_reactive_cyclejs_egghead/
         ---h--e--l--l--o|
         -------0-----1--2|
           buffer(closing observable)
-        ------([h,e])---ll--o|
+        -------h-----e--ll|
     15: delay
       ex
         --0--1--2--3--4|

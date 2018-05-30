@@ -37,6 +37,10 @@
 
 # bash
 
+  tee
+    pipe output to pbcopy and to stdout
+      echo 'hello' | tee >(pbcopy)
+      > hello
   error: ~ in ""
     works:
       DATA_MODEL_DIR=~/projects/itr/itr_documentation/data_model
@@ -1351,10 +1355,6 @@
     npm start
     open localhost:3000
     node server.js
-  errors
-    node-gyp: gyp ERR! stack You can pass the --python switch to point to Python >= v2.5.0 & < 3.0.0.
-      where python
-      npm install --python=/usr/bin/python -g underscore-cli
 
 # OpenShift
 
@@ -3343,6 +3343,7 @@ install from local file system
     ffmpeg -i filename.mp4 filename.mp3
     ffmpeg -i video.mp4 -b:a 192K -vn music.mp3
     for f in ./*.mp4; ffmpeg -i "$f" -b:a 192K -vn "${f%.*}.mp3"
+    for f in ./*.webm; ffmpeg -i "$f" -b:a 192K -vn "${f%.*}.mp3"
   concat videos with same codecs
     ffmpeg -f concat -i video_files.in -c copy output.mp4
     video_files.in
@@ -3410,6 +3411,8 @@ install from local file system
         > dirname "$(find / -type f -name ls | head -1)"
         /usr/bin
         > cd "$(dirname "$(find / -type f -name ls | head -1)")"
+  -maxdepth
+    levels
   using xargs
     find . -maxdepth 1 -iname "*.flv" -print0 | xargs -0 -I file ffmpeg -i file -b:a 192K -vn file.mp3
       it removes \n at the end of print
@@ -3510,9 +3513,11 @@ install from local file system
     convert x.pdf[2] x3.jpg
   resize image
     convert -resize 1280x720\! intro.pdf intro-%02d.jpg
-    resize to fixed dimensions
+      resize to fixed dimensions
     convert -resize 1280x720 intro.pdf intro-%02d.jpg
-    resize proportionally
+      resize proportionally
+    multiple images
+      mogrify -quality 100 -density 300x300 -resize 1280x720 *.jpg 
   check dimensions of an image
     identify intro-01.jpg
     intro-01.jpg JPEG 1280x720 1280x720+0+0 8-bit Gray 256c 41.6KB 0.000u 0:00.000  
@@ -3560,6 +3565,8 @@ install from local file system
   list directories
     echo */
     ls -d */
+  sort by date/time 
+    -t
 
 ## netcat 
 
@@ -3719,6 +3726,10 @@ install from local file system
 ## rg: ack ag alternative
 
     -L --follow symlinks
+    -S --smart-case
+    -s --case-sensitive
+    -l --files-with-matches
+    -i --ignore-case
     rg <keyword> **/*.md
       search recursively in md files
 
@@ -3884,7 +3895,8 @@ install from local file system
     f – following is the archive file name
     z - gzip
   tar xvfz archive_name.tar.gz
-
+  tar all *.php files
+    find -name '*.php' -printf "%P\n" | tar -zcpvf archive.tar.gz -T -
 
 ## telnet
   
@@ -4019,6 +4031,8 @@ install from local file system
 
 # Vim
 
+  keybinding to run current script with node
+    nmap üc :!node %<cr>
   prettify indent 
     gg=G
   horizontal scrolling
@@ -4078,7 +4092,8 @@ install from local file system
     use tabs
       set tabstop=2 softtabstop=0 noexpandtab shiftwidth=2 
     tab yerine space kullan
-      set expandtab
+      set expandtab 
+      set expandtab 
     mevcut tabları çevir
       retab
     Tersi:
@@ -4267,8 +4282,11 @@ install from local file system
     examples
       s:\([.!?]\)\s\+\([a-z]\):\1  \u\2:g
         küçük harfle başlayan cümleleri, büyük harfe çevirir
-  Lookbehind Lookaround Lookforward
+  lookbehind lookaround lookforward lookahead
+    :h \@=
     ex
+      foo\(bar\)\@=       "foo" in "foobar"
+      foo\(bar\)\@=foo    nothing
       /\(foo.*\)\@<!bar
         to find all bar that are not preceeded by a foo: 
     Dikkat: ATOM: \(foo.*\)
@@ -4771,8 +4789,7 @@ default keymappings
       endfunction
       call DisplayName("Your Name")
     escaping quotes inside quotes
-      let @s = 'ma/]
-  mb''awye0j''bkI*nj'
+      let @s = 'ma/] mb''awye0j''bkI*nj'
     select word under cursor
       let wordUnderCursor = expand("<cword>")
     overwrite/override existing mappings
@@ -4784,7 +4801,7 @@ default keymappings
           normal zM
           /92-TEMPOR
           "let c = 'zM/92-TEMPO
-  '
+    '
     map multiple commands to a key
       http://stackoverflow.com/questions/23204110/mapping-one-key-to-multiple-commands-in-vim
       you must escape the bar or use <bar> instead:

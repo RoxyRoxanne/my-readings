@@ -52,6 +52,8 @@ _ id=r_lastid ccd_0009
 
 ## chrome
     
+    ref
+      <url:file:///~/projects/study/js/study_chrome_devtools.Rmd>
     shortcuts
       #!i   developer tools
     monitor events
@@ -60,6 +62,9 @@ _ id=r_lastid ccd_0009
         getEventListeners(document)
         registered on dom elements
           <url:file:///.select dom > event listeners>
+    display console as drawer
+      Esc
+      menu > Show Console
 
 ## cloud
 
@@ -997,6 +1002,12 @@ _ id=r_lastid ccd_0009
         console > persist
 
 # bash
+
+    http://www.tldp.org/LDP/abs/html/commandsub.html
+    command substitution: 
+      cd "`pwd`"
+      better: $(..)
+        output=$(sed -n /"$1"/p $file)
 
 ## fd: find replacement
 
@@ -5634,6 +5645,12 @@ _ id=r_lastid ccd_0009
         Predicting the Unpredictable Pragmatic Approaches to Estimating Project Schedule or Cost
         Behind Closed Doors
 
+    slack
+      slack-term
+        cli tool for slack
+        config
+          ~/slack-term.json
+        slack-token 
     Maker products marketplace: tindie.com
     hackaday.io: maker projeleri sosyal ağı
     HackerRank: challenges for hackers
@@ -5803,10 +5820,44 @@ _ id=r_lastid ccd_0009
       Category Theory, The essence of interface-based design - Erik Meijer-JMP6gI5mLHc.mp4
       Spreadsheets for developers by Felienne Hermans-0CKru5d4GPk.mp4
     tools 
+      opensource.guide
+        https://github.com/github/opensource.guide
+        community guides for open source authors
+      OnlinePythonTutor
+        https://github.com/pgbovine/OnlinePythonTutor
+        visualize python, java, js in browser
+      csvtotable
+        https://github.com/vividvilla/csvtotable
+        cli to convert CSV files to searchable and sortable HTML table
+        ex
+        Installation
+          pip install --upgrade csvtotable
+        Get started
+          csvtotable --help
+        Convert data.csv file to data.html file
+          csvtotable data.csv data.html
+        Open output file in a web browser instead of writing to a file
+          csvtotable data.csv --serve
+      audreyr/cookiecutter
+        https://github.com/audreyr/cookiecutter
+        A command-line utility that creates projects from cookiecutters (project templates), 
+        e.g. creating a Python package project from a Python package project template.
+      toddmotto/public-apis
+        https://github.com/toddmotto/public-apis
+        collective list of public JSON APIs for use in web development
+      learnxinyminutes-docs
+        https://github.com/adambard/learnxinyminutes-docs
+        learn programming languages with examples in actual code
+        ex
+          // ... or using the dot syntax, provided the key is a valid identifier.
+          myObj.myKey; // = "myValue"
       https://asciinema.org/
         screencasting tool for terminal
       https://github.com/jreybert/vimagit
         vim git client, very useful
+        ex
+          S: stage block
+          CC: commit block
       Google Translate plugin for chrome
         çift tıklayarak kelimelerin karşılıklarını bulur
       http://kk.org/cooltools/tag/cool-tools-show/
@@ -6211,6 +6262,7 @@ _ id=r_lastid ccd_0009
         PATCH: backwards-compatible bug fixes
     Graphviz in Browser
       http://www.webgraphviz.com
-
-
-
+    blessed: terminal interface for nodejs
+      https://github.com/chjj/blessed
+      https://recodes.co/introducing-gitter-cli/
+    
